@@ -20,10 +20,10 @@ export default function ApplicationLogo(props: SVGAttributes<SVGElement>) {
             </div>
             <div className="flex flex-col">
                 <span className="text-lg font-extrabold tracking-tight text-slate-900">
-                    AFC <span className="text-emerald-600">Finanzas</span>
+                    Tesorería<span className="text-emerald-600">Deportiva</span>
                 </span>
                 <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                    Gestión Financiera
+                    Gestión Financiera & Arcas
                 </span>
             </div>
         </div>

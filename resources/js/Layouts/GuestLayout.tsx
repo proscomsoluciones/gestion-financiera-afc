@@ -36,10 +36,10 @@ export default function Guest({ children }: PropsWithChildren) {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-xl font-bold tracking-tight text-white">
-                                            AFC <span className="text-emerald-400">Finanzas</span>
+                                            Tesorería<span className="text-emerald-400">Deportiva</span>
                                         </span>
                                         <span className="text-[10px] font-medium tracking-wider text-emerald-300/80 uppercase">
-                                            Gestión Financiera
+                                            Gestión Financiera & Arcas
                                         </span>
                                     </div>
                                 </div>
@@ -47,10 +47,10 @@ export default function Guest({ children }: PropsWithChildren) {
 
                             <div className="mt-12 space-y-4">
                                 <h1 className="text-2xl font-bold leading-snug tracking-tight text-white lg:text-3xl">
-                                    Control Total de tus Finanzas Corporativas
+                                    Control Total de las Arcas y Tesorería
                                 </h1>
                                 <p className="text-sm leading-relaxed text-slate-300">
-                                    Plataforma integral para el seguimiento de ingresos, egresos, presupuestos y proyecciones financieras en tiempo real.
+                                    Plataforma integral para el seguimiento de ingresos, egresos, tributos de clubes, pases, fondo solidario, reportes y balances en tiempo real.
                                 </p>
                             </div>
                         </div>
@@ -58,16 +58,16 @@ export default function Guest({ children }: PropsWithChildren) {
                         {/* Feature Badges */}
                         <div className="relative z-10 mt-10 space-y-3 pt-6 border-t border-slate-700/60">
                             <div className="flex items-center gap-3 text-xs text-slate-300">
-                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
                                     ✓
                                 </div>
-                                <span>Seguridad y Cifrado Bancario 256-bit</span>
+                                <span>Balances, Cartolas y Pases </span>
                             </div>
                             <div className="flex items-center gap-3 text-xs text-slate-300">
-                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
+                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
                                     ✓
                                 </div>
-                                <span>Reportes Financieros y Métricas AFC</span>
+                                <span>Transparencia 100% Auditada para Clubes</span>
                             </div>
                         </div>
 

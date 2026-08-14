@@ -64,7 +64,7 @@ export default function Login({
                             name="email"
                             value={data.email}
                             className="block w-full rounded-xl border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2.5 text-slate-900 placeholder-slate-400 transition-all focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
-                            placeholder="ejemplo@afcfinanzas.com"
+                            placeholder="ejemplo@tesoreriadeportiva.cl"
                             autoComplete="username"
                             isFocused={true}
                             onChange={(e) => setData('email', e.target.value)}
@@ -150,16 +150,6 @@ export default function Login({
                     >
                         {processing ? 'Accediendo...' : 'Iniciar Sesión'}
                     </PrimaryButton>
-                </div>
-
-                <div className="mt-6 text-center text-xs text-slate-500">
-                    ¿No tienes una cuenta de acceso?{' '}
-                    <Link
-                        href={route('register')}
-                        className="font-bold text-emerald-600 hover:text-emerald-700 underline"
-                    >
-                        Registrar nueva cuenta
-                    </Link>
                 </div>
             </form>
         </GuestLayout>
