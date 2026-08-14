@@ -27,18 +27,18 @@ export default function Show({ club }: { club: Club }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
                         {club.crest_url ? (
-                            <img src={club.crest_url} alt={club.name} className="h-12 w-12 rounded-2xl object-cover border border-slate-200 shadow-sm" />
+                            <img src={club.crest_url} alt={club.name} className="h-12 w-12 rounded-2xl object-cover border border-slate-200 shadow-sm shrink-0" />
                         ) : (
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-lg font-black text-white shadow-xs">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-lg font-black text-white shadow-xs shrink-0">
                                 {club.short_name ? club.short_name.substring(0, 3) : club.name.substring(0, 2).toUpperCase()}
                             </div>
                         )}
                         <div>
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                                <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
                                     {club.name}
                                 </h2>
                                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${

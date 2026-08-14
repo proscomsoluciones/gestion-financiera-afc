@@ -565,66 +565,108 @@ export default function Index({
 
                                 {/* Table Preview */}
                                 <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                    <table className="w-full text-left text-xs">
-                                        <thead>
-                                            <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                <th className="py-3 px-5">Fecha</th>
-                                                <th className="py-3 px-5">Concepto</th>
-                                                <th className="py-3 px-5">Categoría</th>
-                                                <th className="py-3 px-5 text-center">Boleta / Foto</th>
-                                                <th className="py-3 px-5 text-right">Monto</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100 font-medium">
-                                            {expensesList.length > 0 ? (
-                                                expensesList.map((exp: TransactionItem) => (
-                                                    <tr key={exp.id} className="hover:bg-slate-50/80">
-                                                        <td className="py-3 px-5 font-bold text-slate-700">
-                                                            {formatDateChile(exp.date)}
+                                    {/* Desktop Table View (1024px+) */}
+                                    <div className="hidden lg:block overflow-x-auto">
+                                        <table className="w-full text-left text-xs">
+                                            <thead>
+                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                    <th className="py-3 px-5">Fecha</th>
+                                                    <th className="py-3 px-5">Concepto</th>
+                                                    <th className="py-3 px-5">Categoría</th>
+                                                    <th className="py-3 px-5 text-center">Boleta / Foto</th>
+                                                    <th className="py-3 px-5 text-right">Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 font-medium">
+                                                {expensesList.length > 0 ? (
+                                                    expensesList.map((exp: TransactionItem) => (
+                                                        <tr key={exp.id} className="hover:bg-slate-50/80">
+                                                            <td className="py-3 px-5 font-bold text-slate-700">
+                                                                {formatDateChile(exp.date)}
+                                                            </td>
+                                                            <td className="py-3 px-5 font-extrabold text-slate-900">
+                                                                {exp.concept}
+                                                            </td>
+                                                            <td className="py-3 px-5 text-slate-600 font-medium">
+                                                                {exp.category}
+                                                            </td>
+                                                            <td className="py-3 px-5 text-center">
+                                                                {exp.receipt_image ? (
+                                                                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                                                                        📷 Foto Adjunta
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-500">
+                                                                        📄 Comprobante Folio
+                                                                    </span>
+                                                                )}
+                                                            </td>
+                                                            <td className="py-3 px-5 text-right font-black text-rose-600">
+                                                                -{formatCLP(exp.amount)}
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
+                                                            No hay egresos o gastos registrados en el período seleccionado.
                                                         </td>
-                                                        <td className="py-3 px-5 font-extrabold text-slate-900">
-                                                            {exp.concept}
+                                                    </tr>
+                                                )}
+                                            </tbody>
+                                            {expensesList.length > 0 && (
+                                                <tfoot>
+                                                    <tr className="bg-slate-50 border-t border-slate-200 font-black">
+                                                        <td colSpan={4} className="py-3.5 px-5 text-right text-xs uppercase tracking-wider text-slate-700">
+                                                            TOTAL EGRESOS DEL PERÍODO
                                                         </td>
-                                                        <td className="py-3 px-5 text-slate-600 font-medium">
-                                                            {exp.category}
+                                                        <td className="py-3.5 px-5 text-right text-sm text-rose-600">
+                                                            -{formatCLP(summary.total_expense)}
                                                         </td>
-                                                        <td className="py-3 px-5 text-center">
+                                                    </tr>
+                                                </tfoot>
+                                            )}
+                                        </table>
+                                    </div>
+
+                                    {/* Mobile & Tablet Cards View (< 1024px) */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                        {expensesList.length > 0 ? (
+                                            <>
+                                                {expensesList.map((exp: TransactionItem) => (
+                                                    <div key={exp.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 flex flex-col justify-between">
+                                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                                            <span className="text-xs font-bold text-slate-600">📅 {formatDateChile(exp.date)}</span>
+                                                            <span className="text-sm font-black text-rose-600">-{formatCLP(exp.amount)}</span>
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-extrabold text-slate-900 text-xs">{exp.concept}</p>
+                                                            <p className="text-[11px] text-slate-500 font-medium mt-0.5">Categoría: {exp.category}</p>
+                                                        </div>
+                                                        <div className="pt-1 flex items-center justify-between text-[11px]">
                                                             {exp.receipt_image ? (
-                                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-bold text-emerald-700 border border-emerald-200">
                                                                     📷 Foto Adjunta
                                                                 </span>
                                                             ) : (
-                                                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-500">
+                                                                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 font-bold text-slate-500">
                                                                     📄 Comprobante Folio
                                                                 </span>
                                                             )}
-                                                        </td>
-                                                        <td className="py-3 px-5 text-right font-black text-rose-600">
-                                                            -{formatCLP(exp.amount)}
-                                                        </td>
-                                                    </tr>
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
-                                                        No hay egresos o gastos registrados en el período seleccionado.
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                        {expensesList.length > 0 && (
-                                            <tfoot>
-                                                <tr className="bg-slate-50 border-t border-slate-200 font-black">
-                                                    <td colSpan={4} className="py-3.5 px-5 text-right text-xs uppercase tracking-wider text-slate-700">
-                                                        TOTAL EGRESOS DEL PERÍODO
-                                                    </td>
-                                                    <td className="py-3.5 px-5 text-right text-sm text-rose-600">
-                                                        -{formatCLP(summary.total_expense)}
-                                                    </td>
-                                                </tr>
-                                            </tfoot>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                <div className="rounded-2xl bg-rose-50 border border-rose-200 p-3 text-right col-span-1 md:col-span-2">
+                                                    <span className="text-xs font-bold text-rose-800 uppercase block">Total Egresos del Período</span>
+                                                    <span className="text-base font-black text-rose-600">-{formatCLP(summary.total_expense)}</span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="py-8 text-center text-slate-400 font-medium text-xs col-span-1 md:col-span-2">
+                                                No hay egresos o gastos registrados en el período seleccionado.
+                                            </div>
                                         )}
-                                    </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -655,40 +697,74 @@ export default function Index({
                                 </div>
 
                                 <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                    <table className="w-full text-left text-xs">
-                                        <thead>
-                                            <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                <th className="py-3 px-5">Folio</th>
-                                                <th className="py-3 px-5">Fecha</th>
-                                                <th className="py-3 px-5">Entidad / Club</th>
-                                                <th className="py-3 px-5">Concepto</th>
-                                                <th className="py-3 px-5 text-right">Monto</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100 font-medium">
-                                            {(transactions?.data || []).map((tx: TransactionItem) => (
-                                                <tr key={tx.id} className="hover:bg-slate-50/80">
-                                                    <td className="py-3 px-5 font-mono font-black text-emerald-700">
-                                                        {tx.folio_number}
-                                                    </td>
-                                                    <td className="py-3 px-5 font-bold text-slate-600">
-                                                        {formatDateChile(tx.date)}
-                                                    </td>
-                                                    <td className="py-3 px-5 font-extrabold text-slate-900">
-                                                        {tx.club ? tx.club.name : '— Asociación AFC —'}
-                                                    </td>
-                                                    <td className="py-3 px-5 text-slate-700">
-                                                        {tx.concept}
-                                                    </td>
-                                                    <td className={`py-3 px-5 text-right font-black ${
+                                    {/* Desktop Table View (1024px+) */}
+                                    <div className="hidden lg:block overflow-x-auto">
+                                        <table className="w-full text-left text-xs">
+                                            <thead>
+                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                    <th className="py-3 px-5">Folio</th>
+                                                    <th className="py-3 px-5">Fecha</th>
+                                                    <th className="py-3 px-5">Entidad / Club</th>
+                                                    <th className="py-3 px-5">Concepto</th>
+                                                    <th className="py-3 px-5 text-right">Monto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 font-medium">
+                                                {(transactions?.data || []).map((tx: TransactionItem) => (
+                                                    <tr key={tx.id} className="hover:bg-slate-50/80">
+                                                        <td className="py-3 px-5 font-mono font-black text-emerald-700">
+                                                            {tx.folio_number}
+                                                        </td>
+                                                        <td className="py-3 px-5 font-bold text-slate-600">
+                                                            {formatDateChile(tx.date)}
+                                                        </td>
+                                                        <td className="py-3 px-5 font-extrabold text-slate-900">
+                                                            {tx.club ? tx.club.name : '— Asociación AFC —'}
+                                                        </td>
+                                                        <td className="py-3 px-5 text-slate-700">
+                                                            {tx.concept}
+                                                        </td>
+                                                        <td className={`py-3 px-5 text-right font-black ${
+                                                            tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'
+                                                        }`}>
+                                                            {tx.type === 'income' ? '+' : '-'}{formatCLP(tx.amount)}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {/* Mobile & Tablet Cards View (< 1024px) */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                        {(transactions?.data || []).map((tx: TransactionItem) => (
+                                            <div key={tx.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2">
+                                                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                                                            {tx.folio_number}
+                                                        </span>
+                                                        <span className="text-xs font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                    </div>
+                                                    <span className={`text-sm font-black ${
                                                         tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'
                                                     }`}>
                                                         {tx.type === 'income' ? '+' : '-'}{formatCLP(tx.amount)}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                                    </span>
+                                                </div>
+                                                <div className="space-y-1 text-xs">
+                                                    <div className="flex justify-between">
+                                                        <span className="text-slate-400 font-semibold">Entidad:</span>
+                                                        <span className="font-extrabold text-slate-900">{tx.club ? tx.club.name : '— Asociación AFC —'}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-slate-400 font-semibold block text-[11px]">Concepto:</span>
+                                                        <span className="font-semibold text-slate-700">{tx.concept}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -748,82 +824,155 @@ export default function Index({
 
                                 {annualViewMode === 'summary' ? (
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                    <th className="py-3.5 px-5">Mes</th>
-                                                    <th className="py-3.5 px-5 text-right">Ingresos ($)</th>
-                                                    <th className="py-3.5 px-5 text-right">Egresos ($)</th>
-                                                    <th className="py-3.5 px-5 text-right">Resultado Neto ($)</th>
-                                                    <th className="py-3.5 px-5 text-right">Saldo Acumulado ($)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100 font-medium">
-                                                {annual_balance.map((row) => (
-                                                    <tr key={row.month_num} className="hover:bg-slate-50/80">
-                                                        <td className="py-3.5 px-5 font-black text-slate-900 uppercase">
-                                                            📅 {row.month_name} {selectedYear}
-                                                        </td>
-                                                        <td className="py-3.5 px-5 text-right font-bold text-emerald-600">
-                                                            +{formatCLP(row.income)}
-                                                        </td>
-                                                        <td className="py-3.5 px-5 text-right font-bold text-rose-600">
-                                                            -{formatCLP(row.expense)}
-                                                        </td>
-                                                        <td className="py-3.5 px-5 text-right font-extrabold text-slate-800">
-                                                            {formatCLP(row.net)}
-                                                        </td>
-                                                        <td className="py-3.5 px-5 text-right font-mono font-black text-slate-900">
-                                                            {formatCLP(row.accumulated)}
-                                                        </td>
+                                        {/* Desktop Table View (1024px+) */}
+                                        <div className="hidden lg:block overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                        <th className="py-3.5 px-5">Mes</th>
+                                                        <th className="py-3.5 px-5 text-right">Ingresos ($)</th>
+                                                        <th className="py-3.5 px-5 text-right">Egresos ($)</th>
+                                                        <th className="py-3.5 px-5 text-right">Resultado Neto ($)</th>
+                                                        <th className="py-3.5 px-5 text-right">Saldo Acumulado ($)</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 font-medium">
+                                                    {annual_balance.map((row) => (
+                                                        <tr key={row.month_num} className="hover:bg-slate-50/80">
+                                                            <td className="py-3.5 px-5 font-black text-slate-900 uppercase">
+                                                                📅 {row.month_name} {selectedYear}
+                                                            </td>
+                                                            <td className="py-3.5 px-5 text-right font-bold text-emerald-600">
+                                                                +{formatCLP(row.income)}
+                                                            </td>
+                                                            <td className="py-3.5 px-5 text-right font-bold text-rose-600">
+                                                                -{formatCLP(row.expense)}
+                                                            </td>
+                                                            <td className="py-3.5 px-5 text-right font-extrabold text-slate-800">
+                                                                {formatCLP(row.net)}
+                                                            </td>
+                                                            <td className="py-3.5 px-5 text-right font-mono font-black text-slate-900">
+                                                                {formatCLP(row.accumulated)}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                            {annual_balance.map((row) => (
+                                                <div key={row.month_num} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 flex flex-col justify-between">
+                                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                                        <span className="font-black text-slate-900 text-xs uppercase">📅 {row.month_name} {selectedYear}</span>
+                                                        <span className="font-mono font-black text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">
+                                                            Saldo: {formatCLP(row.accumulated)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                                                        <div className="bg-emerald-50/50 p-2 rounded-xl border border-emerald-100">
+                                                            <span className="text-[10px] font-bold text-emerald-700 block uppercase">Ingresos</span>
+                                                            <span className="font-bold text-emerald-600">+{formatCLP(row.income)}</span>
+                                                        </div>
+                                                        <div className="bg-rose-50/50 p-2 rounded-xl border border-rose-100">
+                                                            <span className="text-[10px] font-bold text-rose-700 block uppercase">Egresos</span>
+                                                            <span className="font-bold text-rose-600">-{formatCLP(row.expense)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex justify-between items-center text-xs pt-1 border-t border-slate-100">
+                                                        <span className="text-slate-500 font-semibold">Resultado Neto:</span>
+                                                        <span className={`font-extrabold ${row.net >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+                                                            {formatCLP(row.net)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 ) : (
                                     /* Detailed Category Matrix */
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                    <th className="py-3.5 px-4">Mes</th>
-                                                    <th className="py-3.5 px-4 text-right">Tributos</th>
-                                                    <th className="py-3.5 px-4 text-right">Pases</th>
-                                                    <th className="py-3.5 px-4 text-right">Inscripciones</th>
-                                                    <th className="py-3.5 px-4 text-right">Multas / Apel.</th>
-                                                    <th className="py-3.5 px-4 text-right">Otros Ing.</th>
-                                                    <th className="py-3.5 px-4 text-right">Egresos</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100 font-medium">
-                                                {annual_balance.map((row) => (
-                                                    <tr key={row.month_num} className="hover:bg-slate-50/80">
-                                                        <td className="py-3.5 px-4 font-black text-slate-900 uppercase">
-                                                            📅 {row.month_name}
-                                                        </td>
-                                                        <td className="py-3.5 px-4 text-right font-bold text-emerald-600">
-                                                            {formatCLP(row.categories?.tributo || 0)}
-                                                        </td>
-                                                        <td className="py-3.5 px-4 text-right font-bold text-teal-600">
-                                                            {formatCLP(row.categories?.pase || 0)}
-                                                        </td>
-                                                        <td className="py-3.5 px-4 text-right font-bold text-sky-600">
-                                                            {formatCLP(row.categories?.inscripcion || 0)}
-                                                        </td>
-                                                        <td className="py-3.5 px-4 text-right font-bold text-amber-600">
-                                                            {formatCLP(row.categories?.multa_apelacion || 0)}
-                                                        </td>
-                                                        <td className="py-3.5 px-4 text-right font-bold text-indigo-600">
-                                                            {formatCLP(row.categories?.otros_ingresos || 0)}
-                                                        </td>
-                                                        <td className="py-3.5 px-4 text-right font-bold text-rose-600">
-                                                            -{formatCLP(row.categories?.egresos || 0)}
-                                                        </td>
+                                        {/* Desktop Table View (1024px+) */}
+                                        <div className="hidden lg:block overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                        <th className="py-3.5 px-4">Mes</th>
+                                                        <th className="py-3.5 px-4 text-right">Tributos</th>
+                                                        <th className="py-3.5 px-4 text-right">Pases</th>
+                                                        <th className="py-3.5 px-4 text-right">Inscripciones</th>
+                                                        <th className="py-3.5 px-4 text-right">Multas / Apel.</th>
+                                                        <th className="py-3.5 px-4 text-right">Otros Ing.</th>
+                                                        <th className="py-3.5 px-4 text-right">Egresos</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 font-medium">
+                                                    {annual_balance.map((row) => (
+                                                        <tr key={row.month_num} className="hover:bg-slate-50/80">
+                                                            <td className="py-3.5 px-4 font-black text-slate-900 uppercase">
+                                                                📅 {row.month_name}
+                                                            </td>
+                                                            <td className="py-3.5 px-4 text-right font-bold text-emerald-600">
+                                                                {formatCLP(row.categories?.tributo || 0)}
+                                                            </td>
+                                                            <td className="py-3.5 px-4 text-right font-bold text-teal-600">
+                                                                {formatCLP(row.categories?.pase || 0)}
+                                                            </td>
+                                                            <td className="py-3.5 px-4 text-right font-bold text-sky-600">
+                                                                {formatCLP(row.categories?.inscripcion || 0)}
+                                                            </td>
+                                                            <td className="py-3.5 px-4 text-right font-bold text-amber-600">
+                                                                {formatCLP(row.categories?.multa_apelacion || 0)}
+                                                            </td>
+                                                            <td className="py-3.5 px-4 text-right font-bold text-indigo-600">
+                                                                {formatCLP(row.categories?.otros_ingresos || 0)}
+                                                            </td>
+                                                            <td className="py-3.5 px-4 text-right font-bold text-rose-600">
+                                                                -{formatCLP(row.categories?.egresos || 0)}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                            {annual_balance.map((row) => (
+                                                <div key={row.month_num} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 text-xs">
+                                                    <div className="font-black text-slate-900 border-b border-slate-100 pb-2 uppercase">
+                                                        📅 {row.month_name}
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-400">Tributos:</span>
+                                                            <span className="font-bold text-emerald-600">{formatCLP(row.categories?.tributo || 0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-400">Pases:</span>
+                                                            <span className="font-bold text-teal-600">{formatCLP(row.categories?.pase || 0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-400">Inscrip.:</span>
+                                                            <span className="font-bold text-sky-600">{formatCLP(row.categories?.inscripcion || 0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-400">Multas:</span>
+                                                            <span className="font-bold text-amber-600">{formatCLP(row.categories?.multa_apelacion || 0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-400">Otros:</span>
+                                                            <span className="font-bold text-indigo-600">{formatCLP(row.categories?.otros_ingresos || 0)}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-slate-400">Egresos:</span>
+                                                            <span className="font-bold text-rose-600">-{formatCLP(row.categories?.egresos || 0)}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -1015,58 +1164,90 @@ export default function Index({
                                         </div>
 
                                         <div className="overflow-hidden rounded-2xl border border-teal-200 bg-teal-50/20">
-                                            <table className="w-full text-left text-xs">
-                                                <thead>
-                                                    <tr className="border-b border-teal-200 bg-teal-100/50 text-[11px] font-bold uppercase tracking-wider text-teal-900">
-                                                        <th className="py-3 px-4">Folio</th>
-                                                        <th className="py-3 px-4">Fecha</th>
-                                                        <th className="py-3 px-4">Detalle / Jugador</th>
-                                                        <th className="py-3 px-4 text-right">Cobrado al Club</th>
-                                                        <th className="py-3 px-4 text-right">Costo ARFA V Región</th>
-                                                        <th className="py-3 px-4 text-right">Ganancia AFC</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-teal-100 font-medium">
-                                                    {club_statement.passes_list.map((pass) => (
-                                                        <tr key={pass.id} className="hover:bg-teal-50/50">
-                                                            <td className="py-3 px-4 font-mono font-black text-teal-800">
-                                                                {pass.folio_number}
+                                            {/* Desktop Table View (1024px+) */}
+                                            <div className="hidden lg:block overflow-x-auto">
+                                                <table className="w-full text-left text-xs">
+                                                    <thead>
+                                                        <tr className="border-b border-teal-200 bg-teal-100/50 text-[11px] font-bold uppercase tracking-wider text-teal-900">
+                                                            <th className="py-3 px-4">Folio</th>
+                                                            <th className="py-3 px-4">Fecha</th>
+                                                            <th className="py-3 px-4">Detalle / Jugador</th>
+                                                            <th className="py-3 px-4 text-right">Cobrado al Club</th>
+                                                            <th className="py-3 px-4 text-right">Costo ARFA V Región</th>
+                                                            <th className="py-3 px-4 text-right">Ganancia AFC</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-teal-100 font-medium">
+                                                        {club_statement.passes_list.map((pass) => (
+                                                            <tr key={pass.id} className="hover:bg-teal-50/50">
+                                                                <td className="py-3 px-4 font-mono font-black text-teal-800">
+                                                                    {pass.folio_number}
+                                                                </td>
+                                                                <td className="py-3 px-4 font-bold text-slate-700">
+                                                                    {formatDateChile(pass.date)}
+                                                                </td>
+                                                                <td className="py-3 px-4 text-slate-900 font-bold">
+                                                                    {pass.concept}
+                                                                </td>
+                                                                <td className="py-3 px-4 text-right font-black text-slate-900">
+                                                                    {formatCLP(pass.total_amount)}
+                                                                </td>
+                                                                <td className="py-3 px-4 text-right font-bold text-rose-600">
+                                                                    {formatCLP(pass.arfa_cost)}
+                                                                </td>
+                                                                <td className="py-3 px-4 text-right font-black text-emerald-600">
+                                                                    +{formatCLP(pass.afc_net)}
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr className="border-t border-teal-300 bg-teal-100/80 font-black text-slate-900">
+                                                            <td colSpan={3} className="py-3 px-4 text-right text-[11px] uppercase tracking-wider">
+                                                                SUBTOTALES PASES Y TRANSFERENCIAS
                                                             </td>
-                                                            <td className="py-3 px-4 font-bold text-slate-700">
-                                                                {formatDateChile(pass.date)}
+                                                            <td className="py-3 px-4 text-right text-emerald-800">
+                                                                {formatCLP(club_statement.totals_by_category?.pase || 0)}
                                                             </td>
-                                                            <td className="py-3 px-4 text-slate-900 font-bold">
-                                                                {pass.concept}
+                                                            <td className="py-3 px-4 text-right text-rose-700">
+                                                                {formatCLP(club_statement.total_arfa_pases || 0)}
                                                             </td>
-                                                            <td className="py-3 px-4 text-right font-black text-slate-900">
-                                                                {formatCLP(pass.total_amount)}
-                                                            </td>
-                                                            <td className="py-3 px-4 text-right font-bold text-rose-600">
-                                                                {formatCLP(pass.arfa_cost)}
-                                                            </td>
-                                                            <td className="py-3 px-4 text-right font-black text-emerald-600">
-                                                                +{formatCLP(pass.afc_net)}
+                                                            <td className="py-3 px-4 text-right text-emerald-700">
+                                                                +{formatCLP(club_statement.total_afc_pases_net || 0)}
                                                             </td>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                                <tfoot>
-                                                    <tr className="border-t border-teal-300 bg-teal-100/80 font-black text-slate-900">
-                                                        <td colSpan={3} className="py-3 px-4 text-right text-[11px] uppercase tracking-wider">
-                                                            SUBTOTALES PASES Y TRANSFERENCIAS
-                                                        </td>
-                                                        <td className="py-3 px-4 text-right text-emerald-800">
-                                                            {formatCLP(club_statement.totals_by_category?.pase || 0)}
-                                                        </td>
-                                                        <td className="py-3 px-4 text-right text-rose-700">
-                                                            {formatCLP(club_statement.total_arfa_pases || 0)}
-                                                        </td>
-                                                        <td className="py-3 px-4 text-right text-emerald-700">
-                                                            +{formatCLP(club_statement.total_afc_pases_net || 0)}
-                                                        </td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+
+                                            {/* Mobile & Tablet Cards View (< 1024px) */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-teal-50/10">
+                                                {club_statement.passes_list.map((pass) => (
+                                                    <div key={pass.id} className="rounded-2xl border border-teal-200 bg-white p-4 shadow-xs space-y-2 text-xs flex flex-col justify-between">
+                                                        <div className="flex items-center justify-between border-b border-teal-100 pb-2">
+                                                            <span className="font-mono font-black text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                                                                {pass.folio_number}
+                                                            </span>
+                                                            <span className="font-bold text-slate-500">📅 {formatDateChile(pass.date)}</span>
+                                                        </div>
+                                                        <p className="font-bold text-slate-900">{pass.concept}</p>
+                                                        <div className="grid grid-cols-3 gap-1 pt-1 text-[11px] text-center bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                                            <div>
+                                                                <span className="text-slate-400 block text-[9px] uppercase font-bold">Cobrado</span>
+                                                                <span className="font-black text-slate-900">{formatCLP(pass.total_amount)}</span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-slate-400 block text-[9px] uppercase font-bold">ARFA</span>
+                                                                <span className="font-bold text-rose-600">{formatCLP(pass.arfa_cost)}</span>
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-slate-400 block text-[9px] uppercase font-bold">Ret. AFC</span>
+                                                                <span className="font-black text-emerald-600">+{formatCLP(pass.afc_net)}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -1077,57 +1258,99 @@ export default function Index({
                                         3. Historial Completo de Pagos Realizados por {club_statement.club.name}
                                     </h4>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                    <th className="py-3 px-5">N° Folio</th>
-                                                    <th className="py-3 px-5">Fecha</th>
-                                                    <th className="py-3 px-5">Categoría</th>
-                                                    <th className="py-3 px-5">Detalle / Motivo</th>
-                                                    <th className="py-3 px-5 text-right">Monto Cancelado</th>
-                                                    <th className="py-3 px-5 text-center">Comprobante</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100 font-medium">
-                                                {club_statement.transactions && club_statement.transactions.length > 0 ? (
-                                                    club_statement.transactions.map((tx) => (
-                                                        <tr key={tx.id} className="hover:bg-slate-50/80">
-                                                            <td className="py-3 px-5 font-mono font-black text-emerald-700">
-                                                                {tx.folio_number}
-                                                            </td>
-                                                            <td className="py-3 px-5 font-bold text-slate-600">
-                                                                {formatDateChile(tx.date)}
-                                                            </td>
-                                                            <td className="py-3 px-5 font-bold text-slate-800">
-                                                                {tx.category}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-slate-700">
-                                                                {tx.concept}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-right font-black text-emerald-600">
-                                                                +{formatCLP(tx.amount)}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-center">
-                                                                <a
-                                                                    href={route('transactions.pdf', tx.id)}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition"
-                                                                >
-                                                                    🖨️ Recibo
-                                                                </a>
+                                        {/* Desktop Table View (1024px+) */}
+                                        <div className="hidden lg:block overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                        <th className="py-3 px-5">N° Folio</th>
+                                                        <th className="py-3 px-5">Fecha</th>
+                                                        <th className="py-3 px-5">Categoría</th>
+                                                        <th className="py-3 px-5">Detalle / Motivo</th>
+                                                        <th className="py-3 px-5 text-right">Monto Cancelado</th>
+                                                        <th className="py-3 px-5 text-center">Comprobante</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 font-medium">
+                                                    {club_statement.transactions && club_statement.transactions.length > 0 ? (
+                                                        club_statement.transactions.map((tx) => (
+                                                            <tr key={tx.id} className="hover:bg-slate-50/80">
+                                                                <td className="py-3 px-5 font-mono font-black text-emerald-700">
+                                                                    {tx.folio_number}
+                                                                </td>
+                                                                <td className="py-3 px-5 font-bold text-slate-600">
+                                                                    {formatDateChile(tx.date)}
+                                                                </td>
+                                                                <td className="py-3 px-5 font-bold text-slate-800">
+                                                                    {tx.category}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-slate-700">
+                                                                    {tx.concept}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-right font-black text-emerald-600">
+                                                                    +{formatCLP(tx.amount)}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-center">
+                                                                    <a
+                                                                        href={route('transactions.pdf', tx.id)}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition"
+                                                                    >
+                                                                        🖨️ Recibo
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                                                                No hay pagos registrados para este club en la temporada.
                                                             </td>
                                                         </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
-                                                            No hay pagos registrados para este club en la temporada.
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                            {club_statement.transactions && club_statement.transactions.length > 0 ? (
+                                                club_statement.transactions.map((tx) => (
+                                                    <div key={tx.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 text-xs">
+                                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                                                                    {tx.folio_number}
+                                                                </span>
+                                                                <span className="text-xs font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                            </div>
+                                                            <span className="font-black text-sm text-emerald-600">+{formatCLP(tx.amount)}</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 mb-1">
+                                                                {tx.category}
+                                                            </span>
+                                                            <p className="font-bold text-slate-900">{tx.concept}</p>
+                                                        </div>
+                                                        <div className="pt-2 border-t border-slate-100 flex justify-end">
+                                                            <a
+                                                                href={route('transactions.pdf', tx.id)}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800"
+                                                            >
+                                                                🖨️ Ver Recibo PDF
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="py-8 text-center text-slate-400 font-medium text-xs">
+                                                    No hay pagos registrados para este club en la temporada.
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1210,46 +1433,77 @@ export default function Index({
                                         <span>📥</span> 1. Aportes y Fondos Recaudados por los Clubes
                                     </h4>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                    <th className="py-3 px-5">Folio</th>
-                                                    <th className="py-3 px-5">Fecha</th>
-                                                    <th className="py-3 px-5">Club Aportante</th>
-                                                    <th className="py-3 px-5">Detalle / Concepto</th>
-                                                    <th className="py-3 px-5 text-right">Monto Recaudado</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100 font-medium">
-                                                {solidarity_report?.incomes && solidarity_report.incomes.length > 0 ? (
-                                                    solidarity_report.incomes.map((tx) => (
-                                                        <tr key={tx.id} className="hover:bg-slate-50/80">
-                                                            <td className="py-3 px-5 font-mono font-black text-blue-700">
-                                                                {tx.folio_number}
-                                                            </td>
-                                                            <td className="py-3 px-5 font-bold text-slate-600">
-                                                                {formatDateChile(tx.date)}
-                                                            </td>
-                                                            <td className="py-3 px-5 font-extrabold text-slate-900">
-                                                                {tx.club ? tx.club.name : '— Aporte Varios —'}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-slate-700">
-                                                                {tx.concept}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-right font-black text-blue-600">
-                                                                +{formatCLP(tx.amount)}
+                                        {/* Desktop Table View (1024px+) */}
+                                        <div className="hidden lg:block overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                        <th className="py-3 px-5">Folio</th>
+                                                        <th className="py-3 px-5">Fecha</th>
+                                                        <th className="py-3 px-5">Club Aportante</th>
+                                                        <th className="py-3 px-5">Detalle / Concepto</th>
+                                                        <th className="py-3 px-5 text-right">Monto Recaudado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 font-medium">
+                                                    {solidarity_report?.incomes && solidarity_report.incomes.length > 0 ? (
+                                                        solidarity_report.incomes.map((tx) => (
+                                                            <tr key={tx.id} className="hover:bg-slate-50/80">
+                                                                <td className="py-3 px-5 font-mono font-black text-blue-700">
+                                                                    {tx.folio_number}
+                                                                </td>
+                                                                <td className="py-3 px-5 font-bold text-slate-600">
+                                                                    {formatDateChile(tx.date)}
+                                                                </td>
+                                                                <td className="py-3 px-5 font-extrabold text-slate-900">
+                                                                    {tx.club ? tx.club.name : '— Aporte Varios —'}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-slate-700">
+                                                                    {tx.concept}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-right font-black text-blue-600">
+                                                                    +{formatCLP(tx.amount)}
+                                                                </td>
+                                                            </tr>
+                                                        ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
+                                                                No hay ingresos por Fondo Solidario registrados en el período.
                                                             </td>
                                                         </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan={5} className="py-8 text-center text-slate-400 font-medium">
-                                                            No hay ingresos por Fondo Solidario registrados en el período.
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                            {solidarity_report?.incomes && solidarity_report.incomes.length > 0 ? (
+                                                solidarity_report.incomes.map((tx) => (
+                                                    <div key={tx.id} className="rounded-2xl border border-blue-200/80 bg-white p-4 shadow-xs space-y-2 text-xs flex flex-col justify-between">
+                                                        <div className="flex items-center justify-between border-b border-blue-100 pb-2">
+                                                            <span className="font-mono font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                                                                {tx.folio_number}
+                                                            </span>
+                                                            <span className="font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <span className="font-extrabold text-slate-900 block">{tx.club ? tx.club.name : '— Aporte Varios —'}</span>
+                                                            <p className="text-slate-700 font-medium">{tx.concept}</p>
+                                                        </div>
+                                                        <div className="pt-2 border-t border-slate-100 flex justify-between items-center">
+                                                            <span className="text-[11px] text-slate-400 font-semibold">Monto Recaudado:</span>
+                                                            <span className="font-black text-sm text-blue-600">+{formatCLP(tx.amount)}</span>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="py-8 text-center text-slate-400 font-medium text-xs col-span-1 md:col-span-2">
+                                                    No hay ingresos por Fondo Solidario registrados en el período.
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1259,57 +1513,95 @@ export default function Index({
                                         <span>📤</span> 2. Ayudas Entregadas y Desembolsadas a Beneficiarios
                                     </h4>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                                                    <th className="py-3 px-5">Folio</th>
-                                                    <th className="py-3 px-5">Fecha</th>
-                                                    <th className="py-3 px-5">Club / Beneficiario</th>
-                                                    <th className="py-3 px-5">Motivo / Caso de Auxilio</th>
-                                                    <th className="py-3 px-5 text-right">Monto Entregado</th>
-                                                    <th className="py-3 px-5 text-center">Comprobante</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100 font-medium">
-                                                {solidarity_report?.expenses && solidarity_report.expenses.length > 0 ? (
-                                                    solidarity_report.expenses.map((tx) => (
-                                                        <tr key={tx.id} className="hover:bg-slate-50/80">
-                                                            <td className="py-3 px-5 font-mono font-black text-rose-700">
-                                                                {tx.folio_number}
-                                                            </td>
-                                                            <td className="py-3 px-5 font-bold text-slate-600">
-                                                                {formatDateChile(tx.date)}
-                                                            </td>
-                                                            <td className="py-3 px-5 font-extrabold text-slate-900">
-                                                                {tx.club ? tx.club.name : '— Beneficiario Directo —'}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-slate-700">
-                                                                {tx.concept}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-right font-black text-rose-600">
-                                                                -{formatCLP(tx.amount)}
-                                                            </td>
-                                                            <td className="py-3 px-5 text-center">
-                                                                <a
-                                                                    href={route('transactions.pdf', tx.id)}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition"
-                                                                >
-                                                                    🖨️ Recibo
-                                                                </a>
+                                        {/* Desktop Table View (1024px+) */}
+                                        <div className="hidden lg:block overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                        <th className="py-3 px-5">Folio</th>
+                                                        <th className="py-3 px-5">Fecha</th>
+                                                        <th className="py-3 px-5">Club / Beneficiario</th>
+                                                        <th className="py-3 px-5">Motivo / Caso de Auxilio</th>
+                                                        <th className="py-3 px-5 text-right">Monto Entregado</th>
+                                                        <th className="py-3 px-5 text-center">Comprobante</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 font-medium">
+                                                    {solidarity_report?.expenses && solidarity_report.expenses.length > 0 ? (
+                                                        solidarity_report.expenses.map((tx) => (
+                                                            <tr key={tx.id} className="hover:bg-slate-50/80">
+                                                                <td className="py-3 px-5 font-mono font-black text-rose-700">
+                                                                    {tx.folio_number}
+                                                                </td>
+                                                                <td className="py-3 px-5 font-bold text-slate-600">
+                                                                    {formatDateChile(tx.date)}
+                                                                </td>
+                                                                <td className="py-3 px-5 font-extrabold text-slate-900">
+                                                                    {tx.club ? tx.club.name : '— Beneficiario Directo —'}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-slate-700">
+                                                                    {tx.concept}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-right font-black text-rose-600">
+                                                                    -{formatCLP(tx.amount)}
+                                                                </td>
+                                                                <td className="py-3 px-5 text-center">
+                                                                    <a
+                                                                        href={route('transactions.pdf', tx.id)}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition"
+                                                                    >
+                                                                        🖨️ Recibo
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                         ))
+                                                    ) : (
+                                                        <tr>
+                                                            <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                                                                No se han registrado entregas o desembolsos de Fondo Solidario en el período.
                                                             </td>
                                                         </tr>
-                                                     ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
-                                                            No se han registrado entregas o desembolsos de Fondo Solidario en el período.
-                                                        </td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                            {solidarity_report?.expenses && solidarity_report.expenses.length > 0 ? (
+                                                solidarity_report.expenses.map((tx) => (
+                                                    <div key={tx.id} className="rounded-2xl border border-rose-200/80 bg-white p-4 shadow-xs space-y-2 text-xs flex flex-col justify-between">
+                                                        <div className="flex items-center justify-between border-b border-rose-100 pb-2">
+                                                            <span className="font-mono font-black text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                                                                {tx.folio_number}
+                                                            </span>
+                                                            <span className="font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <span className="font-extrabold text-slate-900 block">{tx.club ? tx.club.name : '— Beneficiario Directo —'}</span>
+                                                            <p className="text-slate-700 font-medium">{tx.concept}</p>
+                                                        </div>
+                                                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                            <a
+                                                                href={route('transactions.pdf', tx.id)}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700"
+                                                            >
+                                                                🖨️ PDF
+                                                            </a>
+                                                            <span className="font-black text-sm text-rose-600">-{formatCLP(tx.amount)}</span>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="py-8 text-center text-slate-400 font-medium text-xs col-span-1 md:col-span-2">
+                                                    No se han registrado entregas o desembolsos de Fondo Solidario en el período.
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

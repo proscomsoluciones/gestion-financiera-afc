@@ -136,106 +136,188 @@ export default function Index({ clubs, filters }: IndexProps) {
                     {/* Clubs Table List */}
                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
                         {clubs.data.length > 0 ? (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead>
-                                        <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-bold uppercase tracking-wider text-slate-400">
-                                            <th className="py-3.5 px-6">Club</th>
-                                            <th className="py-3.5 px-6">Presidente / Directiva</th>
-                                            <th className="py-3.5 px-4 text-center">Estado</th>
-                                            <th className="py-3.5 px-6 text-right">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 font-medium">
-                                        {clubs.data.map((club) => (
-                                            <tr key={club.id} className="hover:bg-slate-50/80 transition-colors">
-                                                <td className="py-4 px-6">
-                                                    <div className="flex items-center gap-3.5">
-                                                        {club.crest_url ? (
-                                                            <img
-                                                                src={club.crest_url}
-                                                                alt={club.name}
-                                                                className="h-11 w-11 rounded-xl object-cover border border-slate-200 shadow-xs"
-                                                            />
-                                                        ) : (
-                                                            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-sm font-black text-white shadow-xs">
-                                                                {club.short_name ? club.short_name.substring(0, 3) : club.name.substring(0, 2).toUpperCase()}
+                            <>
+                                {/* Desktop Table View (1024px+) */}
+                                <div className="hidden lg:block overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead>
+                                            <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                                <th className="py-3.5 px-6">Club</th>
+                                                <th className="py-3.5 px-6">Presidente / Directiva</th>
+                                                <th className="py-3.5 px-4 text-center">Estado</th>
+                                                <th className="py-3.5 px-6 text-right">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 font-medium">
+                                            {clubs.data.map((club) => (
+                                                <tr key={club.id} className="hover:bg-slate-50/80 transition-colors">
+                                                    <td className="py-4 px-6">
+                                                        <div className="flex items-center gap-3.5">
+                                                            {club.crest_url ? (
+                                                                <img
+                                                                    src={club.crest_url}
+                                                                    alt={club.name}
+                                                                    className="h-11 w-11 rounded-xl object-cover border border-slate-200 shadow-xs"
+                                                                />
+                                                            ) : (
+                                                                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-sm font-black text-white shadow-xs">
+                                                                    {club.short_name ? club.short_name.substring(0, 3) : club.name.substring(0, 2).toUpperCase()}
+                                                                </div>
+                                                            )}
+                                                            <div>
+                                                                <Link
+                                                                    href={route('clubs.show', club.id)}
+                                                                    className="font-bold text-slate-900 hover:text-emerald-600 transition"
+                                                                >
+                                                                    {club.name}
+                                                                </Link>
+                                                                {club.short_name && (
+                                                                    <p className="text-xs font-semibold text-slate-400">
+                                                                        Siglas: {club.short_name}
+                                                                    </p>
+                                                                )}
                                                             </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td className="py-4 px-6 text-slate-700 text-xs">
+                                                        {club.president_name ? (
+                                                            <div>
+                                                                <p className="font-bold text-slate-800">{club.president_name}</p>
+                                                                <p className="text-[11px] text-slate-400">Presidente Institucional</p>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-slate-400 text-xs">— Sin registrar</span>
                                                         )}
-                                                        <div>
+                                                    </td>
+
+                                                    <td className="py-4 px-4 text-center">
+                                                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                                                            club.is_active 
+                                                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                                                : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                                        }`}>
+                                                            {club.is_active ? 'Activo' : 'Inactivo'}
+                                                        </span>
+                                                    </td>
+
+                                                    <td className="py-4 px-6 text-right">
+                                                        <div className="flex items-center justify-end gap-2">
                                                             <Link
                                                                 href={route('clubs.show', club.id)}
-                                                                className="font-bold text-slate-900 hover:text-emerald-600 transition"
+                                                                className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
+                                                                title="Ver Detalle"
                                                             >
-                                                                {club.name}
+                                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                                </svg>
                                                             </Link>
-                                                            {club.short_name && (
-                                                                <p className="text-xs font-semibold text-slate-400">
-                                                                    Siglas: {club.short_name}
-                                                                </p>
-                                                            )}
+                                                            <Link
+                                                                href={route('clubs.edit', club.id)}
+                                                                className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-600 transition"
+                                                                title="Editar Club"
+                                                            >
+                                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                                </svg>
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => handleDelete(club)}
+                                                                className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
+                                                                title="Eliminar Club"
+                                                            >
+                                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            </button>
                                                         </div>
-                                                    </div>
-                                                </td>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                                                <td className="py-4 px-6 text-slate-700 text-xs">
-                                                    {club.president_name ? (
-                                                        <div>
-                                                            <p className="font-bold text-slate-800">{club.president_name}</p>
-                                                            <p className="text-[11px] text-slate-400">Presidente Institucional</p>
-                                                        </div>
+                                {/* Mobile & Tablet Cards View (< 1024px) */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-4 p-4 bg-slate-50/30">
+                                    {clubs.data.map((club) => (
+                                        <div key={club.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-3 flex flex-col justify-between">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    {club.crest_url ? (
+                                                        <img
+                                                            src={club.crest_url}
+                                                            alt={club.name}
+                                                            className="h-12 w-12 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0"
+                                                        />
                                                     ) : (
-                                                        <span className="text-slate-400 text-xs">— Sin registrar</span>
+                                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-sm font-black text-white shadow-xs shrink-0">
+                                                            {club.short_name ? club.short_name.substring(0, 3) : club.name.substring(0, 2).toUpperCase()}
+                                                        </div>
                                                     )}
-                                                </td>
-
-                                                <td className="py-4 px-4 text-center">
-                                                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                                                        club.is_active 
-                                                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                                                            : 'bg-slate-100 text-slate-600 border border-slate-200'
-                                                    }`}>
-                                                        {club.is_active ? 'Activo' : 'Inactivo'}
-                                                    </span>
-                                                </td>
-
-                                                <td className="py-4 px-6 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
+                                                    <div>
                                                         <Link
                                                             href={route('clubs.show', club.id)}
-                                                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
-                                                            title="Ver Detalle"
+                                                            className="font-bold text-slate-900 text-sm hover:text-emerald-600 transition"
                                                         >
-                                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                            </svg>
+                                                            {club.name}
                                                         </Link>
-                                                        <Link
-                                                            href={route('clubs.edit', club.id)}
-                                                            className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-600 transition"
-                                                            title="Editar Club"
-                                                        >
-                                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                            </svg>
-                                                        </Link>
-                                                        <button
-                                                            onClick={() => handleDelete(club)}
-                                                            className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
-                                                            title="Eliminar Club"
-                                                        >
-                                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
-                                                        </button>
+                                                        {club.short_name && (
+                                                            <p className="text-xs font-semibold text-slate-400">
+                                                                Siglas: {club.short_name}
+                                                            </p>
+                                                        )}
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                </div>
+                                                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold shrink-0 ${
+                                                    club.is_active 
+                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                                }`}>
+                                                    {club.is_active ? 'Activo' : 'Inactivo'}
+                                                </span>
+                                            </div>
+
+                                            <div className="rounded-xl bg-slate-50 p-2.5 text-xs flex items-center justify-between border border-slate-100">
+                                                <span className="text-slate-400 font-semibold">Presidente:</span>
+                                                <span className="font-bold text-slate-800">{club.president_name || '— Sin registrar'}</span>
+                                            </div>
+
+                                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2.5">
+                                                <Link
+                                                    href={route('clubs.show', club.id)}
+                                                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition"
+                                                >
+                                                    <svg className="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                    Ver
+                                                </Link>
+                                                <Link
+                                                    href={route('clubs.edit', club.id)}
+                                                    className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                    Editar
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(club)}
+                                                    className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
                         ) : (
                             <div className="flex flex-col items-center justify-center p-12 text-center">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">

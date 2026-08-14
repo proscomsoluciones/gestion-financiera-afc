@@ -799,7 +799,7 @@ export default function Index({
 
                             {/* Filters & Search */}
                             <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs">
-                                <form onSubmit={handleSearch} className="flex flex-col gap-3 md:flex-row md:items-center">
+                                <form onSubmit={handleSearch} className="flex flex-col gap-3 lg:flex-row lg:items-center">
                                     <div className="relative flex-1">
                                         <input
                                             type="text"
@@ -813,62 +813,64 @@ export default function Index({
                                         </div>
                                     </div>
 
-                                    <select
-                                        value={clubIdFilter}
-                                        onChange={(e) => setClubIdFilter(e.target.value)}
-                                        className="rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
-                                    >
-                                        <option value="">Todos los Clubes</option>
-                                        <option value="afc">🏛️ Arcas Directas (Asociación AFC)</option>
-                                        {clubs.map((c) => (
-                                            <option key={c.id} value={c.id}>
-                                                {c.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:items-center gap-2.5">
+                                        <select
+                                            value={clubIdFilter}
+                                            onChange={(e) => setClubIdFilter(e.target.value)}
+                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
+                                        >
+                                            <option value="">Todos los Clubes</option>
+                                            <option value="afc">🏛️ Arcas Directas (Asociación AFC)</option>
+                                            {clubs.map((c) => (
+                                                <option key={c.id} value={c.id}>
+                                                    {c.name}
+                                                </option>
+                                            ))}
+                                        </select>
 
-                                    <select
-                                        value={categoryFilter}
-                                        onChange={(e) => setCategoryFilter(e.target.value)}
-                                        className="rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
-                                    >
-                                        <option value="">Todas las Categorías</option>
-                                        <option value="tributo">Tributos Mensuales</option>
-                                        <option value="fondo_solidario">Fondo Solidario</option>
-                                        <option value="inscripcion">Inscripciones Jugadores</option>
-                                        <option value="inscripcion_campeonato">Inscripción Campeonato</option>
-                                        <option value="pase">Pases</option>
-                                        <option value="apelacion">Apelaciones</option>
-                                        <option value="multa">Multas</option>
-                                        <option value="otro_ingreso">Otros Ingresos (Donaciones, Proyectos, etc.)</option>
-                                        <option value="egreso">Egresos / Salidas de Caja</option>
-                                    </select>
+                                        <select
+                                            value={categoryFilter}
+                                            onChange={(e) => setCategoryFilter(e.target.value)}
+                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
+                                        >
+                                            <option value="">Todas las Categorías</option>
+                                            <option value="tributo">Tributos Mensuales</option>
+                                            <option value="fondo_solidario">Fondo Solidario</option>
+                                            <option value="inscripcion">Inscripciones Jugadores</option>
+                                            <option value="inscripcion_campeonato">Inscripción Campeonato</option>
+                                            <option value="pase">Pases</option>
+                                            <option value="apelacion">Apelaciones</option>
+                                            <option value="multa">Multas</option>
+                                            <option value="otro_ingreso">Otros Ingresos (Donaciones, Proyectos, etc.)</option>
+                                            <option value="egreso">Egresos / Salidas de Caja</option>
+                                        </select>
 
-                                    <select
-                                        value={perPageFilter}
-                                        onChange={(e) => {
-                                            const val = e.target.value;
-                                            setPerPageFilter(val);
-                                            router.get(
-                                                route('transactions.index'),
-                                                { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: tributePeriod, per_page: val },
-                                                { preserveState: true }
-                                            );
-                                        }}
-                                        className="rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
-                                    >
-                                        <option value="10">📄 10 por pág.</option>
-                                        <option value="25">📄 25 por pág.</option>
-                                        <option value="50">📄 50 por pág.</option>
-                                        <option value="100">📄 100 por pág.</option>
-                                    </select>
+                                        <select
+                                            value={perPageFilter}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                setPerPageFilter(val);
+                                                router.get(
+                                                    route('transactions.index'),
+                                                    { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: tributePeriod, per_page: val },
+                                                    { preserveState: true }
+                                                );
+                                            }}
+                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
+                                        >
+                                            <option value="10">📄 10 por pág.</option>
+                                            <option value="25">📄 25 por pág.</option>
+                                            <option value="50">📄 50 por pág.</option>
+                                            <option value="100">📄 100 por pág.</option>
+                                        </select>
+                                    </div>
 
-                                    <div className="flex gap-2">
-                                        <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white">
+                                    <div className="flex items-center gap-2 justify-end shrink-0">
+                                        <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white hover:bg-slate-800 transition">
                                             Filtrar
                                         </button>
                                         {(search || clubIdFilter || categoryFilter || String(perPageFilter) !== '10') && (
-                                            <button type="button" onClick={handleResetFilters} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600">
+                                            <button type="button" onClick={handleResetFilters} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
                                                 Limpiar
                                             </button>
                                         )}
@@ -877,10 +879,12 @@ export default function Index({
                             </div>
 
                             {/* Transactions Table */}
+                            {/* Transactions Table Container */}
                             <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs">
                                 {transactions.data.length > 0 ? (
                                     <div>
-                                        <div className="overflow-x-auto">
+                                        {/* Desktop Table View (1024px+) */}
+                                        <div className="hidden lg:block overflow-x-auto">
                                             <table className="w-full text-left text-xs">
                                                 <thead>
                                                     <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -971,6 +975,88 @@ export default function Index({
                                                     ))}
                                                 </tbody>
                                             </table>
+                                        </div>
+
+                                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                            {transactions.data.map((tx) => (
+                                                <div key={tx.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-3">
+                                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                                                                {tx.folio_number}
+                                                            </span>
+                                                            <span className="text-xs font-bold text-slate-500">
+                                                                {formatDateChile(tx.date)}
+                                                            </span>
+                                                        </div>
+                                                        <span className={`text-base font-black ${
+                                                            tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'
+                                                        }`}>
+                                                            {tx.type === 'income' ? '+' : '-'}${Math.round(Number(tx.amount)).toLocaleString('es-CL')}
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="space-y-2 text-xs">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-slate-400 font-semibold">Club / Destino:</span>
+                                                            <span className="font-extrabold text-slate-900">{tx.club ? tx.club.name : '— General —'}</span>
+                                                        </div>
+
+                                                        <div>
+                                                            <span className="text-slate-400 font-semibold block text-[11px]">Concepto / Detalle:</span>
+                                                            <p className="font-bold text-slate-800 text-xs mt-0.5">{tx.concept}</p>
+                                                            {tx.notes && (
+                                                                <p className="text-[11px] font-medium text-slate-500 italic mt-0.5">
+                                                                    Obs: {tx.notes}
+                                                                </p>
+                                                            )}
+                                                            {tx.player_name && (
+                                                                <p className="text-[11px] font-bold text-emerald-600 mt-0.5">
+                                                                    Jugador: {tx.player_name}
+                                                                </p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="flex items-center justify-between pt-1">
+                                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
+                                                                categoryBadges[tx.category]?.class || 'bg-slate-100 text-slate-600 border-slate-200'
+                                                            }`}>
+                                                                {categoryBadges[tx.category]?.label || tx.category}
+                                                            </span>
+
+                                                            {tx.receipt_image_url && (
+                                                                <a
+                                                                    href={tx.receipt_image_url}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:underline"
+                                                                >
+                                                                    📄 Boleta Adjunta
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2.5">
+                                                        <a
+                                                            href={route('transactions.pdf', tx.id)}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex-1 text-center inline-flex items-center justify-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
+                                                        >
+                                                            🖨️ PDF
+                                                        </a>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDelete(tx)}
+                                                            className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
+                                                        >
+                                                            🗑️ Anular
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
 
                                         {/* Pagination Navigation Bar */}
@@ -1089,8 +1175,8 @@ export default function Index({
                                 </div>
                             </div>
 
-                            {/* Tribute Status Table */}
-                            <div className="overflow-x-auto">
+                            {/* Desktop Table View (1024px+) */}
+                            <div className="hidden lg:block overflow-x-auto">
                                 <table className="w-full text-left text-xs">
                                     <thead>
                                         <tr className="bg-slate-50 font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
@@ -1164,6 +1250,71 @@ export default function Index({
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+
+                            {/* Mobile & Tablet Cards View (< 1024px) */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
+                                {tribute_status.clubs.map((c) => (
+                                    <div key={c.club_id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-3">
+                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                            <h4 className="font-extrabold text-sm text-slate-900">{c.club_name}</h4>
+                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold border ${
+                                                c.status === 'paid'
+                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                                    : c.status === 'overdue'
+                                                    ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                                    : 'bg-blue-50 text-blue-700 border-blue-200'
+                                            }`}>
+                                                {c.badge}
+                                            </span>
+                                        </div>
+
+                                        <div className="space-y-1.5 text-xs">
+                                            <div className="flex items-center justify-between text-slate-600">
+                                                <span className="text-slate-400 font-semibold">Período:</span>
+                                                <span className="font-bold">📅 {tribute_status.period_month}</span>
+                                            </div>
+
+                                            <div className="flex items-center justify-between text-slate-600">
+                                                <span className="text-slate-400 font-semibold">Fecha Límite:</span>
+                                                <span className="font-medium text-slate-700">📌 {c.due_date}</span>
+                                            </div>
+
+                                            <div className="flex items-center justify-between text-slate-600">
+                                                <span className="text-slate-400 font-semibold">Fecha Registro Pago:</span>
+                                                <span className="font-bold">
+                                                    {c.payment_date ? (
+                                                        <span className="text-emerald-600 font-mono">
+                                                            {formatDateChile(c.payment_date)} ({c.folio_number})
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-slate-400">— Sin registro —</span>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+                                            {c.status !== 'paid' ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openFormModal('tributo', c.club_id)}
+                                                    className={`w-full inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-2xs ${
+                                                        c.status === 'overdue'
+                                                            ? 'bg-rose-600 hover:bg-rose-500'
+                                                            : 'bg-emerald-600 hover:bg-emerald-500'
+                                                    }`}
+                                                >
+                                                    💳 Cobrar Tributo AHORA
+                                                </button>
+                                            ) : (
+                                                <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl">
+                                                    ✅ Tributo Al Día
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}

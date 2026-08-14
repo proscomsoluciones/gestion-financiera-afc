@@ -851,11 +851,11 @@ export default function Dashboard({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             {tribute_status.clubs.map((c) => (
                                 <div
                                     key={c.club_id}
-                                    className={`rounded-2xl p-4 border transition ${
+                                    className={`rounded-2xl p-4 border transition flex flex-col justify-between ${
                                         c.status === 'paid'
                                             ? 'bg-emerald-50/40 border-emerald-200/80'
                                             : c.status === 'overdue'
@@ -863,11 +863,11 @@ export default function Dashboard({
                                             : 'bg-blue-50/40 border-blue-200'
                                     }`}
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="font-extrabold text-sm text-slate-900 truncate">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h4 className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
                                             {c.club_name}
                                         </h4>
-                                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
+                                        <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold border whitespace-nowrap ${
                                             c.status === 'paid'
                                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                                                 : c.status === 'overdue'
@@ -877,7 +877,7 @@ export default function Dashboard({
                                             {c.badge}
                                         </span>
                                     </div>
-                                    <p className="text-[11px] text-slate-500 font-semibold mt-2">
+                                    <p className="text-[11px] text-slate-500 font-semibold mt-2.5 pt-2 border-t border-slate-100/60">
                                         {c.payment_date ? `Pagado: ${formatDateChile(c.payment_date)} (${c.folio_number})` : `Límite: ${formatDateChile(c.due_date)}`}
                                     </p>
                                 </div>
@@ -904,7 +904,8 @@ export default function Dashboard({
                             </Link>
                         </div>
 
-                        <div className="overflow-x-auto">
+                        {/* Desktop Table View (1024px+) */}
+                        <div className="hidden lg:block overflow-x-auto">
                             <table className="w-full text-left text-xs">
                                 <thead>
                                     <tr className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
@@ -958,6 +959,55 @@ export default function Dashboard({
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Mobile & Tablet Cards View (< 1024px) */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5">
+                            {recent_transactions.map((tx) => (
+                                <div key={tx.id} className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 shadow-xs transition hover:border-slate-300 flex flex-col justify-between">
+                                    <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5 mb-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                                                {tx.folio_number}
+                                            </span>
+                                            <span className="text-xs font-bold text-slate-500">
+                                                {formatDateChile(tx.date)}
+                                            </span>
+                                        </div>
+                                        <span className={`text-sm font-black ${
+                                            tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'
+                                        }`}>
+                                            {tx.type === 'income' ? '+' : '-'}{formatCLP(tx.amount)}
+                                        </span>
+                                    </div>
+
+                                    <div className="space-y-2 text-xs">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-slate-400 text-[11px] font-semibold">Club / Destino:</span>
+                                            <span className="font-extrabold text-slate-900">{tx.club ? tx.club.name : '— General —'}</span>
+                                        </div>
+                                        <div className="flex items-start justify-between gap-2">
+                                            <span className="text-slate-400 text-[11px] font-semibold shrink-0">Concepto:</span>
+                                            <span className="font-semibold text-slate-700 text-right truncate">{tx.concept}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between pt-1">
+                                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold border ${
+                                                categoryBadges[tx.category]?.class || 'bg-slate-100 text-slate-600 border-slate-200'
+                                            }`}>
+                                                {categoryBadges[tx.category]?.label || tx.category}
+                                            </span>
+                                            <a
+                                                href={route('transactions.pdf', tx.id)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
+                                            >
+                                                🖨️ Ver PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

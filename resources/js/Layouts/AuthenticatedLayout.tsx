@@ -20,15 +20,15 @@ export default function Authenticated({
             <nav className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between items-center">
-                        <div className="flex items-center gap-3 lg:gap-6 overflow-x-auto no-scrollbar">
+                        <div className="flex items-center gap-3 lg:gap-6">
                             <div className="flex shrink-0 items-center">
                                 <Link href={route('dashboard')}>
                                     <ApplicationLogo />
                                 </Link>
                             </div>
 
-                            {/* Desktop Links */}
-                            <div className="hidden space-x-1 sm:flex sm:items-center lg:space-x-2">
+                            {/* Desktop Links (1024px+) */}
+                            <div className="hidden space-x-1 lg:flex lg:items-center lg:space-x-2">
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
@@ -67,8 +67,8 @@ export default function Authenticated({
                             </div>
                         </div>
 
-                        {/* User Dropdown Profile */}
-                        <div className="hidden sm:flex sm:items-center sm:ms-6">
+                        {/* User Dropdown Profile (1024px+) */}
+                        <div className="hidden lg:flex lg:items-center lg:ms-6">
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -122,8 +122,8 @@ export default function Authenticated({
                             </div>
                         </div>
 
-                        {/* Hamburger Button for Mobile */}
-                        <div className="-me-2 flex items-center sm:hidden">
+                        {/* Hamburger Button for Mobile & Tablet (< 1024px) */}
+                        <div className="-me-2 flex items-center lg:hidden">
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
@@ -166,11 +166,11 @@ export default function Authenticated({
                     </div>
                 </div>
 
-                {/* Mobile Navigation Menu */}
+                {/* Mobile & Tablet Navigation Menu (< 1024px) */}
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden border-t border-slate-100 bg-white'
+                        ' lg:hidden border-t border-slate-100 bg-white'
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
