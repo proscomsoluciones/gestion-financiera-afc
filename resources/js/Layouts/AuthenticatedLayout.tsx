@@ -20,7 +20,7 @@ export default function Authenticated({
             <nav className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between items-center">
-                        <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-3 lg:gap-6 overflow-x-auto no-scrollbar">
                             <div className="flex shrink-0 items-center">
                                 <Link href={route('dashboard')}>
                                     <ApplicationLogo />
@@ -28,7 +28,7 @@ export default function Authenticated({
                             </div>
 
                             {/* Desktop Links */}
-                            <div className="hidden space-x-2 sm:flex sm:items-center">
+                            <div className="hidden space-x-1 sm:flex sm:items-center lg:space-x-2">
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
