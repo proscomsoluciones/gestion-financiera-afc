@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrintableVoucherModal, { TransactionVoucher } from '@/Components/PrintableVoucherModal';
+import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
@@ -61,6 +62,19 @@ const defaultExpenseCategories = [
     { id: 'otro', label: 'Otro Egreso' },
 ];
 
+interface VoidedTransaction {
+    id: number;
+    folio_number: string | null;
+    concept: string;
+    amount: number | string;
+    date: string;
+    club?: { id: number; name: string } | null;
+    user?: { id: number; name: string } | null;
+    voided_by?: { id: number; name: string } | null;
+    deleted_at: string;
+    void_reason: string | null;
+}
+
 interface IndexProps {
     transactions: {
         data: TransactionVoucher[];
@@ -74,6 +88,15 @@ interface IndexProps {
         from?: number;
         to?: number;
         per_page?: number;
+    };
+    voided?: {
+        data: VoidedTransaction[];
+        links: Array<{
+            url: string | null;
+            label: string;
+            active: boolean;
+        }>;
+        total: number;
     };
     filters: {
         search?: string;
@@ -103,6 +126,7 @@ interface IndexProps {
 
 export default function Index({
     transactions,
+    voided,
     filters,
     clubs,
     tariffs = {},
@@ -113,8 +137,11 @@ export default function Index({
     metrics,
     flash,
 }: IndexProps) {
+    const { can } = usePermissions();
+    const canManage = can('transactions.manage');
+
     // Navigation Tab state
-    const [activeTab, setActiveTab] = useState<'historial' | 'tributos'>('historial');
+    const [activeTab, setActiveTab] = useState<'historial' | 'tributos' | 'anulados'>('historial');
 
     // Dynamic Years and Months lists for multi-year support (starting from 2026 onwards)
     const availableYears = [2026, 2027, 2028, 2029, 2030, 2031, 2032];
@@ -258,6 +285,7 @@ export default function Index({
 
     // Confirmation Alert Modal State for Deletion
     const [deletingTx, setDeletingTx] = useState<TransactionVoucher | null>(null);
+    const [voidReason, setVoidReason] = useState('');
 
     // State and Form Hook for Editing Transactions
     const [editingTx, setEditingTx] = useState<TransactionVoucher | null>(null);
@@ -724,12 +752,14 @@ export default function Index({
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Link
-                            href={route('settings.index')}
-                            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
-                        >
-                            ⚙️ Configurar Tarifas
-                        </Link>
+                        {can('settings.manage') && (
+                            <Link
+                                href={route('settings.index')}
+                                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                            >
+                                ⚙️ Configurar Tarifas
+                            </Link>
+                        )}
                         <span className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs">
                             📝 Folio Manual según Talonario
                         </span>
@@ -812,6 +842,25 @@ export default function Index({
                                     </span>
                                 )}
                             </button>
+
+                            {canManage && (
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('anulados')}
+                                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold transition-all ${
+                                        activeTab === 'anulados'
+                                            ? 'bg-rose-600 text-white shadow-sm'
+                                            : 'text-slate-600 hover:bg-slate-100'
+                                    }`}
+                                >
+                                    <span>🗑️ Comprobantes Anulados (Auditoría)</span>
+                                    {voided && voided.total > 0 && (
+                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${activeTab === 'anulados' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
+                                            {voided.total}
+                                        </span>
+                                    )}
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -819,6 +868,7 @@ export default function Index({
                     {activeTab === 'historial' && (
                         <div className="space-y-6">
                             {/* Quick Action Buttons Toolbar */}
+                            {canManage && (
                             <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs">
                                 <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3">
                                     Registrar Nuevo Comprobante / Trámite Rápido
@@ -906,6 +956,7 @@ export default function Index({
                                     </button>
                                 </div>
                             </div>
+                            )}
 
                             {/* Filters & Search */}
                             <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs">
@@ -1071,22 +1122,26 @@ export default function Index({
                                                                     >
                                                                         <span>🖨️ Imprimir PDF</span>
                                                                     </a>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleOpenEditModal(tx)}
-                                                                        className="rounded-xl p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
-                                                                        title="Editar Comprobante / Registro"
-                                                                    >
-                                                                        ✏️
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleDelete(tx)}
-                                                                        className="rounded-xl p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                                                                        title="Anular Comprobante"
-                                                                    >
-                                                                        🗑️
-                                                                    </button>
+                                                                    {canManage && (
+                                                                        <>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleOpenEditModal(tx)}
+                                                                                className="rounded-xl p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                                                                                title="Editar Comprobante / Registro"
+                                                                            >
+                                                                                ✏️
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => handleDelete(tx)}
+                                                                                className="rounded-xl p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                                                                                title="Anular Comprobante"
+                                                                            >
+                                                                                🗑️
+                                                                            </button>
+                                                                        </>
+                                                                    )}
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -1164,20 +1219,24 @@ export default function Index({
                                                         >
                                                             🖨️ PDF
                                                         </a>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleOpenEditModal(tx)}
-                                                            className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100 transition"
-                                                        >
-                                                            ✏️ Editar
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleDelete(tx)}
-                                                            className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
-                                                        >
-                                                            🗑️ Anular
-                                                        </button>
+                                                        {canManage && (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleOpenEditModal(tx)}
+                                                                    className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100 transition"
+                                                                >
+                                                                    ✏️ Editar
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDelete(tx)}
+                                                                    className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
+                                                                >
+                                                                    🗑️ Anular
+                                                                </button>
+                                                            </>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))}
@@ -1352,7 +1411,7 @@ export default function Index({
                                                 </td>
 
                                                 <td className="py-3 px-4 text-right">
-                                                    {c.status !== 'paid' ? (
+                                                    {c.status !== 'paid' && canManage ? (
                                                         <button
                                                             type="button"
                                                             onClick={() => openFormModal('tributo', c.club_id)}
@@ -1364,10 +1423,12 @@ export default function Index({
                                                         >
                                                             💳 Cobrar Tributo AHORA
                                                         </button>
-                                                    ) : (
+                                                    ) : c.status === 'paid' ? (
                                                         <span className="text-xs font-bold text-emerald-600">
                                                             ✅ Cumplido
                                                         </span>
+                                                    ) : (
+                                                        <span className="text-xs font-medium text-slate-400">— Sin permiso —</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -1419,7 +1480,7 @@ export default function Index({
                                         </div>
 
                                         <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
-                                            {c.status !== 'paid' ? (
+                                            {c.status !== 'paid' && canManage ? (
                                                 <button
                                                     type="button"
                                                     onClick={() => openFormModal('tributo', c.club_id)}
@@ -1431,15 +1492,96 @@ export default function Index({
                                                 >
                                                     💳 Cobrar Tributo AHORA
                                                 </button>
-                                            ) : (
+                                            ) : c.status === 'paid' ? (
                                                 <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl">
                                                     ✅ Tributo Al Día
                                                 </span>
+                                            ) : (
+                                                <span className="text-xs font-medium text-slate-400">— Sin permiso —</span>
                                             )}
                                         </div>
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    )}
+
+                    {/* TAB 3: ANULADOS (AUDITORÍA) */}
+                    {activeTab === 'anulados' && canManage && (
+                        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+                            <div className="border-b border-slate-100 bg-rose-50/50 p-4">
+                                <p className="text-xs font-bold text-rose-800">
+                                    🔒 Registro de auditoría: comprobantes anulados, quién los anuló y cuándo. No se pueden eliminar de forma permanente ni restaurar desde aquí.
+                                </p>
+                            </div>
+                            {voided && voided.data.length > 0 ? (
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead>
+                                            <tr className="border-b border-slate-100 bg-slate-50/50 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                                <th className="py-3.5 px-6">Folio / Fecha Original</th>
+                                                <th className="py-3.5 px-6">Concepto</th>
+                                                <th className="py-3.5 px-4 text-right">Monto</th>
+                                                <th className="py-3.5 px-6">Anulado Por</th>
+                                                <th className="py-3.5 px-6">Motivo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 font-medium">
+                                            {voided.data.map((tx) => (
+                                                <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
+                                                    <td className="py-3.5 px-6">
+                                                        <p className="font-mono font-bold text-slate-700 text-xs">{tx.folio_number || `ID #${tx.id}`}</p>
+                                                        <p className="text-[11px] text-slate-400">{formatDateChile(tx.date)}</p>
+                                                    </td>
+                                                    <td className="py-3.5 px-6 text-xs text-slate-700">
+                                                        {tx.concept}
+                                                        {tx.club && <p className="text-[11px] text-slate-400">{tx.club.name}</p>}
+                                                    </td>
+                                                    <td className="py-3.5 px-4 text-right font-black text-slate-500 line-through">
+                                                        ${Math.round(Number(tx.amount)).toLocaleString('es-CL')}
+                                                    </td>
+                                                    <td className="py-3.5 px-6 text-xs">
+                                                        <p className="font-bold text-rose-700">{tx.voided_by?.name || 'Desconocido'}</p>
+                                                        <p className="text-[11px] text-slate-400">{formatDateChile(tx.deleted_at)}</p>
+                                                    </td>
+                                                    <td className="py-3.5 px-6 text-xs text-slate-600 italic">
+                                                        {tx.void_reason || '— Sin motivo registrado —'}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="p-10 text-center text-sm text-slate-400">
+                                    No hay comprobantes anulados registrados.
+                                </div>
+                            )}
+
+                            {voided && voided.links && voided.links.length > 3 && (
+                                <div className="flex justify-center items-center gap-1 p-4 border-t border-slate-100">
+                                    {voided.links.map((link, key) => (
+                                        link.url ? (
+                                            <Link
+                                                key={key}
+                                                href={link.url}
+                                                className={`px-3.5 py-2 text-xs font-bold rounded-xl transition ${
+                                                    link.active
+                                                        ? 'bg-rose-600 text-white shadow-sm'
+                                                        : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                                                }`}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        ) : (
+                                            <span
+                                                key={key}
+                                                className="px-3.5 py-2 text-xs font-medium text-slate-400 rounded-xl bg-slate-50"
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                            />
+                                        )
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -1474,14 +1616,30 @@ export default function Index({
                                 {deletingTx.club && <p><strong>Club:</strong> {deletingTx.club.name}</p>}
                             </div>
                             <p className="font-semibold text-[11px] text-rose-700">
-                                ⚠️ Esta acción anulará el registro de las arcas y recalculará los saldos disponibles. Esta operación no se puede deshacer.
+                                ⚠️ Esta acción anulará el registro de las arcas y recalculará los saldos disponibles. Queda registrado en la auditoría quién y cuándo lo anuló.
                             </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">
+                                Motivo de la Anulación (opcional, quedará en el registro de auditoría)
+                            </label>
+                            <textarea
+                                value={voidReason}
+                                onChange={(e) => setVoidReason(e.target.value)}
+                                placeholder="Ej. Error de digitación, comprobante duplicado, monto incorrecto..."
+                                rows={2}
+                                className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3 py-2 text-xs text-slate-800 focus:border-rose-500 focus:bg-white focus:ring-2 focus:ring-rose-500/20"
+                            />
                         </div>
 
                         <div className="flex items-center justify-end gap-3 pt-2">
                             <button
                                 type="button"
-                                onClick={() => setDeletingTx(null)}
+                                onClick={() => {
+                                    setDeletingTx(null);
+                                    setVoidReason('');
+                                }}
                                 className="rounded-xl px-4 py-2.5 text-xs font-extrabold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
                             >
                                 Cancelar
@@ -1490,8 +1648,12 @@ export default function Index({
                                 type="button"
                                 onClick={() => {
                                     const targetId = deletingTx.id;
+                                    const reason = voidReason;
                                     setDeletingTx(null);
-                                    router.delete(route('transactions.destroy', targetId));
+                                    setVoidReason('');
+                                    router.delete(route('transactions.destroy', targetId), {
+                                        data: { reason },
+                                    });
                                 }}
                                 className="rounded-xl px-5 py-2.5 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-600/20 transition cursor-pointer flex items-center gap-1.5"
                             >

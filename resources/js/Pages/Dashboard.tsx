@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -119,6 +120,7 @@ export default function Dashboard({
     institutional,
     filters,
 }: DashboardProps) {
+    const { can } = usePermissions();
     const [monthFilter, setMonthFilter] = useState(filters?.month_filter || '');
     const [startDate, setStartDate] = useState(filters?.start_date || '');
     const [endDate, setEndDate] = useState(filters?.end_date || '');
@@ -212,18 +214,22 @@ export default function Dashboard({
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Link
-                            href={route('transactions.index')}
-                            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-slate-800 transition"
-                        >
-                            💳 Registrar Cobro / Tesorería
-                        </Link>
-                        <Link
-                            href={route('settings.index')}
-                            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
-                        >
-                            ⚙️ Configuración
-                        </Link>
+                        {can('transactions.view') && (
+                            <Link
+                                href={route('transactions.index')}
+                                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-slate-800 transition"
+                            >
+                                {can('transactions.manage') ? '💳 Registrar Cobro / Tesorería' : '💳 Ver Tesorería'}
+                            </Link>
+                        )}
+                        {can('settings.manage') && (
+                            <Link
+                                href={route('settings.index')}
+                                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+                            >
+                                ⚙️ Configuración
+                            </Link>
+                        )}
                     </div>
                 </div>
             }

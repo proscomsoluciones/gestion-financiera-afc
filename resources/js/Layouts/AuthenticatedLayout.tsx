@@ -2,6 +2,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import usePermissions from '@/hooks/usePermissions';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
@@ -10,6 +11,7 @@ export default function Authenticated({
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
+    const { can } = usePermissions();
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -36,34 +38,51 @@ export default function Authenticated({
                                     <span className="mr-1.5">🏠</span>
                                     <span>Panel Principal</span>
                                 </NavLink>
-                                <NavLink
-                                    href={route('transactions.index')}
-                                    active={route().current('transactions.*')}
-                                >
-                                    <span className="mr-1.5">💳</span>
-                                    <span>Tesorería & Caja</span>
-                                </NavLink>
-                                <NavLink
-                                    href={route('clubs.index')}
-                                    active={route().current('clubs.*')}
-                                >
-                                    <span className="mr-1.5">🛡️</span>
-                                    <span>Clubes</span>
-                                </NavLink>
-                                <NavLink
-                                    href={route('reports.index')}
-                                    active={route().current('reports.*')}
-                                >
-                                    <span className="mr-1.5">📊</span>
-                                    <span>Reportes & Libros</span>
-                                </NavLink>
-                                <NavLink
-                                    href={route('settings.index')}
-                                    active={route().current('settings.*')}
-                                >
-                                    <span className="mr-1.5">⚙️</span>
-                                    <span>Tarifas & Valores</span>
-                                </NavLink>
+                                {can('transactions.view') && (
+                                    <NavLink
+                                        href={route('transactions.index')}
+                                        active={route().current('transactions.*')}
+                                    >
+                                        <span className="mr-1.5">💳</span>
+                                        <span>Tesorería & Caja</span>
+                                    </NavLink>
+                                )}
+                                {can('clubs.view') && (
+                                    <NavLink
+                                        href={route('clubs.index')}
+                                        active={route().current('clubs.*')}
+                                    >
+                                        <span className="mr-1.5">🛡️</span>
+                                        <span>Clubes</span>
+                                    </NavLink>
+                                )}
+                                {can('reports.view') && (
+                                    <NavLink
+                                        href={route('reports.index')}
+                                        active={route().current('reports.*')}
+                                    >
+                                        <span className="mr-1.5">📊</span>
+                                        <span>Reportes & Libros</span>
+                                    </NavLink>
+                                )}
+                                {can('settings.manage') && (
+                                    <NavLink
+                                        href={route('settings.index')}
+                                        active={route().current('settings.*')}
+                                    >
+                                        <span className="mr-1.5">⚙️</span>
+                                        <span>Tarifas & Valores</span>
+                                    </NavLink>
+                                )}
+                                {can('users.manage') && (
+                                    <NavLink
+                                        href={route('users.index')}
+                                        active={route().current('users.*')}
+                                    >
+                                        <span className="mr-1.5">👥</span>
+                                        <span>Usuarios</span>
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
@@ -180,30 +199,46 @@ export default function Authenticated({
                         >
                             🏠 Panel Principal
                         </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('transactions.index')}
-                            active={route().current('transactions.*')}
-                        >
-                            💳 Tesorería & Caja
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('clubs.index')}
-                            active={route().current('clubs.*')}
-                        >
-                            🛡️ Clubes
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('reports.index')}
-                            active={route().current('reports.*')}
-                        >
-                            📊 Reportes & Libros
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('settings.index')}
-                            active={route().current('settings.*')}
-                        >
-                            ⚙️ Tarifas & Valores
-                        </ResponsiveNavLink>
+                        {can('transactions.view') && (
+                            <ResponsiveNavLink
+                                href={route('transactions.index')}
+                                active={route().current('transactions.*')}
+                            >
+                                💳 Tesorería & Caja
+                            </ResponsiveNavLink>
+                        )}
+                        {can('clubs.view') && (
+                            <ResponsiveNavLink
+                                href={route('clubs.index')}
+                                active={route().current('clubs.*')}
+                            >
+                                🛡️ Clubes
+                            </ResponsiveNavLink>
+                        )}
+                        {can('reports.view') && (
+                            <ResponsiveNavLink
+                                href={route('reports.index')}
+                                active={route().current('reports.*')}
+                            >
+                                📊 Reportes & Libros
+                            </ResponsiveNavLink>
+                        )}
+                        {can('settings.manage') && (
+                            <ResponsiveNavLink
+                                href={route('settings.index')}
+                                active={route().current('settings.*')}
+                            >
+                                ⚙️ Tarifas & Valores
+                            </ResponsiveNavLink>
+                        )}
+                        {can('users.manage') && (
+                            <ResponsiveNavLink
+                                href={route('users.index')}
+                                active={route().current('users.*')}
+                            >
+                                👥 Usuarios
+                            </ResponsiveNavLink>
+                        )}
                     </div>
 
                     <div className="border-t border-slate-100 pb-3 pt-4">

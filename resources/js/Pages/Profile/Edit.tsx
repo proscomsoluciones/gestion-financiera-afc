@@ -12,16 +12,21 @@ export default function Edit({
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Profile
-                </h2>
+                <div>
+                    <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
+                        Mi Perfil
+                    </h2>
+                    <p className="text-xs font-medium text-slate-500 mt-0.5">
+                        Administra la información de tu cuenta, seguridad y credenciales de acceso
+                    </p>
+                </div>
             }
         >
-            <Head title="Profile" />
+            <Head title="Mi Perfil - Gestión Financiera AFC" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
+            <div className="py-8">
+                <div className="mx-auto max-w-7xl px-4 space-y-6 sm:px-6 lg:px-8">
+                    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8">
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
@@ -29,11 +34,11 @@ export default function Edit({
                         />
                     </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
+                    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8">
                         <UpdatePasswordForm className="max-w-xl" />
                     </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
+                    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8">
                         <DeleteUserForm className="max-w-xl" />
                     </div>
                 </div>

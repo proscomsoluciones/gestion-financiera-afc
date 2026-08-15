@@ -6,10 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'folio_number',
@@ -78,10 +79,10 @@ class Transaction extends Model
 
     public static function generateNextFolio(): string
     {
-        $lastId = self::max('id') ?? 0;
+        $lastId = self::withTrashed()->max('id') ?? 0;
         $nextId = $lastId + 1;
         $folio = 'FOL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
-        while (self::where('folio_number', $folio)->exists()) {
+        while (self::withTrashed()->where('folio_number', $folio)->exists()) {
             $nextId++;
             $folio = 'FOL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
         }
@@ -112,5 +113,10 @@ class Transaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function voidedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 }

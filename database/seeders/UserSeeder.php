@@ -10,27 +10,27 @@ class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * Idempotent by design: re-running this (e.g. on every deploy) must never
+     * overwrite a password an admin has since changed in production.
      */
     public function run(): void
     {
-        // Super Admin User
-        User::updateOrCreate(
-            ['email' => 'jcornejo@proscom.cl'],
-            [
-                'name' => 'Super Admin',
-                'password' => Hash::make('Jupipe2083@'),
-                'email_verified_at' => now(),
-            ]
-        );
+        $this->createIfMissing('jcornejo@proscom.cl', 'Super Admin', 'Jupipe2083@', 'admin');
+        $this->createIfMissing('tesoreria@afc.cl', 'Tesorero General', 'Tesoreria2026!', 'tesorero');
+    }
 
-        // Tesorería User
-        User::updateOrCreate(
-            ['email' => 'tesoreria@afc.cl'],
-            [
-                'name' => 'Tesorero General',
-                'password' => Hash::make('Tesoreria2026!'),
-                'email_verified_at' => now(),
-            ]
-        );
+    private function createIfMissing(string $email, string $name, string $defaultPassword, string $role): void
+    {
+        $user = User::firstOrNew(['email' => $email]);
+
+        if (! $user->exists) {
+            $user->name = $name;
+            $user->password = Hash::make($defaultPassword);
+            $user->email_verified_at = now();
+            $user->save();
+        }
+
+        $user->syncRoles([$role]);
     }
 }

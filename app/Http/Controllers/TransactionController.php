@@ -17,6 +17,12 @@ use Inertia\Response;
 class TransactionController extends Controller
 {
     /**
+     * Allowed file types for uploaded vouchers: photos of paper receipts
+     * (jpeg/png/webp/heic from phone cameras) or digital PDF invoices.
+     */
+    private const RECEIPT_IMAGE_RULE = 'nullable|file|mimes:jpeg,jpg,png,webp,heic,heif,pdf|max:25600';
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request): Response
@@ -70,8 +76,16 @@ class TransactionController extends Controller
         $tributePeriod = $request->input('tribute_period', 'Agosto 2026');
         $tributeStatus = TributeStatusService::getTributeStatusForPeriod($tributePeriod);
 
+        // Voided transactions (audit trail)
+        $voided = Transaction::onlyTrashed()
+            ->with(['club', 'user', 'voidedBy'])
+            ->latest('deleted_at')
+            ->paginate(20, ['*'], 'voided_page')
+            ->withQueryString();
+
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
+            'voided' => $voided,
             'filters' => array_merge(
                 ['per_page' => $perPage],
                 $request->only(['search', 'club_id', 'category', 'type', 'tribute_period', 'per_page'])
@@ -116,7 +130,7 @@ class TransactionController extends Controller
             'date' => 'required|date',
             'notes' => 'nullable|string',
             'breakdown' => 'nullable|array',
-            'receipt_image' => 'nullable|file|max:25600',
+            'receipt_image' => self::RECEIPT_IMAGE_RULE,
         ];
 
         $validated = $request->validate($rules);
@@ -227,7 +241,7 @@ class TransactionController extends Controller
             'date' => 'required|date',
             'notes' => 'nullable|string',
             'breakdown' => 'nullable|array',
-            'receipt_image' => 'nullable|file|max:25600',
+            'receipt_image' => self::RECEIPT_IMAGE_RULE,
         ];
 
         $validated = $request->validate($rules);
@@ -255,9 +269,17 @@ class TransactionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Transaction $transaction): RedirectResponse
+    public function destroy(Request $request, Transaction $transaction): RedirectResponse
     {
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:255',
+        ]);
+
         $folio = $transaction->folio_number ? "folio {$transaction->folio_number}" : "registro ID #{$transaction->id}";
+
+        $transaction->deleted_by = Auth::id();
+        $transaction->void_reason = $validated['reason'] ?? null;
+        $transaction->save();
         $transaction->delete();
 
         return redirect()->route('transactions.index')->with('success', "El comprobante ({$folio}) ha sido anulado.");

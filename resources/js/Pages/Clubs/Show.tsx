@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router } from '@inertiajs/react';
 
 interface Club {
@@ -18,6 +19,7 @@ interface Club {
 }
 
 export default function Show({ club }: { club: Club }) {
+    const { can } = usePermissions();
     const handleDelete = () => {
         if (confirm(`¿Estás seguro de eliminar el club "${club.name}"? Esta acción no se puede deshacer.`)) {
             router.delete(route('clubs.destroy', club.id));
@@ -55,20 +57,22 @@ export default function Show({ club }: { club: Club }) {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href={route('clubs.edit', club.id)}
-                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500"
-                        >
-                            Editar Club
-                        </Link>
-                        <button
-                            onClick={handleDelete}
-                            className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50"
-                        >
-                            Eliminar
-                        </button>
-                    </div>
+                    {can('clubs.manage') && (
+                        <div className="flex items-center gap-3">
+                            <Link
+                                href={route('clubs.edit', club.id)}
+                                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500"
+                            >
+                                Editar Club
+                            </Link>
+                            <button
+                                onClick={handleDelete}
+                                className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    )}
                 </div>
             }
         >

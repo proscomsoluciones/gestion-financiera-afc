@@ -1,0 +1,29 @@
+name: Deploy to VPS
+
+# Manual trigger only: GitHub repo -> Actions tab -> "Deploy to VPS" -> "Run workflow".
+# Always deploys the current tip of main; will not run from any other branch.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy main to production VPS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: SSH into VPS and run deploy.sh
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          command_timeout: 15m
+          script_stop: true
+          script: |
+            cd "${{ secrets.VPS_PROJECT_PATH }}"
+            bash deploy.sh
