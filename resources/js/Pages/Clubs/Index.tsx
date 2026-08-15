@@ -60,21 +60,19 @@ export default function Index({ clubs, filters }: IndexProps) {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-                            Gestión de Clubes AFC
+                            Gestión de Clubes
                         </h2>
-                        <p className="text-sm font-medium text-slate-500">
-                            Catálogo institucional de clubes y mesas directivas
+                        <p className="text-xs font-medium text-slate-500 mt-0.5">
+                            Directorio oficial de instituciones deportivas afiliadas
                         </p>
                     </div>
 
                     <Link
                         href={route('clubs.create')}
-                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-500"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white shadow-xs hover:bg-slate-800 transition shrink-0"
                     >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Registrar Nuevo Club
+                        <span>+</span>
+                        <span>Registrar Nuevo Club</span>
                     </Link>
                 </div>
             }

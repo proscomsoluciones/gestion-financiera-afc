@@ -38,13 +38,13 @@
                     <img src="{{ $institutional['logo_url'] }}" style="max-width: 55px; max-height: 55px;">
                 @else
                     <div style="width: 48px; height: 48px; background: #1e3a8a; color: #ffffff; font-weight: 900; font-size: 16px; text-align: center; line-height: 48px; border-radius: 8px;">
-                        AFC
+                        ⚽
                     </div>
                 @endif
             </td>
             <td style="vertical-align: middle; padding-left: 8px;">
                 <h1 style="font-size: 15px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                    {{ $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL AFC' }}
+                    {{ $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL CATEMU' }}
                 </h1>
                 <p style="font-size: 9px; color: #475569; margin: 2px 0 0 0; font-weight: bold;">
                     RUT: {{ $institutional['association_rut'] ?? '65.123.456-K' }} • {{ $institutional['association_address'] ?? 'Región de Valparaíso, Chile' }}

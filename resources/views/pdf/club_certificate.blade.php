@@ -46,13 +46,13 @@
                     <img src="{{ $institutional['logo_url'] }}" style="max-width: 55px; max-height: 55px;">
                 @else
                     <div style="width: 48px; height: 48px; background: #047857; color: #ffffff; font-weight: 900; font-size: 16px; text-align: center; line-height: 48px; border-radius: 8px;">
-                        AFC
+                        ⚽
                     </div>
                 @endif
             </td>
             <td style="vertical-align: middle; padding-left: 8px;">
                 <h1 style="font-size: 15px; font-weight: 900; color: #047857; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                    {{ $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL AFC' }}
+                    {{ $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL CATEMU' }}
                 </h1>
                 <p style="font-size: 9px; color: #475569; margin: 2px 0 0 0; font-weight: bold;">
                     RUT: {{ $institutional['association_rut'] ?? '65.123.456-K' }} • {{ $institutional['association_address'] ?? 'Región de Valparaíso, Chile' }}
@@ -80,7 +80,7 @@
 
     <div class="certificate-body">
         <p>
-            La <strong>{{ $institutional['association_name'] ?? 'Asociación de Fútbol AFC' }}</strong>, a través de su Secretaría de Tesorería General, certifica por medio del presente documento oficial que la institución deportiva denominada <span class="highlight">{{ strtoupper($club->name) }}</span>, ha sido evaluada financieramente para la temporada correspondiente al año <span class="highlight">{{ $year }}</span>.
+            La <strong>{{ $institutional['association_name'] ?? 'Asociación de Fútbol Catemu' }}</strong>, a través de su Secretaría de Tesorería General, certifica por medio del presente documento oficial que la institución deportiva denominada <span class="highlight">{{ strtoupper($club->name) }}</span>, ha sido evaluada financieramente para la temporada correspondiente al año <span class="highlight">{{ $year }}</span>.
         </p>
 
         @if($statement['is_up_to_date'])
@@ -89,7 +89,7 @@
             </p>
         @else
             <p>
-                A la fecha de emisión de este documento, el club <span class="highlight">{{ strtoupper($club->name) }}</span> registra un saldo pendiente de <span class="highlight">${{ number_format($statement['total_pending_amount'], 0, ',', '.') }} CLP</span> correspondiente a <span class="highlight">{{ $statement['pending_tributes_count'] }} período(s) de tributo mensual</span>. Se solicita regularizar dicha situación a la brevedad ante la Tesorería de la AFC.
+                A la fecha de emisión de este documento, el club <span class="highlight">{{ strtoupper($club->name) }}</span> registra un saldo pendiente de <span class="highlight">${{ number_format($statement['total_pending_amount'], 0, ',', '.') }} CLP</span> correspondiente a <span class="highlight">{{ $statement['pending_tributes_count'] }} período(s) de tributo mensual</span>. Se solicita regularizar dicha situación a la brevedad ante la Tesorería General.
             </p>
         @endif
     </div>
@@ -111,7 +111,7 @@
             @foreach($statement['tribute_history'] as $tribute)
                 <tr>
                     <td><strong>{{ $tribute['month_name'] }} {{ $year }}</strong></td>
-                    <td>Tributo Mensual Club + Aporte Selección AFC</td>
+                    <td>Tributo Mensual Club + Aporte Selección</td>
                     <td class="text-right">${{ number_format($tribute['amount'], 0, ',', '.') }}</td>
                     <td class="text-right">
                         @if($tribute['status'] === 'paid')

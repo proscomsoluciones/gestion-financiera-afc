@@ -31,7 +31,7 @@ export default function Login({
 
     return (
         <GuestLayout>
-            <Head title="Iniciar Sesión - Gestión Financiera AFC" />
+            <Head title="Iniciar Sesión - Gestión Financiera" />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">

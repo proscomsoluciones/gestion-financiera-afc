@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Planilla de Control de Pases AFC - {{ $periodTitle }}</title>
+    <title>Planilla de Control de Pases - {{ $periodTitle }}</title>
     <style>
         @page { margin: 25px 30px; }
         body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1a1a; font-size: 10px; line-height: 1.3; }
@@ -36,7 +36,7 @@
                     <img src="{{ $institutional['logo_url'] }}" style="max-width: 55px; max-height: 55px;">
                 @else
                     <div style="width: 48px; height: 48px; background: #1e3a8a; color: #ffffff; font-weight: 900; font-size: 16px; text-align: center; line-height: 48px; border-radius: 8px;">
-                        AFC
+                        ⚽
                     </div>
                 @endif
             </td>
@@ -66,7 +66,7 @@
             <tr>
                 <td style="width: 25%; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 7px; text-align: center;">
                     <span style="font-size: 8px; font-weight: bold; color: #64748b; text-transform: uppercase; display: block;">TRÁMITES TOTALES</span>
-                    <span style="font-size: 11.5px; font-weight: 900; color: #0f172a; display: block; margin-top: 2px;">{{ count($passes) }} Pases</span>
+                    <span style="font-size: 11.5px; font-weight: 900; color: #0f172a; display: block; margin-top: 2px;">{{ $totalPassesCount ?? count($passes) }} Pases</span>
                 </td>
                 <td style="width: 25%; background-color: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 6px; padding: 7px; text-align: center;">
                     <span style="font-size: 8px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block;">TOTAL COBRADO CLUBES</span>

@@ -107,41 +107,52 @@
                 <span class="cat-amount">${{ number_format($statement['totals_by_category']['multas_apelaciones'], 0, ',', '.') }}</span>
             </td>
             <td>
-                <span class="cat-title">Fondo Solidario / Varios</span>
-                <span class="cat-amount">${{ number_format($statement['totals_by_category']['otros'], 0, ',', '.') }}</span>
-            </td>
-        </tr>
-    </table>
-
-    <!-- 1. RESUMEN DE TRIBUTOS -->
-    <div class="section-title">
-        1. CUMPLIMIENTO DE TRIBUTOS MENSUALES (TEMPORADA {{ $statement['year'] }})
+    <div class="summary-cards font-mono">
+        <div class="summary-card card-paid">
+            <span class="card-title">TRIBUTOS PAGADOS</span>
+            <span class="card-amount paid-text">${{ number_format($statement['total_paid_tributes_amount'], 0, ',', '.') }} CLP</span>
+            <span class="card-detail">{{ $statement['paid_tributes_count'] }} de 12 meses cancelados</span>
+        </div>
+        <div class="summary-card card-pending">
+            <span class="card-title">TRIBUTOS PENDIENTES</span>
+            <span class="card-amount pending-text">${{ number_format($statement['total_pending_amount'], 0, ',', '.') }} CLP</span>
+            <span class="card-detail">{{ $statement['pending_tributes_count'] }} de 12 meses pendientes</span>
+        </div>
+        <div class="summary-card card-total">
+            <span class="card-title">TOTAL RECAUDADO CLUB</span>
+            <span class="card-amount total-text">${{ number_format($statement['total_club_incomes_amount'], 0, ',', '.') }} CLP</span>
+            <span class="card-detail">Incluye Pases y Derechos</span>
+        </div>
     </div>
 
+    <!-- 1. HISTORIAL DE TRIBUTOS MENSUALES -->
+    <div class="section-title">
+        1. HISTORIAL DE TRIBUTOS MENSUALES TEMPORADA {{ $year }}
+    </div>
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 25%;">Mes</th>
-                <th style="width: 25%;">Estado de Cumplimiento</th>
-                <th style="width: 25%;">Fecha de Pago</th>
-                <th style="width: 25%; text-align: right;">N° Folio Comprobante</th>
+                <th style="width: 15%;">Mes</th>
+                <th style="width: 35%;">Concepto / Detalle</th>
+                <th style="width: 15%;">N° Folio</th>
+                <th style="width: 15%;">Fecha Pago</th>
+                <th style="width: 20%; text-align: right;">Monto ($ CLP)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($statement['tribute_history'] as $t)
+            @foreach($statement['tribute_history'] as $tribute)
                 <tr>
-                    <td><strong>{{ $t['month_name'] }} {{ $statement['year'] }}</strong></td>
-                    <td>
-                        @if($t['status'] === 'paid')
-                            <span class="paid-badge">PAGADO</span>
-                        @elseif($t['status'] === 'overdue')
-                            <span class="overdue-badge">VENCIDO / MOROSO</span>
+                    <td><strong>{{ $tribute['month_name'] }} {{ $year }}</strong></td>
+                    <td>Tributo Mensual Club</td>
+                    <td>{{ $tribute['folio_number'] ?? '-' }}</td>
+                    <td>{{ $tribute['paid_date'] ? \Carbon\Carbon::parse($tribute['paid_date'])->format('d/m/Y') : '-' }}</td>
+                    <td class="text-right {{ $tribute['status'] === 'paid' ? 'paid-text' : 'pending-text' }}">
+                        @if($tribute['status'] === 'paid')
+                            ${{ number_format($tribute['amount'], 0, ',', '.') }}
                         @else
-                            <span class="pending-badge">POR VENCER (EN PLAZO)</span>
+                            ${{ number_format($tribute['amount'], 0, ',', '.') }} (Pendiente)
                         @endif
                     </td>
-                    <td>{{ $t['payment_date'] ? \Carbon\Carbon::parse($t['payment_date'])->format('d/m/Y') : '—' }}</td>
-                    <td class="text-right">{{ $t['folio_number'] ?? '—' }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -150,7 +161,7 @@
     <!-- 2. DESGLOSE TRANSPARENTE DE PASES SI EXISTEN -->
     @if(count($statement['passes_list']) > 0)
         <div class="section-title">
-            2. DETALLE DE PASES Y ARANCELES ARFA V REGIÓN vs RETENCIÓN AFC (TOTAL: {{ $statement['passes_count'] ?? count($statement['passes_list']) }} PASES CURSADOS)
+            2. DETALLE DE PASES Y ARANCELES ARFA V REGIÓN vs RETENCIÓN ASOCIACIÓN (TOTAL: {{ $statement['passes_count'] ?? count($statement['passes_list']) }} PASES CURSADOS)
         </div>
         <table class="data-table">
             <thead>
@@ -160,7 +171,7 @@
                     <th style="width: 40%;">Detalle / Jugador</th>
                     <th style="width: 12%; text-align: right;">Cobrado</th>
                     <th style="width: 12%; text-align: right;">ARFA V Región</th>
-                    <th style="width: 12%; text-align: right;">Ganancia AFC</th>
+                    <th style="width: 12%; text-align: right;">Ganancia Asociación</th>
                 </tr>
             </thead>
             <tbody>

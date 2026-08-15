@@ -3,9 +3,10 @@ import { Dialog, Transition } from '@headlessui/react';
 
 export interface TransactionVoucher {
     id: number;
-    folio_number: string;
+    folio_number: string | null;
     type: 'income' | 'expense';
     category: string;
+    club_id?: number | string | null;
     amount: number;
     concept: string;
     period_month?: string;
@@ -151,12 +152,12 @@ export default function PrintableVoucherModal({
                                                 />
                                             ) : (
                                                 <div className="flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-white text-black font-black text-xl">
-                                                    AFC
+                                                    ⚽
                                                 </div>
                                             )}
                                             <div>
                                                 <h1 className="text-xl font-black text-black tracking-tight uppercase">
-                                                    {institutional?.association_name || 'ASOCIACIÓN DE FÚTBOL AFC'}
+                                                    {institutional?.association_name || 'ASOCIACIÓN DE FÚTBOL CATEMU'}
                                                 </h1>
                                                 <p className="text-xs font-black uppercase tracking-wider text-black">
                                                     Comprobante Oficial de {transaction.type === 'income' ? 'Ingreso en Caja' : 'Egreso / Salida'}
@@ -284,7 +285,7 @@ export default function PrintableVoucherModal({
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="py-2.5 px-3 text-black">Aporte Fondo Selección AFC</td>
+                                                        <td className="py-2.5 px-3 text-black">Aporte Fondo Selección</td>
                                                         <td className="py-2.5 px-3 text-right font-bold text-black">
                                                             ${Math.round(transaction.breakdown?.aporte_seleccion ?? 10000).toLocaleString('es-CL')}
                                                         </td>
@@ -310,7 +311,7 @@ export default function PrintableVoucherModal({
                                                         <td className="py-2.5 px-3 text-right font-bold text-black">$0</td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="py-2.5 px-3 text-black">Fondo / Arcas Asociación AFC (100%)</td>
+                                                        <td className="py-2.5 px-3 text-black">Fondo / Arcas de la Asociación (100%)</td>
                                                         <td className="py-2.5 px-3 text-right font-bold text-black">
                                                             ${Math.round(transaction.amount).toLocaleString('es-CL')}
                                                         </td>
@@ -338,7 +339,7 @@ export default function PrintableVoucherModal({
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td className="py-2.5 px-3 text-black">Fondo / Arcas Asociación AFC</td>
+                                                        <td className="py-2.5 px-3 text-black">Fondo / Arcas de la Asociación</td>
                                                         <td className="py-2.5 px-3 text-right font-bold text-black">
                                                             ${Math.round(transaction.breakdown?.afc_margin ?? 5000).toLocaleString('es-CL')}
                                                         </td>
@@ -414,7 +415,7 @@ export default function PrintableVoucherModal({
 
                                         <div className="w-5/12">
                                             <div className="border-b border-black mb-2 h-10" />
-                                            <p className="text-xs font-black text-black">Tesorería General AFC</p>
+                                            <p className="text-xs font-black text-black">Tesorería General</p>
                                             <p className="text-[10px] font-black text-black">Tesorero(a): {institutional?.treasurer_name || (transaction.user ? transaction.user.name : 'Juan Ramón Cornejo')}</p>
                                         </div>
                                     </div>

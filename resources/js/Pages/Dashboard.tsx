@@ -204,7 +204,7 @@ export default function Dashboard({
                             </span>
                         </div>
                         <h2 className="text-2xl font-black tracking-tight text-slate-900">
-                            {institutional.association_name || 'Asociación de Fútbol AFC'}
+                            {institutional.association_name || 'Asociación de Fútbol Catemu'}
                         </h2>
                         <p className="text-xs font-medium text-slate-500">
                             RUT: {institutional.association_rut} • {institutional.association_address} • Tesorero General: <span className="font-bold text-slate-800">{institutional.treasurer_name}</span>
@@ -228,7 +228,7 @@ export default function Dashboard({
                 </div>
             }
         >
-            <Head title="Dashboard - Gestión Financiera AFC" />
+            <Head title="Dashboard - Gestión Financiera" />
 
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
@@ -575,7 +575,7 @@ export default function Dashboard({
 
                             <div className="rounded-2xl bg-slate-900 p-4 text-white text-center">
                                 <p className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">
-                                    Eficiencia Financiera AFC
+                                    Eficiencia Financiera
                                 </p>
                                 <p className="text-base font-black text-white mt-0.5">
                                     + {formatCLP(kpis.net_balance)} de Superávit
@@ -684,7 +684,7 @@ export default function Dashboard({
                                         <span className="text-2xl">🤝</span>
                                         <div>
                                             <p className="text-xs font-extrabold text-blue-950">Fondo Solidario</p>
-                                            <p className="text-[10px] text-blue-600">Auxilio a Clubes AFC</p>
+                                            <p className="text-[10px] text-blue-600">Auxilio a Clubes</p>
                                         </div>
                                     </div>
                                     <span className="text-base font-black text-blue-900">
@@ -697,7 +697,7 @@ export default function Dashboard({
                                         <span className="text-2xl">📝</span>
                                         <div>
                                             <p className="text-xs font-extrabold text-sky-950">Inscripciones Jugadores</p>
-                                            <p className="text-[10px] text-sky-600">ARFA $0 • 100% Arcas AFC</p>
+                                            <p className="text-[10px] text-sky-600">ARFA $0 • 100% Arcas</p>
                                         </div>
                                     </div>
                                     <span className="text-base font-black text-sky-900">
@@ -733,7 +733,7 @@ export default function Dashboard({
                                             {formatCLP(kpis.arfa_distribution.total_afc_pases)}
                                         </span>
                                         <span className="text-[9px] font-bold uppercase text-emerald-600 block">
-                                            Margen AFC
+                                            Margen Asociación
                                         </span>
                                     </div>
                                 </div>
@@ -743,7 +743,7 @@ export default function Dashboard({
                                         <span className="text-2xl">⚖️</span>
                                         <div>
                                             <p className="text-xs font-extrabold text-indigo-950">Apelaciones & Multas</p>
-                                            <p className="text-[10px] text-indigo-600">Tribunal de Penas AFC</p>
+                                            <p className="text-[10px] text-indigo-600">Tribunal de Penas</p>
                                         </div>
                                     </div>
                                     <span className="text-base font-black text-indigo-900">
@@ -775,7 +775,7 @@ export default function Dashboard({
                                     </div>
                                     <div>
                                         <h3 className="text-base font-extrabold text-slate-900">
-                                            Distribución ARFA V Región vs AFC
+                                            Distribución ARFA V Región vs Asociación
                                         </h3>
                                         <p className="text-xs font-medium text-slate-500">
                                             Fondos Pases e Inscripciones de Jugadores
@@ -805,7 +805,7 @@ export default function Dashboard({
                                     <div className="rounded-2xl bg-emerald-50 p-4 border border-emerald-200">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 block">
-                                                Ganancia Libre Arcas AFC
+                                                Ganancia Libre Arcas Asociación
                                             </span>
                                             <span className="text-[10px] font-bold text-emerald-700">100% Permanente</span>
                                         </div>
@@ -922,7 +922,7 @@ export default function Dashboard({
                                     {recent_transactions.map((tx) => (
                                         <tr key={tx.id} className="hover:bg-slate-50/80">
                                             <td className="py-3 px-4 font-mono font-black text-emerald-700">
-                                                {tx.folio_number}
+                                                {tx.folio_number || <span className="text-slate-400 font-sans font-normal text-xs">S/N</span>}
                                             </td>
                                             <td className="py-3 px-4 text-slate-600 font-bold">
                                                 {formatDateChile(tx.date)}
@@ -968,7 +968,7 @@ export default function Dashboard({
                                     <div className="flex items-center justify-between border-b border-slate-200/60 pb-2.5 mb-2.5">
                                         <div className="flex items-center gap-2">
                                             <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                                                {tx.folio_number}
+                                                {tx.folio_number || 'S/N'}
                                             </span>
                                             <span className="text-xs font-bold text-slate-500">
                                                 {formatDateChile(tx.date)}

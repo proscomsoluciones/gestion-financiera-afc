@@ -50,7 +50,7 @@ export default function Show({ club }: { club: Club }) {
                                 </span>
                             </div>
                             <p className="text-sm font-medium text-slate-500">
-                                Perfil Institucional • {club.short_name ? `Siglas: ${club.short_name}` : 'Club AFC'}
+                                Perfil Institucional • {club.short_name ? `Siglas: ${club.short_name}` : 'Club Deportivo'}
                             </p>
                         </div>
                     </div>

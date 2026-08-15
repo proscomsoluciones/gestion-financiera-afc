@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -49,8 +50,8 @@ class TransactionController extends Controller
             $query->where('type', $request->input('type'));
         }
 
-        $perPage = (int) $request->input('per_page', 10);
-        if ($perPage <= 0) { $perPage = 10; }
+        $perPage = (int) $request->input('per_page', 50);
+        if ($perPage <= 0) { $perPage = 50; }
         if ($perPage > 200) { $perPage = 200; }
 
         $transactions = $query->latest('id')->paginate($perPage)->withQueryString();
@@ -102,6 +103,7 @@ class TransactionController extends Controller
         $isExpense = $request->input('type') === 'expense';
 
         $rules = [
+            'folio_number' => 'nullable|string|max:50|unique:transactions,folio_number',
             'type' => 'required|in:income,expense',
             'category' => 'required|string|max:50',
             'club_id' => 'nullable|exists:clubs,id',
@@ -114,7 +116,7 @@ class TransactionController extends Controller
             'date' => 'required|date',
             'notes' => 'nullable|string',
             'breakdown' => 'nullable|array',
-            'receipt_image' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:10240',
+            'receipt_image' => 'nullable|file|max:25600',
         ];
 
         $validated = $request->validate($rules);
@@ -157,13 +159,19 @@ class TransactionController extends Controller
         }
 
         $validated['user_id'] = Auth::id();
-        $validated['folio_number'] = Transaction::generateNextFolio();
+        if (!empty($validated['folio_number'])) {
+            $validated['folio_number'] = trim($validated['folio_number']);
+        } else {
+            $validated['folio_number'] = null;
+        }
 
         $transaction = Transaction::create($validated);
         $transaction->load(['club', 'user']);
 
+        $folioMsg = $transaction->folio_number ? "folio {$transaction->folio_number}" : "ID #{$transaction->id}";
+
         return redirect()->route('transactions.index')->with([
-            'success' => "Comprobante {$transaction->folio_number} emitido exitosamente.",
+            'success' => "Comprobante ({$folioMsg}) emitido exitosamente.",
             'created_transaction' => $transaction,
         ]);
     }
@@ -179,7 +187,8 @@ class TransactionController extends Controller
 
         $pdf = Pdf::loadView('pdf.voucher', compact('transaction', 'institutional', 'amountInWords'));
 
-        $filename = "Comprobante_{$transaction->folio_number}.pdf";
+        $folioStr = $transaction->folio_number ?: "ID_{$transaction->id}";
+        $filename = "Comprobante_{$folioStr}.pdf";
 
         return $pdf->stream($filename);
     }
@@ -195,13 +204,62 @@ class TransactionController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Transaction $transaction): RedirectResponse
+    {
+        $rules = [
+            'folio_number' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('transactions', 'folio_number')->ignore($transaction->id),
+            ],
+            'type' => 'required|in:income,expense',
+            'category' => 'required|string|max:50',
+            'club_id' => 'nullable|exists:clubs,id',
+            'amount' => 'required|numeric|min:0.01',
+            'concept' => 'required|string|max:255',
+            'period_month' => 'nullable|string|max:100',
+            'player_name' => 'nullable|string|max:255',
+            'payment_method' => 'required|in:efectivo,transferencia,deposito,cheque',
+            'reference_number' => 'nullable|string|max:255',
+            'date' => 'required|date',
+            'notes' => 'nullable|string',
+            'breakdown' => 'nullable|array',
+            'receipt_image' => 'nullable|file|max:25600',
+        ];
+
+        $validated = $request->validate($rules);
+
+        if ($request->hasFile('receipt_image')) {
+            $path = $request->file('receipt_image')->store('vouchers', 'public');
+            $validated['receipt_image'] = $path;
+        }
+
+        if (!empty($validated['folio_number'])) {
+            $validated['folio_number'] = trim($validated['folio_number']);
+        } else {
+            $validated['folio_number'] = null;
+        }
+
+        $transaction->update($validated);
+
+        $folioMsg = $transaction->folio_number ? "folio {$transaction->folio_number}" : "ID #{$transaction->id}";
+
+        return redirect()->route('transactions.index')->with([
+            'success' => "Comprobante ({$folioMsg}) actualizado exitosamente.",
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Transaction $transaction): RedirectResponse
     {
-        $folio = $transaction->folio_number;
+        $folio = $transaction->folio_number ? "folio {$transaction->folio_number}" : "registro ID #{$transaction->id}";
         $transaction->delete();
 
-        return redirect()->route('transactions.index')->with('success', "El comprobante {$folio} ha sido anulado.");
+        return redirect()->route('transactions.index')->with('success', "El comprobante ({$folio}) ha sido anulado.");
     }
 }

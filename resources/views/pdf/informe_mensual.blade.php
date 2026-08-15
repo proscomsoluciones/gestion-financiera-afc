@@ -46,7 +46,7 @@
                     RUT: {{ $institutional['association_rut'] ?? '65.123.456-K' }} • {{ $institutional['association_address'] ?? 'Región de Valparaíso, Chile' }}
                 </p>
                 <p style="font-size: 11px; color: #0f172a; margin: 3px 0 0 0; font-weight: 900; text-transform: uppercase;">
-                    INFORME FINANCIERO Y MOVIMIENTOS DEL PERÍODO
+                    INFORME MENSUAL DE CAJA & LIBRO CONTABLE
                 </p>
             </td>
             <td style="width: 150px; text-align: right; vertical-align: middle;">
@@ -63,41 +63,41 @@
         <table style="width: 100%; border-collapse: separate; border-spacing: 5px 0;">
             <tr>
                 <td style="width: 33.3%; background-color: #f0fdf4; border: 1.5px solid #10b981; border-radius: 6px; padding: 8px; text-align: center;">
-                    <span style="font-size: 8.5px; font-weight: bold; color: #047857; text-transform: uppercase; display: block;">TOTAL INGRESOS</span>
+                    <span style="font-size: 8.5px; font-weight: bold; color: #047857; text-transform: uppercase; display: block;">INGRESOS TOTALES</span>
                     <span style="font-size: 12px; font-weight: 900; color: #059669; display: block; margin-top: 2px;">+${{ number_format($totalIncome, 0, ',', '.') }} CLP</span>
                 </td>
                 <td style="width: 33.3%; background-color: #fef2f2; border: 1.5px solid #ef4444; border-radius: 6px; padding: 8px; text-align: center;">
-                    <span style="font-size: 8.5px; font-weight: bold; color: #b91c1c; text-transform: uppercase; display: block;">TOTAL EGRESOS</span>
+                    <span style="font-size: 8.5px; font-weight: bold; color: #b91c1c; text-transform: uppercase; display: block;">EGRESOS TOTALES</span>
                     <span style="font-size: 12px; font-weight: 900; color: #dc2626; display: block; margin-top: 2px;">-${{ number_format($totalExpense, 0, ',', '.') }} CLP</span>
                 </td>
                 <td style="width: 33.3%; background-color: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px; text-align: center;">
-                    <span style="font-size: 8.5px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block;">SUPERÁVIT / NETO</span>
-                    <span style="font-size: 12px; font-weight: 900; color: #1e40af; display: block; margin-top: 2px;">${{ number_format($netBalance, 0, ',', '.') }} CLP</span>
+                    <span style="font-size: 8.5px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block;">SALDO FINAL PERÍODO</span>
+                    <span style="font-size: 12px; font-weight: 900; color: #1e40af; display: block; margin-top: 2px;">${{ number_format($netBalance ?? 0, 0, ',', '.') }} CLP</span>
                 </td>
             </tr>
         </table>
     </div>
 
     <div class="section-title">
-        MOVIMIENTOS CONTABLES REGISTRADOS EN EL PERÍODO
+        MOVIMIENTOS DE CAJA REGISTRADOS EN EL PERÍODO
     </div>
 
     <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 12%;">Folio</th>
-                <th style="width: 13%;">Fecha</th>
+                <th style="width: 10%;">Folio</th>
+                <th style="width: 12%;">Fecha</th>
                 <th style="width: 25%;">Entidad / Club</th>
-                <th style="width: 35%;">Concepto / Detalle</th>
+                <th style="width: 38%;">Concepto / Detalle</th>
                 <th style="width: 15%; text-align: right;">Monto</th>
             </tr>
         </thead>
         <tbody>
             @forelse($transactions as $tx)
                 <tr>
-                    <td>{{ $tx->folio_number }}</td>
+                    <td class="font-mono text-center font-bold">{{ $tx->folio_number ?? 'S/N' }}</td>
                     <td>{{ \Carbon\Carbon::parse($tx->date)->format('d/m/Y') }}</td>
-                    <td>{{ $tx->club ? $tx->club->name : 'Asociación AFC' }}</td>
+                    <td>{{ $tx->club ? $tx->club->name : 'Asociación (General)' }}</td>
                     <td>{{ $tx->concept }}</td>
                     <td class="text-right {{ $tx->type === 'income' ? 'income-text' : 'expense-text' }}">
                         {{ $tx->type === 'income' ? '+' : '-' }}${{ number_format($tx->amount, 0, ',', '.') }}

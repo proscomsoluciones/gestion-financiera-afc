@@ -142,6 +142,7 @@ interface ReportsProps {
         to?: number;
         per_page?: number;
     };
+    all_expenses?: TransactionItem[];
     solidarity_report?: SolidarityReportData;
     institutional: {
         association_name: string;
@@ -165,6 +166,7 @@ export default function Index({
     annual_balance,
     passes_metrics,
     transactions,
+    all_expenses,
     solidarity_report,
     institutional,
     clubs,
@@ -174,13 +176,13 @@ export default function Index({
     const [activeTab, setActiveTab] = useState<'libro' | 'period' | 'annual' | 'club' | 'solidarity'>('libro');
     const [annualViewMode, setAnnualViewMode] = useState<'summary' | 'detailed'>('summary');
     const [selectedYear, setSelectedYear] = useState<number>(filters.year || 2026);
-    const [monthFilter, setMonthFilter] = useState(filters.month_filter || '2026-04');
+    const [monthFilter, setMonthFilter] = useState(filters.month_filter || '');
     const [startDate, setStartDate] = useState(filters.start_date || '');
     const [endDate, setEndDate] = useState(filters.end_date || '');
     const [selectedClubId, setSelectedClubId] = useState<string>(
         filters.club_id ? String(filters.club_id) : clubs.length > 0 ? String(clubs[0].id) : ''
     );
-    const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 10);
+    const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 50);
 
     const formatCLP = (val: number) => {
         return '$' + Math.round(val || 0).toLocaleString('es-CL');
@@ -226,11 +228,11 @@ export default function Index({
 
     const handleResetFilter = () => {
         setSelectedYear(2026);
-        setMonthFilter('2026-04');
+        setMonthFilter('');
         setStartDate('');
         setEndDate('');
-        setPerPageFilter(10);
-        router.get(route('reports.index'), { per_page: 10 }, {
+        setPerPageFilter(50);
+        router.get(route('reports.index'), { per_page: 50 }, {
             preserveState: true,
             preserveScroll: true,
         });
@@ -260,7 +262,9 @@ export default function Index({
         }
     };
 
-    const expensesList = (transactions?.data || []).filter((t: TransactionItem) => t.type === 'expense');
+    const expensesList = (all_expenses && all_expenses.length > 0)
+        ? all_expenses
+        : (transactions?.data || []).filter((t: TransactionItem) => t.type === 'expense');
 
     return (
         <AuthenticatedLayout
@@ -271,7 +275,7 @@ export default function Index({
                             <span>📊</span> Centro de Reportes & Libro de Respaldos
                         </h2>
                         <p className="text-xs font-medium text-slate-500 mt-0.5">
-                            {institutional.association_name || 'Asociación de Fútbol Catemu (AFC)'} • Generación de Libros Físicos/Digitales, Balances y Cartolas de Clubes
+                            {institutional.association_name || 'Asociación de Fútbol Catemu'} • Generación de Libros Físicos/Digitales, Balances y Cartolas de Clubes
                         </p>
                     </div>
 
@@ -314,7 +318,7 @@ export default function Index({
                 </div>
             }
         >
-            <Head title="Reportes & Libro de Respaldos - AFC" />
+            <Head title="Reportes & Libro de Respaldos" />
 
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
@@ -406,7 +410,7 @@ export default function Index({
                                 </button>
                             </div>
 
-                            {(monthFilter !== '2026-04' || startDate || endDate) && (
+                            {(monthFilter || startDate || endDate) && (
                                 <button
                                     type="button"
                                     onClick={handleResetFilter}
@@ -441,7 +445,7 @@ export default function Index({
                                 {passes_metrics?.total_count || 0} <span className="text-xs font-bold text-teal-700">Pases</span>
                             </h3>
                             <p className="text-[10px] font-extrabold text-teal-800 mt-0.5">
-                                Utilidad AFC: {formatCLP(passes_metrics?.total_afc || 0)} (ARFA: {formatCLP(passes_metrics?.total_arfa || 0)})
+                                Utilidad Asociación: {formatCLP(passes_metrics?.total_afc || 0)} (ARFA: {formatCLP(passes_metrics?.total_arfa || 0)})
                             </p>
                         </div>
                     </div>
@@ -587,8 +591,8 @@ export default function Index({
                                                             <td className="py-3 px-5 font-extrabold text-slate-900">
                                                                 {exp.concept}
                                                             </td>
-                                                            <td className="py-3 px-5 text-slate-600 font-medium">
-                                                                {exp.category}
+                                                            <td className="py-3 px-5 text-slate-600 font-semibold">
+                                                                {(exp as any).category_label || exp.category}
                                                             </td>
                                                             <td className="py-3 px-5 text-center">
                                                                 {exp.receipt_image ? (
@@ -719,7 +723,7 @@ export default function Index({
                                                             {formatDateChile(tx.date)}
                                                         </td>
                                                         <td className="py-3 px-5 font-extrabold text-slate-900">
-                                                            {tx.club ? tx.club.name : '— Asociación AFC —'}
+                                                            {tx.club ? tx.club.name : '— Asociación —'}
                                                         </td>
                                                         <td className="py-3 px-5 text-slate-700">
                                                             {tx.concept}
@@ -755,7 +759,7 @@ export default function Index({
                                                 <div className="space-y-1 text-xs">
                                                     <div className="flex justify-between">
                                                         <span className="text-slate-400 font-semibold">Entidad:</span>
-                                                        <span className="font-extrabold text-slate-900">{tx.club ? tx.club.name : '— Asociación AFC —'}</span>
+                                                        <span className="font-extrabold text-slate-900">{tx.club ? tx.club.name : '— Asociación —'}</span>
                                                     </div>
                                                     <div>
                                                         <span className="text-slate-400 font-semibold block text-[11px]">Concepto:</span>
@@ -1156,7 +1160,7 @@ export default function Index({
                                     <div className="space-y-3 pt-2">
                                         <div className="flex items-center justify-between">
                                             <h4 className="text-xs font-black uppercase tracking-wider text-teal-800 flex items-center gap-1.5">
-                                                <span>🔄</span> 2. Detalle Transparente de Pases: ARFA V Región vs Retención AFC
+                                                <span>🔄</span> 2. Detalle Transparente de Pases: ARFA V Región vs Retención Asociación
                                                 <span className="ml-2 rounded-full bg-teal-100 px-2.5 py-0.5 text-[10px] font-extrabold text-teal-800 border border-teal-200">
                                                     {club_statement.passes_count || 0} Pases ({club_statement.passes_adult_count || 0} Adultos • {club_statement.passes_femenino_count || 0} Femeninos)
                                                 </span>
@@ -1174,7 +1178,7 @@ export default function Index({
                                                             <th className="py-3 px-4">Detalle / Jugador</th>
                                                             <th className="py-3 px-4 text-right">Cobrado al Club</th>
                                                             <th className="py-3 px-4 text-right">Costo ARFA V Región</th>
-                                                            <th className="py-3 px-4 text-right">Ganancia AFC</th>
+                                                            <th className="py-3 px-4 text-right">Ganancia Asociación</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="divide-y divide-teal-100 font-medium">
@@ -1241,7 +1245,7 @@ export default function Index({
                                                                 <span className="font-bold text-rose-600">{formatCLP(pass.arfa_cost)}</span>
                                                             </div>
                                                             <div>
-                                                                <span className="text-slate-400 block text-[9px] uppercase font-bold">Ret. AFC</span>
+                                                                <span className="text-slate-400 block text-[9px] uppercase font-bold">Ret. Asociación</span>
                                                                 <span className="font-black text-emerald-600">+{formatCLP(pass.afc_net)}</span>
                                                             </div>
                                                         </div>

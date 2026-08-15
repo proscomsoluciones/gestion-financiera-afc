@@ -43,12 +43,12 @@ interface SettingsIndexProps {
 export default function Index({ tariffs, institutional, other_income_categories = [], expense_categories = [], flash }: SettingsIndexProps) {
     const { data, setData, post, processing, errors } = useForm({
         // Institutional Data
-        association_name: institutional?.association_name ?? 'ASOCIACIÓN DE FÚTBOL AFC',
-        association_rut: institutional?.association_rut ?? '65.123.456-K',
-        association_address: institutional?.association_address ?? 'Región de Valparaíso, Chile',
-        treasurer_name: institutional?.treasurer_name ?? 'Juan Ramón Cornejo',
-        president_name: institutional?.president_name ?? 'Presidente General AFC',
-        secretary_name: institutional?.secretary_name ?? 'Secretario General AFC',
+        association_name: institutional?.association_name ?? 'ASOCIACIÓN DE FÚTBOL CATEMU',
+        association_rut: institutional?.association_rut ?? '75.141.900-7',
+        association_address: institutional?.association_address ?? 'ARTURO PEREZ CANTO 050',
+        treasurer_name: institutional?.treasurer_name ?? 'JAIME VALENZUELA',
+        president_name: institutional?.president_name ?? 'JUAN CORNEJO G.',
+        secretary_name: institutional?.secretary_name ?? 'FRANCO CORTEZ O',
         association_logo: null as File | null,
 
         // Tariffs
@@ -81,7 +81,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                 { id: 'viatico', label: 'Viático / Asignación de Traslado / Árbitros' },
                 { id: 'compra', label: 'Compra de Insumos / Balones / Materiales' },
                 { id: 'servicio', label: 'Pago de Servicios / Honorarios / Gastos' },
-                { id: 'otro', label: 'Otro Egreso AFC' },
+                { id: 'otro', label: 'Otro Egreso' },
             ],
     });
 
@@ -135,7 +135,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                 </div>
             }
         >
-            <Head title="Configuración Institucional - Gestión Financiera AFC" />
+            <Head title="Configuración Institucional - Gestión Financiera" />
 
             <div className="py-8">
                 <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -325,7 +325,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                             />
                                         ) : (
                                             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-white font-black text-lg">
-                                                AFC
+                                                ⚽
                                             </div>
                                         )}
                                         <div className="flex-1">
@@ -359,14 +359,14 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                                     Inscripciones de Jugadores (Adulto, Infantil, Femenina)
                                                 </h3>
                                                 <p className="text-xs font-medium text-slate-500">
-                                                    ARFA V Región cobra $0 CLP (Gratis) • 100% del ingreso va a las Arcas de la AFC
+                                                    ARFA V Región cobra $0 CLP (Gratis) • 100% del ingreso va a las Arcas de la Asociación
                                                 </p>
                                             </div>
                                         </div>
 
                                         <div className="rounded-2xl bg-blue-50 border border-blue-200 px-4 py-2 text-right">
                                             <p className="text-[10px] font-extrabold uppercase tracking-wider text-blue-700">
-                                                Ingreso Arcas AFC (100%)
+                                                Ingreso Arcas Asociación (100%)
                                             </p>
                                             <p className="text-xl font-black text-blue-700">
                                                 {formatCLP(marginInscripcion)} CLP
@@ -420,7 +420,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-extrabold text-slate-900">
-                                                Aranceles de Pases / Transferencias (ARFA V Región & AFC)
+                                                Aranceles de Pases / Transferencias (ARFA V Región & Asociación)
                                             </h3>
                                             <p className="text-xs font-medium text-slate-500">
                                                 Configura el cobro total al club y el arancel pagado a ARFA V Región
@@ -435,7 +435,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                                 Pases Estándar (Pase Interno, Regional y Externo)
                                             </h4>
                                             <span className="rounded-xl bg-teal-100 px-3 py-1 text-xs font-black text-teal-800">
-                                                Ingreso Arcas AFC: {formatCLP(marginEstandar)} CLP por Pase
+                                                Ingreso Arcas Asociación: {formatCLP(marginEstandar)} CLP por Pase
                                             </span>
                                         </div>
 
@@ -570,7 +570,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
 
                                         <div>
                                             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                                Aporte Fondo Selección AFC ($ CLP)
+                                                Aporte Fondo Selección ($ CLP)
                                             </label>
                                             <div className="relative">
                                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 font-bold text-sm">

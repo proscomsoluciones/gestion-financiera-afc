@@ -38,24 +38,54 @@ class Transaction extends Model
     protected $appends = [
         'receipt_image_url',
         'formatted_date',
+        'category_label',
     ];
 
     protected static function boot()
     {
         parent::boot();
+    }
 
-        static::creating(function ($transaction) {
-            if (empty($transaction->folio_number)) {
-                $transaction->folio_number = self::generateNextFolio();
+    public function getCategoryLabelAttribute(): string
+    {
+        if ($this->type === 'expense') {
+            $typeKey = $this->breakdown['expense_type'] ?? null;
+            if ($typeKey) {
+                $expenseCats = Setting::getExpenseCategories();
+                foreach ($expenseCats as $cat) {
+                    if (isset($cat['id']) && $cat['id'] === $typeKey) {
+                        return $cat['label'];
+                    }
+                }
+                return str_replace('_', ' ', ucfirst($typeKey));
             }
-        });
+            return 'Egreso General (Asociación)';
+        }
+
+        $incomeCats = [
+            'tributo' => 'Tributo Mensual',
+            'fondo_solidario' => 'Fondo Solidario',
+            'inscripcion' => 'Inscripción Jugador',
+            'inscripcion_campeonato' => 'Inscripción Campeonato',
+            'pase' => 'Pase Jugador',
+            'apelacion' => 'Apelación',
+            'multa' => 'Multa / Sanción',
+            'otro_ingreso' => 'Otro Ingreso',
+        ];
+
+        return $incomeCats[$this->category] ?? ucfirst($this->category);
     }
 
     public static function generateNextFolio(): string
     {
         $lastId = self::max('id') ?? 0;
         $nextId = $lastId + 1;
-        return 'FOL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+        $folio = 'FOL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+        while (self::where('folio_number', $folio)->exists()) {
+            $nextId++;
+            $folio = 'FOL-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+        }
+        return $folio;
     }
 
     public function getReceiptImageUrlAttribute(): ?string

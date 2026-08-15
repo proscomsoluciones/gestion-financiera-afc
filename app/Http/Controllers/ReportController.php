@@ -109,7 +109,14 @@ class ReportController extends Controller
         foreach ($spanishMonths as $index => $monthName) {
             $monthNum = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
             $txs = Transaction::where('category', 'pase')->whereYear('date', $year)->whereMonth('date', $monthNum)->get();
-            $pCount = $txs->count();
+            $pCount = 0;
+            foreach ($txs as $t) {
+                if (is_array($t->breakdown) && !empty($t->breakdown['items']) && is_array($t->breakdown['items'])) {
+                    $pCount += count($t->breakdown['items']);
+                } else {
+                    $pCount += 1;
+                }
+            }
             $pAmount = (float) $txs->sum('amount');
             $pArfa = (float) $txs->sum(function($t) {
                 return isset($t->breakdown['arfa_cost']) ? (float)$t->breakdown['arfa_cost'] : (str_contains(strtolower($t->concept), 'femenino') ? 12000 : 17000);
@@ -130,6 +137,22 @@ class ReportController extends Controller
                 'afc_net' => $pAfc,
             ];
         }
+
+        // Compute filtered passes count for top metric card when month or date filters apply
+        $filteredPassesTxs = (clone $baseQuery)->where('category', 'pase')->get();
+        $filteredPassesCount = 0;
+        foreach ($filteredPassesTxs as $t) {
+            if (is_array($t->breakdown) && !empty($t->breakdown['items']) && is_array($t->breakdown['items'])) {
+                $filteredPassesCount += count($t->breakdown['items']);
+            } else {
+                $filteredPassesCount += 1;
+            }
+        }
+        $filteredPassesAmount = (float) $filteredPassesTxs->sum('amount');
+        $filteredPassesArfa = (float) $filteredPassesTxs->sum(function($t) {
+            return isset($t->breakdown['arfa_cost']) ? (float)$t->breakdown['arfa_cost'] : (str_contains(strtolower($t->concept), 'femenino') ? 12000 : 17000);
+        });
+        $filteredPassesAfc = max(0, $filteredPassesAmount - $filteredPassesArfa);
 
         // Club Statement report calculation
         $allClubs = Club::where('is_active', true)->orderBy('name')->get();
@@ -163,9 +186,12 @@ class ReportController extends Controller
             'expenses' => $solidarityExpenses,
         ];
 
-        $perPage = (int) $request->input('per_page', 10);
-        if ($perPage <= 0) { $perPage = 10; }
+        $perPage = (int) $request->input('per_page', 50);
+        if ($perPage <= 0) { $perPage = 50; }
         if ($perPage > 200) { $perPage = 200; }
+
+        // All Expenses for Libro de Respaldos preview
+        $allExpenses = (clone $baseQuery)->where('type', 'expense')->with(['club', 'user'])->latest('date')->latest('id')->get();
 
         // Transactions list for report table preview (paginated)
         $transactions = (clone $baseQuery)->with(['club', 'user'])->latest('date')->latest('id')->paginate($perPage)->withQueryString();
@@ -187,13 +213,14 @@ class ReportController extends Controller
             ],
             'annual_balance' => $annualBalance,
             'passes_metrics' => [
-                'total_count' => $totalPassesYearCount,
-                'total_amount' => $totalPassesYearAmount,
-                'total_arfa' => $totalPassesYearArfa,
-                'total_afc' => $totalPassesYearAfc,
+                'total_count' => $filteredPassesCount,
+                'total_amount' => $filteredPassesAmount,
+                'total_arfa' => $filteredPassesArfa,
+                'total_afc' => $filteredPassesAfc,
                 'monthly_summary' => $monthlyPassesSummary,
             ],
             'transactions' => $transactions,
+            'all_expenses' => $allExpenses,
             'solidarity_report' => $solidarityReport,
             'institutional' => $institutional,
             'clubs' => $allClubs,
@@ -236,7 +263,7 @@ class ReportController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $monthFilter = $request->input('month_filter', '2026-04'); // default to sample month if empty
+        $monthFilter = $request->input('month_filter');
         $year = (int) $request->input('year', 2026);
 
         $query = Transaction::where('type', 'expense')->with(['club']);
@@ -255,6 +282,8 @@ class ReportController extends Controller
                 $query->whereYear('date', $year)->whereMonth('date', $monthFilter);
                 $periodTitle = self::formatSpanishMonthPeriod($monthFilter, $year);
             }
+        } else {
+            $query->whereYear('date', $year);
         }
 
         $expenses = $query->orderBy('date', 'asc')->get();
@@ -316,7 +345,7 @@ class ReportController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $monthFilter = $request->input('month_filter', '2026-08');
+        $monthFilter = $request->input('month_filter');
         $year = (int) $request->input('year', 2026);
 
         $query = Transaction::with(['club', 'user']);
@@ -334,6 +363,8 @@ class ReportController extends Controller
                 $query->whereYear('date', $year)->whereMonth('date', $monthFilter);
                 $periodTitle = self::formatSpanishMonthPeriod($monthFilter, $year);
             }
+        } else {
+            $query->whereYear('date', $year);
         }
 
         $transactions = $query->orderBy('date', 'asc')->get();
@@ -341,6 +372,7 @@ class ReportController extends Controller
         $totalIncome = (float) (clone $query)->where('type', 'income')->sum('amount');
         $totalExpense = (float) (clone $query)->where('type', 'expense')->sum('amount');
         $netBalance = $totalIncome - $totalExpense;
+        $balance = $netBalance;
 
         $institutional = Setting::getInstitutionalData();
 
@@ -349,6 +381,7 @@ class ReportController extends Controller
             'totalIncome',
             'totalExpense',
             'netBalance',
+            'balance',
             'periodTitle',
             'institutional'
         ));
@@ -540,9 +573,16 @@ class ReportController extends Controller
         $totalArfaPases = (float) $passesList->sum('arfa_cost');
         $totalAfcPasesNet = (float) $passesList->sum('afc_net');
 
-        $passesCount = $passesList->count();
+        $passesCount = 0;
+        foreach ($transactions->where('category', 'pase') as $tx) {
+            if (is_array($tx->breakdown) && !empty($tx->breakdown['items']) && is_array($tx->breakdown['items'])) {
+                $passesCount += count($tx->breakdown['items']);
+            } else {
+                $passesCount += 1;
+            }
+        }
         $passesFemeninoCount = $passesList->filter(fn($p) => str_contains(strtolower($p['concept']), 'femenino'))->count();
-        $passesAdultCount = $passesCount - $passesFemeninoCount;
+        $passesAdultCount = max(0, $passesCount - $passesFemeninoCount);
 
         $inscriptionsList = $transactions->whereIn('category', ['inscripcion', 'inscripcion_campeonato'])->values();
         $penaltiesList = $transactions->whereIn('category', ['multa', 'apelacion'])->values();
@@ -610,7 +650,7 @@ class ReportController extends Controller
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-        $monthFilter = $request->input('month_filter', '2026-08');
+        $monthFilter = $request->input('month_filter');
         $year = (int) $request->input('year', 2026);
 
         $query = Transaction::where('category', 'pase')->with(['club']);
@@ -628,6 +668,8 @@ class ReportController extends Controller
                 $query->whereYear('date', $year)->whereMonth('date', $monthFilter);
                 $periodTitle = self::formatSpanishMonthPeriod($monthFilter, $year);
             }
+        } else {
+            $query->whereYear('date', $year);
         }
 
         $passes = $query->orderBy('date', 'asc')->get();
@@ -638,13 +680,22 @@ class ReportController extends Controller
         });
         $totalAfcNet = max(0, $totalAmount - $totalArfa);
 
+        $totalPassesCount = 0;
+        foreach ($passes as $p) {
+            if (is_array($p->breakdown) && !empty($p->breakdown['items']) && is_array($p->breakdown['items'])) {
+                $totalPassesCount += count($p->breakdown['items']);
+            } else {
+                $totalPassesCount += 1;
+            }
+        }
+
         $institutional = Setting::getInstitutionalData();
 
-        $pdf = Pdf::loadView('pdf.arfa_rendicion', compact('passes', 'totalAmount', 'totalArfa', 'totalAfcNet', 'periodTitle', 'institutional'));
+        $pdf = Pdf::loadView('pdf.arfa_rendicion', compact('passes', 'totalAmount', 'totalArfa', 'totalAfcNet', 'totalPassesCount', 'periodTitle', 'institutional'));
         $pdf->setPaper('a4', 'portrait');
 
         $safePeriod = str_replace([' ', '/', ':'], '_', $periodTitle);
-        return $pdf->stream("Control_Pases_AFC_{$safePeriod}.pdf");
+        return $pdf->stream("Control_Pases_{$safePeriod}.pdf");
     }
 
     /**
@@ -742,7 +793,7 @@ class ReportController extends Controller
                 echo '<td>' . htmlspecialchars($tx->formatted_date) . '</td>';
                 echo '<td>' . ($isIncome ? 'INGRESO' : 'EGRESO') . '</td>';
                 echo '<td>' . htmlspecialchars(ucfirst($tx->category)) . '</td>';
-                echo '<td>' . htmlspecialchars($tx->club ? $tx->club->name : 'Asociación AFC') . '</td>';
+                echo '<td>' . htmlspecialchars($tx->club ? $tx->club->name : 'Asociación (General)') . '</td>';
                 echo '<td>' . htmlspecialchars($tx->concept) . '</td>';
                 echo '<td class="' . $classStr . '">' . $montoStr . '</td>';
                 echo '<td>' . htmlspecialchars(ucfirst($tx->payment_method)) . '</td>';

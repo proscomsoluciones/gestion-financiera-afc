@@ -58,7 +58,7 @@ const defaultExpenseCategories = [
     { id: 'viatico', label: 'Viático / Asignación de Traslado / Árbitros' },
     { id: 'compra', label: 'Compra de Insumos / Balones / Materiales' },
     { id: 'servicio', label: 'Pago de Servicios / Honorarios / Gastos' },
-    { id: 'otro', label: 'Otro Egreso AFC' },
+    { id: 'otro', label: 'Otro Egreso' },
 ];
 
 interface IndexProps {
@@ -133,6 +133,64 @@ export default function Index({
         return dateStr;
     };
 
+    const handleFileSelect = (file: File | null, callback: (processedFile: File | null) => void) => {
+        if (!file) {
+            callback(null);
+            return;
+        }
+
+        if (file.type === 'application/pdf') {
+            callback(file);
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const maxDim = 1920;
+
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height * maxDim) / width);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width * maxDim) / height);
+                        height = maxDim;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                                type: 'image/jpeg',
+                                lastModified: Date.now(),
+                            });
+                            callback(newFile);
+                        } else {
+                            callback(file);
+                        }
+                    },
+                    'image/jpeg',
+                    0.85
+                );
+            };
+            img.onerror = () => callback(file);
+            img.src = e.target?.result as string;
+        };
+        reader.onerror = () => callback(file);
+        reader.readAsDataURL(file);
+    };
+
     // Current Date formatted for defaults
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
@@ -151,7 +209,7 @@ export default function Index({
     const [clubIdFilter, setClubIdFilter] = useState(filters.club_id || '');
     const [categoryFilter, setCategoryFilter] = useState(filters.category || '');
     const [typeFilter, setTypeFilter] = useState(filters.type || '');
-    const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 10);
+    const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 50);
 
     // Dynamic Tariffs with fallback (CLP integers)
     const rateTributo = Math.round(tariffs.rate_tributo_club?.value ?? 30000);
@@ -200,6 +258,57 @@ export default function Index({
 
     // Confirmation Alert Modal State for Deletion
     const [deletingTx, setDeletingTx] = useState<TransactionVoucher | null>(null);
+
+    // State and Form Hook for Editing Transactions
+    const [editingTx, setEditingTx] = useState<TransactionVoucher | null>(null);
+    const editForm = useForm({
+        folio_number: '',
+        type: 'income' as 'income' | 'expense',
+        category: 'otro_ingreso',
+        club_id: '',
+        amount: '' as string | number,
+        concept: '',
+        period_month: '',
+        player_name: '',
+        payment_method: 'efectivo',
+        reference_number: '',
+        receipt_image: null as File | null,
+        date: todayStr,
+        notes: '',
+    });
+
+    const handleOpenEditModal = (tx: TransactionVoucher) => {
+        setEditingTx(tx);
+        editForm.setData({
+            folio_number: tx.folio_number || '',
+            type: tx.type,
+            category: tx.category,
+            club_id: tx.club_id ? String(tx.club_id) : (tx.club?.id ? String(tx.club.id) : ''),
+            amount: tx.amount,
+            concept: tx.concept,
+            period_month: tx.period_month || '',
+            player_name: tx.player_name || '',
+            payment_method: tx.payment_method || 'efectivo',
+            reference_number: tx.reference_number || '',
+            receipt_image: null,
+            date: tx.date ? tx.date.split('T')[0] : todayStr,
+            notes: tx.notes || '',
+        });
+    };
+
+    const handleSubmitEdit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingTx) return;
+        editForm.post(route('transactions.update', editingTx.id), {
+            headers: {
+                'X-HTTP-Method-Override': 'PUT',
+            },
+            forceFormData: true,
+            onSuccess: () => {
+                setEditingTx(null);
+            },
+        });
+    };
 
     // States for Otros Ingresos & Egresos
     const [otherIncomeCategory, setOtherIncomeCategory] = useState<'donacion' | 'proyecto' | 'finales' | 'sponsor' | 'evento' | 'otro'>('donacion');
@@ -286,6 +395,7 @@ export default function Index({
 
     // Inertia Form Hook
     const { data, setData, post, processing, errors, reset } = useForm({
+        folio_number: '',
         type: 'income' as 'income' | 'expense',
         category: 'tributo',
         club_id: '',
@@ -334,7 +444,7 @@ export default function Index({
         } else if (type === 'fondo_solidario') {
             const initialSolRow = {
                 id: Math.random().toString(36).substring(2, 9),
-                description: 'Aporte a Fondo Solidario Clubes AFC',
+                description: 'Aporte a Fondo Solidario Clubes',
                 amount: '',
             };
             setSolidarityRows([initialSolRow]);
@@ -446,7 +556,7 @@ export default function Index({
                 category: 'multa',
                 club_id: targetClubId,
                 amount: '',
-                concept: 'Pago por Multa / Sanción Disciplinaria AFC',
+                concept: 'Pago por Multa / Sanción Disciplinaria',
                 period_month: '',
                 player_name: '',
                 payment_method: 'efectivo',
@@ -570,8 +680,8 @@ export default function Index({
         setClubIdFilter('');
         setCategoryFilter('');
         setTypeFilter('');
-        setPerPageFilter(10);
-        router.get(route('transactions.index'), { per_page: 10 });
+        setPerPageFilter(50);
+        router.get(route('transactions.index'), { per_page: 50 });
     };
 
     const handleSubmitTransaction = (e: React.FormEvent) => {
@@ -606,14 +716,14 @@ export default function Index({
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
-                            Caja & Tesorería AFC
+                            Caja & Tesorería
                         </h2>
-                        <p className="text-sm font-medium text-slate-500">
-                            Gestión financiera simplificada, cobros rápidos y emisión de comprobantes foliados multi-año
+                        <p className="text-xs font-medium text-slate-500 mt-0.5">
+                            {institutional.association_name || 'Asociación de Fútbol Catemu'} • Emisión de Comprobantes Oficiales de Ingreso y Egreso
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <Link
                             href={route('settings.index')}
                             className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
@@ -621,13 +731,13 @@ export default function Index({
                             ⚙️ Configurar Tarifas
                         </Link>
                         <span className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs">
-                            Próximo Folio: <span className="text-emerald-400 font-mono font-black">{metrics.next_folio}</span>
+                            📝 Folio Manual según Talonario
                         </span>
                     </div>
                 </div>
             }
         >
-            <Head title="Tesorería y Caja - Gestión Financiera AFC" />
+            <Head title="Tesorería y Caja - Gestión Financiera" />
 
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 space-y-6 sm:px-6 lg:px-8">
@@ -820,7 +930,7 @@ export default function Index({
                                             className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
                                         >
                                             <option value="">Todos los Clubes</option>
-                                            <option value="afc">🏛️ Arcas Directas (Asociación AFC)</option>
+                                            <option value="afc">🏛️ Arcas Directas (Asociación)</option>
                                             {clubs.map((c) => (
                                                 <option key={c.id} value={c.id}>
                                                     {c.name}
@@ -858,10 +968,10 @@ export default function Index({
                                             }}
                                             className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
                                         >
-                                            <option value="10">📄 10 por pág.</option>
+                                            <option value="50">📄 50 por pág. (Todos)</option>
                                             <option value="25">📄 25 por pág.</option>
-                                            <option value="50">📄 50 por pág.</option>
                                             <option value="100">📄 100 por pág.</option>
+                                            <option value="10">📄 10 por pág.</option>
                                         </select>
                                     </div>
 
@@ -869,7 +979,7 @@ export default function Index({
                                         <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white hover:bg-slate-800 transition">
                                             Filtrar
                                         </button>
-                                        {(search || clubIdFilter || categoryFilter || String(perPageFilter) !== '10') && (
+                                        {(search || clubIdFilter || categoryFilter || String(perPageFilter) !== '50') && (
                                             <button type="button" onClick={handleResetFilters} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
                                                 Limpiar
                                             </button>
@@ -901,7 +1011,7 @@ export default function Index({
                                                     {transactions.data.map((tx) => (
                                                         <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
                                                             <td className="py-3.5 px-5 font-mono font-black text-emerald-700">
-                                                                {tx.folio_number}
+                                                                {tx.folio_number || <span className="text-slate-400 font-sans font-normal text-xs">Sin Folio</span>}
                                                             </td>
 
                                                             <td className="py-3.5 px-4 text-slate-700 text-[11px] font-bold">
@@ -963,6 +1073,14 @@ export default function Index({
                                                                     </a>
                                                                     <button
                                                                         type="button"
+                                                                        onClick={() => handleOpenEditModal(tx)}
+                                                                        className="rounded-xl p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                                                                        title="Editar Comprobante / Registro"
+                                                                    >
+                                                                        ✏️
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
                                                                         onClick={() => handleDelete(tx)}
                                                                         className="rounded-xl p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
                                                                         title="Anular Comprobante"
@@ -976,7 +1094,6 @@ export default function Index({
                                                 </tbody>
                                             </table>
                                         </div>
-
                                         {/* Mobile & Tablet Cards View (< 1024px) */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-3.5 p-4 bg-slate-50/30">
                                             {transactions.data.map((tx) => (
@@ -984,7 +1101,7 @@ export default function Index({
                                                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                                                                {tx.folio_number}
+                                                                {tx.folio_number || 'Sin Folio'}
                                                             </span>
                                                             <span className="text-xs font-bold text-slate-500">
                                                                 {formatDateChile(tx.date)}
@@ -1047,6 +1164,13 @@ export default function Index({
                                                         >
                                                             🖨️ PDF
                                                         </a>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleOpenEditModal(tx)}
+                                                            className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100 transition"
+                                                        >
+                                                            ✏️ Editar
+                                                        </button>
                                                         <button
                                                             type="button"
                                                             onClick={() => handleDelete(tx)}
@@ -1331,7 +1455,7 @@ export default function Index({
                             </div>
                             <div>
                                 <h3 className="text-base font-extrabold text-slate-900">
-                                    ¿Anular Comprobante {deletingTx.folio_number}?
+                                    ¿Anular Comprobante {deletingTx.folio_number ? deletingTx.folio_number : `#${deletingTx.id}`}?
                                 </h3>
                                 <p className="text-xs font-medium text-slate-500">
                                     Confirmación de eliminación de registro
@@ -1344,7 +1468,7 @@ export default function Index({
                                 Estás a punto de anular el siguiente comprobante oficial:
                             </p>
                             <div className="bg-white p-3 rounded-xl border border-rose-200 text-slate-800 space-y-1 font-mono text-xs">
-                                <p><strong>Folio:</strong> {deletingTx.folio_number}</p>
+                                <p><strong>Folio:</strong> {deletingTx.folio_number || 'Sin Folio (N/A)'}</p>
                                 <p><strong>Concepto:</strong> {deletingTx.concept}</p>
                                 <p><strong>Monto:</strong> ${Math.round(Number(deletingTx.amount)).toLocaleString('es-CL')} CLP</p>
                                 {deletingTx.club && <p><strong>Club:</strong> {deletingTx.club.name}</p>}
@@ -1379,6 +1503,230 @@ export default function Index({
                 </div>
             )}
 
+            {/* Edit Transaction Modal */}
+            {editingTx && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+                    <div className="w-full max-w-xl rounded-3xl bg-white p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                            <div>
+                                <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600">
+                                    Edición de Registro #{editingTx.id}
+                                </span>
+                                <h3 className="text-xl font-extrabold text-slate-900">
+                                    ✏️ Editar Comprobante / Transacción
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setEditingTx(null)}
+                                className="rounded-xl p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmitEdit} className="space-y-4" encType="multipart/form-data">
+                            {Object.keys(editForm.errors).length > 0 && (
+                                <div className="rounded-2xl bg-rose-50 p-3.5 border border-rose-200 text-xs font-bold text-rose-800 space-y-1">
+                                    <p className="flex items-center gap-1.5 text-rose-900 font-extrabold">
+                                        <span>🚨</span>
+                                        <span>Atención: Revisa los siguientes campos:</span>
+                                    </p>
+                                    <ul className="list-disc list-inside font-semibold text-rose-700">
+                                        {Object.values(editForm.errors).map((err, i) => (
+                                            <li key={i}>{err}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            {/* Folio, Date & Club */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        N° FOLIO <span className="text-slate-400 font-normal lowercase">(opcional)</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={editForm.data.folio_number || ''}
+                                        onChange={(e) => editForm.setData('folio_number', e.target.value)}
+                                        placeholder="Ej: 000003 (o dejar en blanco)"
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold font-mono text-slate-900 shadow-2xs placeholder:font-sans placeholder:font-normal"
+                                    />
+                                    {editForm.errors.folio_number && (
+                                        <p className="mt-1 text-[11px] font-bold text-rose-600">{editForm.errors.folio_number}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        FECHA DE PAGO *
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={editForm.data.date}
+                                        onChange={(e) => editForm.setData('date', e.target.value)}
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                        required
+                                    />
+                                    {editForm.errors.date && (
+                                        <p className="mt-1 text-[11px] font-bold text-rose-600">{editForm.errors.date}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        CLUB / DESTINO
+                                    </label>
+                                    <select
+                                        value={editForm.data.club_id}
+                                        onChange={(e) => editForm.setData('club_id', e.target.value)}
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                    >
+                                        <option value="">— Arcas General (Asociación) —</option>
+                                        {clubs.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Monto y Método de Pago */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        MONTO ($ CLP) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        step="1"
+                                        value={editForm.data.amount}
+                                        onChange={(e) => editForm.setData('amount', e.target.value)}
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-black text-slate-900 shadow-2xs"
+                                        required
+                                    />
+                                    {editForm.errors.amount && (
+                                        <p className="mt-1 text-[11px] font-bold text-rose-600">{editForm.errors.amount}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        MÉTODO DE PAGO *
+                                    </label>
+                                    <select
+                                        value={editForm.data.payment_method}
+                                        onChange={(e) => editForm.setData('payment_method', e.target.value as any)}
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                    >
+                                        <option value="efectivo">💵 Efectivo en Caja</option>
+                                        <option value="transferencia">🏦 Transferencia Bancaria</option>
+                                        <option value="deposito">📥 Depósito Bancario</option>
+                                        <option value="cheque">📜 Cheque</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    CONCEPTO / DESCRIPCIÓN PRINCIPAL *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editForm.data.concept}
+                                    onChange={(e) => editForm.setData('concept', e.target.value)}
+                                    className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                    required
+                                />
+                                {editForm.errors.concept && (
+                                    <p className="mt-1 text-[11px] font-bold text-rose-600">{editForm.errors.concept}</p>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        JUGADOR / BENEFICIARIO / GLOSA (OPCIONAL)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={editForm.data.player_name}
+                                        onChange={(e) => editForm.setData('player_name', e.target.value)}
+                                        placeholder="Nombre del jugador o glosa extra"
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-900 shadow-2xs"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        N° OPERACIÓN / REFERENCIA (OPCIONAL)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={editForm.data.reference_number}
+                                        onChange={(e) => editForm.setData('reference_number', e.target.value)}
+                                        placeholder="N° Comprobante transferencia o depósito"
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-900 shadow-2xs"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    OBSERVACIONES / NOTAS ADICIONALES (OPCIONAL)
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={editForm.data.notes}
+                                    onChange={(e) => editForm.setData('notes', e.target.value)}
+                                    className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    ADJUNTAR / REEMPLAZAR FOTO DE BOLETA O COMPROBANTE (OPCIONAL)
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*,.pdf,.heic,.heif"
+                                    onChange={(e) => {
+                                        const file = e.target.files ? e.target.files[0] : null;
+                                        handleFileSelect(file, (pf) => editForm.setData('receipt_image', pf));
+                                    }}
+                                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingTx(null)}
+                                    className="rounded-xl px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={editForm.processing}
+                                    className="rounded-xl px-5 py-2.5 text-xs font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition cursor-pointer flex items-center gap-2"
+                                >
+                                    {editForm.processing ? (
+                                        <span>Guardando...</span>
+                                    ) : (
+                                        <>
+                                            <span>💾</span>
+                                            <span>Guardar Cambios</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             {/* Quick Action Modal Forms */}
             {activeModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
@@ -1386,7 +1734,7 @@ export default function Index({
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
                             <div>
                                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600">
-                                    Correlativo Folio: {metrics.next_folio}
+                                    N° de Folio según Talonario / Boleta Física
                                 </span>
                                 <h3 className="text-xl font-extrabold text-slate-900">
                                     {activeModal === 'tributo' && '🏛️ Cobro de Tributo Mensual'}
@@ -1409,8 +1757,37 @@ export default function Index({
                         </div>
 
                         <form onSubmit={handleSubmitTransaction} className="space-y-4" encType="multipart/form-data">
-                            {/* Date Picker & Club Selector */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
+                            {Object.keys(errors).length > 0 && (
+                                <div className="rounded-2xl bg-rose-50 p-3.5 border border-rose-200 text-xs font-bold text-rose-800 space-y-1">
+                                    <p className="flex items-center gap-1.5 text-rose-900 font-extrabold">
+                                        <span>🚨</span>
+                                        <span>Atención: Revisa los siguientes campos:</span>
+                                    </p>
+                                    <ul className="list-disc list-inside font-semibold text-rose-700">
+                                        {Object.values(errors).map((err, i) => (
+                                            <li key={i}>{err}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            {/* Folio, Date Picker & Club Selector */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                        N° FOLIO <span className="text-slate-400 font-normal lowercase">(opcional)</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.folio_number || ''}
+                                        onChange={(e) => setData('folio_number', e.target.value)}
+                                        placeholder="Ej: 000003"
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold font-mono text-slate-900 shadow-2xs placeholder:font-sans placeholder:font-normal placeholder:text-slate-400"
+                                    />
+                                    {errors.folio_number && (
+                                        <p className="mt-1 text-[11px] font-bold text-rose-600">{errors.folio_number}</p>
+                                    )}
+                                </div>
+
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                                         FECHA DE PAGO *
@@ -1419,7 +1796,7 @@ export default function Index({
                                         type="date"
                                         value={data.date}
                                         onChange={(e) => setData('date', e.target.value)}
-                                        className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                        className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-900 shadow-2xs"
                                         required
                                     />
                                 </div>
@@ -1432,12 +1809,12 @@ export default function Index({
                                         <select
                                             value={data.club_id}
                                             onChange={(e) => setData('club_id', e.target.value)}
-                                            className="w-full rounded-xl border-indigo-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                            className="w-full rounded-xl border-indigo-200 bg-white px-3 py-2 text-sm font-bold text-slate-900 shadow-2xs"
                                         >
                                             <option value="">
                                                 {activeModal === 'otro_ingreso'
-                                                    ? 'Arcas Directas de la Asociación (AFC)'
-                                                    : 'Gastos Generales de la Asociación (AFC)'}
+                                                    ? 'Arcas Directas (Asociación)'
+                                                    : 'Gastos Generales (Asociación)'}
                                             </option>
                                             {clubs.map((c) => (
                                                 <option key={c.id} value={c.id}>
@@ -1454,7 +1831,7 @@ export default function Index({
                                         <select
                                             value={data.club_id}
                                             onChange={(e) => setData('club_id', e.target.value)}
-                                            className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 font-bold shadow-2xs"
+                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 font-bold shadow-2xs"
                                             required
                                         >
                                             <option value="">-- Seleccionar Club --</option>
@@ -1524,7 +1901,7 @@ export default function Index({
                                                     const val = e.target.value as any;
                                                     setOtherIncomeCategory(val);
                                                     const foundObj = (other_income_categories.length > 0 ? other_income_categories : defaultOtherIncomeCategories).find((c: any) => c.id === val);
-                                                    const defaultConcept = foundObj ? foundObj.label : 'Ingreso Diversos AFC';
+                                                    const defaultConcept = foundObj ? foundObj.label : 'Ingreso Diversos';
                                                     setData(prev => ({
                                                         ...prev,
                                                         concept: defaultConcept,
@@ -1616,7 +1993,7 @@ export default function Index({
                                                     const val = e.target.value as any;
                                                     setExpenseType(val);
                                                     const foundObj = (expense_categories.length > 0 ? expense_categories : defaultExpenseCategories).find((c: any) => c.id === val);
-                                                    const defaultConcept = foundObj ? foundObj.label : 'Egreso General AFC';
+                                                    const defaultConcept = foundObj ? foundObj.label : 'Egreso General (Asociación)';
                                                     setData(prev => ({
                                                         ...prev,
                                                         concept: defaultConcept,
@@ -2077,8 +2454,11 @@ export default function Index({
                                     </label>
                                     <input
                                         type="file"
-                                        accept="image/*,.pdf"
-                                        onChange={(e) => setData('receipt_image', e.target.files ? e.target.files[0] : null)}
+                                        accept="image/*,.pdf,.heic,.heif"
+                                        onChange={(e) => {
+                                            const file = e.target.files ? e.target.files[0] : null;
+                                            handleFileSelect(file, (pf) => setData('receipt_image', pf));
+                                        }}
                                         className="w-full text-xs text-slate-700 file:mr-3 file:rounded-xl file:border-0 file:bg-rose-600 file:px-4 file:py-2 file:text-xs file:font-bold file:text-white hover:file:bg-rose-500 cursor-pointer"
                                     />
                                     {errors.receipt_image && (

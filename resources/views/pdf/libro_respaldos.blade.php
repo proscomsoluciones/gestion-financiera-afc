@@ -162,13 +162,13 @@
                     <img src="{{ $institutional['logo_url'] }}" style="max-width: 55px; max-height: 55px;">
                 @else
                     <div style="width: 48px; height: 48px; background: #1e3a8a; color: #ffffff; font-weight: 900; font-size: 16px; text-align: center; line-height: 48px; border-radius: 8px;">
-                        AFC
+                        ⚽
                     </div>
                 @endif
             </td>
             <td style="vertical-align: middle; padding-left: 8px;">
                 <h1 style="font-size: 15px; font-weight: 900; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">
-                    {{ $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL AFC' }}
+                    {{ $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL CATEMU' }}
                 </h1>
                 <p style="font-size: 9px; color: #475569; margin: 2px 0 0 0; font-weight: bold;">
                     RUT: {{ $institutional['association_rut'] ?? '65.123.456-K' }} • {{ $institutional['association_address'] ?? 'Región de Valparaíso, Chile' }}
@@ -224,7 +224,7 @@
                 <tr>
                     <td>{{ \Carbon\Carbon::parse($exp->date)->format('d/m/Y') }}</td>
                     <td>{{ $exp->concept }}</td>
-                    <td>{{ $exp->breakdown['expense_type'] ?? ucfirst($exp->category) }}</td>
+                    <td>{{ $exp->category_label }}</td>
                     <td class="text-right">${{ number_format($exp->amount, 0, ',', '.') }}</td>
                 </tr>
             @empty
@@ -286,7 +286,7 @@
                     @else
                         <div class="no-image-box">
                             <p style="margin: 0; font-weight: bold;">Comprobante de Folio {{ $exp->folio_number }}</p>
-                            <p style="margin: 5px 0 0 0; font-size: 10px;">Documento respaldado electrónicamente en Tesorería AFC. Sin copia física adjunta.</p>
+                            <p style="margin: 5px 0 0 0; font-size: 10px;">Documento respaldado electrónicamente en Tesorería General. Sin copia física adjunta.</p>
                         </div>
                     @endif
                 </div>

@@ -279,7 +279,7 @@
                                 @if(!empty($institutional['logo_path']) && file_exists(storage_path('app/public/' . $institutional['logo_path'])))
                                     <img src="{{ storage_path('app/public/' . $institutional['logo_path']) }}" class="logo-img" alt="Logo">
                                 @else
-                                    <div class="logo-box">AFC</div>
+                                    <div class="logo-box">⚽</div>
                                 @endif
                             </td>
                             <td class="title-area">
@@ -313,7 +313,7 @@
                             </tr>
                         </table>
                         <div class="folio-label">N° FOLIO</div>
-                        <div class="folio-number">{{ $transaction->folio_number }}</div>
+                        <div class="folio-number">{{ $transaction->folio_number ?? 'S/N' }}</div>
                     </div>
                 </td>
             </tr>
@@ -400,7 +400,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding-left: 15px; font-size: 9px;">• Aporte Fondo Selección AFC</td>
+                        <td style="padding-left: 15px; font-size: 9px;">• Aporte Fondo Selección</td>
                         <td style="text-align: right; font-size: 9px;">
                             ${{ number_format($transaction->breakdown['aporte_seleccion'] ?? 10000, 0, ',', '.') }}
                         </td>

@@ -24,7 +24,7 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <Head title="Crear Cuenta - Gestión Financiera AFC" />
+            <Head title="Crear Cuenta - Gestión Financiera" />
 
             <div className="mb-6">
                 <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">

@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'jcornejo@proscom.cl'],
             [
-                'name' => 'Super Admin AFC',
+                'name' => 'Super Admin',
                 'password' => Hash::make('Jupipe2083@'),
                 'email_verified_at' => now(),
             ]
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'tesoreria@afc.cl'],
             [
-                'name' => 'Tesorero General AFC',
+                'name' => 'Tesorero General',
                 'password' => Hash::make('Tesoreria2026!'),
                 'email_verified_at' => now(),
             ]

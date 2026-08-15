@@ -74,7 +74,7 @@ export default function Create() {
                 </div>
             }
         >
-            <Head title="Registrar Club - Gestión Financiera AFC" />
+            <Head title="Registrar Club - Gestión Financiera" />
 
             <div className="py-8">
                 <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">

@@ -94,7 +94,7 @@ class Setting extends Model
                 'description' => 'Monto base del tributo mensual que cancela cada club',
             ],
             'rate_aporte_seleccion' => [
-                'label' => 'Aporte Selección AFC',
+                'label' => 'Aporte Selección',
                 'value' => 10000,
                 'description' => 'Monto destinado al fondo de la selección representativa',
             ],
@@ -104,9 +104,9 @@ class Setting extends Model
                 'description' => 'Valor por presentación de recurso de apelación de tribunal',
             ],
             'rate_inscripcion_total' => [
-                'label' => 'Cobro Inscripción Jugador AFC (Adulto/Infantil/Femenina)',
+                'label' => 'Cobro Inscripción Jugador (Adulto/Infantil/Femenina)',
                 'value' => 3000,
-                'description' => 'Valor cobrado al club por inscripción de jugador (100% Arcas AFC)',
+                'description' => 'Valor cobrado al club por inscripción de jugador (100% Arcas de la Asociación)',
             ],
             'rate_inscripcion_arfa' => [
                 'label' => 'Costo ARFA V Región Inscripción (Gratis)',
@@ -114,7 +114,7 @@ class Setting extends Model
                 'description' => 'Arancel pagado a ARFA V Región por inscripción ($0 CLP)',
             ],
             'rate_pase_estandar_total' => [
-                'label' => 'Cobro Pase Estándar AFC (Interno/Regional/Externo)',
+                'label' => 'Cobro Pase Estándar (Interno/Regional/Externo)',
                 'value' => 22000,
                 'description' => 'Valor total cobrado al club por pase de jugador adulto',
             ],
@@ -124,7 +124,7 @@ class Setting extends Model
                 'description' => 'Arancel pagado a ARFA V Región por pase adulto',
             ],
             'rate_pase_femenino_total' => [
-                'label' => 'Cobro Pase Femenino AFC',
+                'label' => 'Cobro Pase Femenino',
                 'value' => 17000,
                 'description' => 'Valor total cobrado al club por pase femenino',
             ],
@@ -190,7 +190,7 @@ class Setting extends Model
             ['id' => 'viatico', 'label' => 'Viático / Asignación de Traslado / Árbitros'],
             ['id' => 'compra', 'label' => 'Compra de Insumos / Balones / Materiales'],
             ['id' => 'servicio', 'label' => 'Pago de Servicios / Honorarios / Gastos'],
-            ['id' => 'otro', 'label' => 'Otro Egreso AFC'],
+            ['id' => 'otro', 'label' => 'Otro Egreso'],
         ];
     }
 }

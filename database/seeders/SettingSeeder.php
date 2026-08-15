@@ -22,7 +22,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'rate_aporte_seleccion',
-                'label' => 'Aporte Fondo Selección AFC',
+                'label' => 'Aporte Fondo Selección',
                 'value' => '10000',
                 'group' => 'tariffs',
                 'type' => 'number',
@@ -36,7 +36,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'rate_inscripcion_total',
-                'label' => 'Cobro Inscripción Jugador AFC',
+                'label' => 'Cobro Inscripción Jugador',
                 'value' => '5000',
                 'group' => 'tariffs',
                 'type' => 'number',
@@ -50,7 +50,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'rate_pase_estandar_total',
-                'label' => 'Cobro Pase Estándar AFC',
+                'label' => 'Cobro Pase Estándar',
                 'value' => '22000',
                 'group' => 'tariffs',
                 'type' => 'number',
@@ -64,7 +64,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'rate_pase_femenino_total',
-                'label' => 'Cobro Pase Femenino AFC',
+                'label' => 'Cobro Pase Femenino',
                 'value' => '17000',
                 'group' => 'tariffs',
                 'type' => 'number',
