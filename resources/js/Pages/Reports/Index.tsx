@@ -42,7 +42,7 @@ interface ClubItem {
 interface TributeMonthStatus {
     month_num: string;
     month_name: string;
-    status: 'paid' | 'overdue' | 'pending';
+    status: 'paid' | 'overdue' | 'pending' | 'exempt';
     status_label: string;
     payment_date: string | null;
     folio_number: string | null;
@@ -1130,19 +1130,23 @@ export default function Index({
                                                 className={`p-3 rounded-2xl border text-xs space-y-1 ${
                                                     t.status === 'paid'
                                                         ? 'bg-emerald-50/60 border-emerald-200'
+                                                        : t.status === 'exempt'
+                                                        ? 'bg-slate-50/80 border-slate-200 opacity-75'
                                                         : t.status === 'overdue'
                                                         ? 'bg-rose-50/60 border-rose-200'
-                                                        : 'bg-slate-50 border-slate-200'
+                                                        : 'bg-blue-50/60 border-blue-200'
                                                 }`}
                                             >
                                                 <div className="flex items-center justify-between font-extrabold">
                                                     <span className="text-slate-900 uppercase">📅 {t.month_name}</span>
                                                     {t.status === 'paid' ? (
                                                         <span className="text-emerald-700 font-bold">✔ Pagado</span>
+                                                    ) : t.status === 'exempt' ? (
+                                                        <span className="text-slate-500 font-bold">⚪ Previo a Gestión</span>
                                                     ) : t.status === 'overdue' ? (
                                                         <span className="text-rose-600 font-bold">✖ Vencido / Moroso</span>
                                                     ) : (
-                                                        <span className="text-slate-500 font-bold">⏳ Por Vencer (En Plazo)</span>
+                                                        <span className="text-blue-600 font-bold">⏳ Por Vencer (En Plazo)</span>
                                                     )}
                                                 </div>
                                                 {t.status === 'paid' && (

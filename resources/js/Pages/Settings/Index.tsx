@@ -16,6 +16,7 @@ interface InstitutionalData {
     treasurer_name: string;
     president_name?: string;
     secretary_name?: string;
+    start_tribute_month?: number;
     logo_path?: string;
     logo_url?: string;
 }
@@ -49,6 +50,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
         treasurer_name: institutional?.treasurer_name ?? 'JAIME VALENZUELA',
         president_name: institutional?.president_name ?? 'JUAN CORNEJO G.',
         secretary_name: institutional?.secretary_name ?? 'FRANCO CORTEZ O',
+        start_tribute_month: institutional?.start_tribute_month ?? 8,
         association_logo: null as File | null,
 
         // Tariffs
@@ -306,6 +308,34 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                         />
                                         <p className="mt-1 text-[11px] font-semibold text-slate-500">
                                             Firma de Secretaría General en Reportes y Certificados
+                                        </p>
+                                    </div>
+
+                                    <div className="sm:col-span-2 rounded-2xl bg-amber-50/70 p-4 border border-amber-200 space-y-2">
+                                        <label className="block text-xs font-extrabold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                                            <span>🗓️</span>
+                                            <span>Mes de Inicio de Cobro de Tributos (Inicio de Gestión 2026) *</span>
+                                        </label>
+                                        <select
+                                            value={data.start_tribute_month}
+                                            onChange={(e) => setData('start_tribute_month', Number(e.target.value))}
+                                            className="w-full rounded-xl border-amber-300 bg-white px-4 py-2.5 text-sm font-black text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 shadow-2xs"
+                                        >
+                                            <option value={1}>Enero (Mes 1)</option>
+                                            <option value={2}>Febrero (Mes 2)</option>
+                                            <option value={3}>Marzo (Mes 3)</option>
+                                            <option value={4}>Abril (Mes 4)</option>
+                                            <option value={5}>Mayo (Mes 5)</option>
+                                            <option value={6}>Junio (Mes 6)</option>
+                                            <option value={7}>Julio (Mes 7)</option>
+                                            <option value={8}>Agosto (Mes 8) - Inicio de Asunción Directiva 2026 (Recomendado)</option>
+                                            <option value={9}>Septiembre (Mes 9)</option>
+                                            <option value={10}>Octubre (Mes 10)</option>
+                                            <option value={11}>Noviembre (Mes 11)</option>
+                                            <option value={12}>Diciembre (Mes 12)</option>
+                                        </select>
+                                        <p className="text-[11px] font-bold text-amber-800">
+                                            💡 Los meses anteriores al mes seleccionado quedan registrados como "Previo a Gestión (No Aplica)" y no generan morosidad ni deuda pendiente para los clubes.
                                         </p>
                                     </div>
                                 </div>

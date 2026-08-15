@@ -145,12 +145,14 @@
                     <td><strong>{{ $tribute['month_name'] }} {{ $year }}</strong></td>
                     <td>Tributo Mensual Club</td>
                     <td>{{ $tribute['folio_number'] ?? '-' }}</td>
-                    <td>{{ $tribute['paid_date'] ? \Carbon\Carbon::parse($tribute['paid_date'])->format('d/m/Y') : '-' }}</td>
-                    <td class="text-right {{ $tribute['status'] === 'paid' ? 'paid-text' : 'pending-text' }}">
+                    <td>{{ isset($tribute['payment_date']) && $tribute['payment_date'] ? \Carbon\Carbon::parse($tribute['payment_date'])->format('d/m/Y') : '-' }}</td>
+                    <td class="text-right {{ $tribute['status'] === 'paid' ? 'paid-text' : ($tribute['status'] === 'exempt' ? 'text-slate-500' : 'pending-text') }}">
                         @if($tribute['status'] === 'paid')
                             ${{ number_format($tribute['amount'], 0, ',', '.') }}
+                        @elseif($tribute['status'] === 'exempt')
+                            <span style="color: #64748b; font-weight: bold;">Previo a Gestión (No Aplica)</span>
                         @else
-                            ${{ number_format($tribute['amount'], 0, ',', '.') }} (Pendiente)
+                            ${{ number_format($tribute['amount'], 0, ',', '.') }} ({{ $tribute['status_label'] ?? 'Pendiente' }})
                         @endif
                     </td>
                 </tr>

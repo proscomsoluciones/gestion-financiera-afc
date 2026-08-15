@@ -38,6 +38,7 @@ class SettingController extends Controller
             'treasurer_name' => 'nullable|string|max:255',
             'president_name' => 'nullable|string|max:255',
             'secretary_name' => 'nullable|string|max:255',
+            'start_tribute_month' => 'nullable|integer|min:1|max:12',
             'association_logo' => 'nullable|image|max:5120',
 
             'rate_tributo_club' => 'required|numeric|min:0',
@@ -52,7 +53,7 @@ class SettingController extends Controller
         ]);
 
         // Save Institutional Text Fields
-        $institutionalKeys = ['association_name', 'association_rut', 'association_address', 'treasurer_name', 'president_name', 'secretary_name'];
+        $institutionalKeys = ['association_name', 'association_rut', 'association_address', 'treasurer_name', 'president_name', 'secretary_name', 'start_tribute_month'];
         foreach ($institutionalKeys as $key) {
             if ($request->has($key)) {
                 Setting::updateOrCreate(

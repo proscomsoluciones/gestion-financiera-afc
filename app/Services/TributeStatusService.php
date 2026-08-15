@@ -68,6 +68,9 @@ class TributeStatusService
     public static function getTributeStatusForPeriod(string $periodMonth): array
     {
         [$year, $monthNum] = self::parsePeriodString($periodMonth);
+        $startMonth = \App\Models\Setting::getStartTributeMonth();
+        $isBeforeManagement = ($monthNum < $startMonth);
+
         $dueDate = self::getLastBusinessDayOfMonth($year, $monthNum);
         $today = Carbon::now()->startOfDay();
 
@@ -99,6 +102,21 @@ class TributeStatusService
                     'payment_date' => Carbon::parse($payment->date)->format('d-m-Y'),
                     'folio_number' => $payment->folio_number,
                     'amount' => (float) $payment->amount,
+                    'due_date' => $dueDate->format('d-m-Y'),
+                    'due_date_formatted' => $dueDate->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY'),
+                ];
+            } elseif ($isBeforeManagement) {
+                $statusList[] = [
+                    'club_id' => $club->id,
+                    'club_name' => $club->name,
+                    'short_name' => $club->short_name,
+                    'status' => 'exempt',
+                    'status_label' => 'Previo a Gestión (No Aplica)',
+                    'status_color' => 'slate',
+                    'badge' => '⚪ Previo a Gestión',
+                    'payment_date' => null,
+                    'folio_number' => null,
+                    'amount' => 0,
                     'due_date' => $dueDate->format('d-m-Y'),
                     'due_date_formatted' => $dueDate->locale('es')->isoFormat('dddd D [de] MMMM [de] YYYY'),
                 ];

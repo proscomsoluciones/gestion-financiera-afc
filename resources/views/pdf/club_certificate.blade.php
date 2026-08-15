@@ -116,10 +116,12 @@
                     <td class="text-right">
                         @if($tribute['status'] === 'paid')
                             <span style="color: #059669; font-weight: bold;">PAGADO ({{ $tribute['folio_number'] }})</span>
+                        @elseif($tribute['status'] === 'exempt')
+                            <span style="color: #64748b; font-weight: bold;">PREVIO A GESTIÓN (NO APLICA)</span>
                         @elseif($tribute['status'] === 'overdue')
                             <span style="color: #dc2626; font-weight: bold;">MOROSO / VENCIDO</span>
                         @else
-                            <span style="color: #6b7280;">PENDIENTE (EN PLAZO)</span>
+                            <span style="color: #2563eb; font-weight: bold;">POR VENCER (EN PLAZO)</span>
                         @endif
                     </td>
                 </tr>

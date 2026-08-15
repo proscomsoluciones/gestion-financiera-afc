@@ -71,15 +71,24 @@ class Setting extends Model
 
         return [
             'association_name' => self::get('association_name', 'ASOCIACIÓN DE FÚTBOL CATEMU'),
-            'association_rut' => self::get('association_rut', '65.123.456-K'),
-            'association_address' => self::get('association_address', 'Región de Valparaíso, Chile'),
-            'treasurer_name' => self::get('treasurer_name', 'Juan Ramón Cornejo'),
-            'president_name' => self::get('president_name', 'Presidente General'),
-            'secretary_name' => self::get('secretary_name', 'Secretario General'),
+            'association_rut' => self::get('association_rut', '75.141.900-7'),
+            'association_address' => self::get('association_address', 'ARTURO PEREZ CANTO 050'),
+            'treasurer_name' => self::get('treasurer_name', 'JAIME VALENZUELA'),
+            'president_name' => self::get('president_name', 'JUAN CORNEJO G.'),
+            'secretary_name' => self::get('secretary_name', 'FRANCO CORTEZ O'),
+            'start_tribute_month' => (int) self::get('start_tribute_month', 8),
             'logo_path' => $logoPath,
             'logo_url' => $logoUrl,
             'logo_base64' => $logoBase64,
         ];
+    }
+
+    /**
+     * Get start tribute month for current management (e.g. 8 for August).
+     */
+    public static function getStartTributeMonth(): int
+    {
+        return (int) self::get('start_tribute_month', 8);
     }
 
     /**

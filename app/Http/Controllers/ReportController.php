@@ -491,6 +491,9 @@ class ReportController extends Controller
 
         $totalPaid = (float) $transactions->where('type', 'income')->sum('amount');
 
+        $startTributeMonth = Setting::getStartTributeMonth();
+        $currentMonth = \Carbon\Carbon::now()->month;
+
         // Tribute compliance status per month
         $tributeHistory = [];
         $pendingTributesCount = 0;
@@ -514,22 +517,34 @@ class ReportController extends Controller
                     'amount' => (float) $tx->amount,
                 ];
             } else {
-                $isPastOrActive = ((int)$mNum <= 8); // Active through August in 2026
-                $status = $isPastOrActive ? 'overdue' : 'pending';
-                if ($isPastOrActive) {
-                    $pendingTributesCount++;
-                    $totalPendingAmount += $rateTributo;
-                }
+                if ((int)$mNum < $startTributeMonth) {
+                    $tributeHistory[] = [
+                        'month_num' => $mNum,
+                        'month_name' => $mName,
+                        'status' => 'exempt',
+                        'status_label' => 'Previo a Gestión (No Aplica)',
+                        'payment_date' => null,
+                        'folio_number' => null,
+                        'amount' => 0,
+                    ];
+                } else {
+                    $isOverdue = ((int)$mNum < $currentMonth);
+                    $status = $isOverdue ? 'overdue' : 'pending';
+                    if ($isOverdue) {
+                        $pendingTributesCount++;
+                        $totalPendingAmount += $rateTributo;
+                    }
 
-                $tributeHistory[] = [
-                    'month_num' => $mNum,
-                    'month_name' => $mName,
-                    'status' => $status,
-                    'status_label' => $status === 'overdue' ? 'Vencido / Moroso' : 'Por Vencer (En Plazo)',
-                    'payment_date' => null,
-                    'folio_number' => null,
-                    'amount' => 0,
-                ];
+                    $tributeHistory[] = [
+                        'month_num' => $mNum,
+                        'month_name' => $mName,
+                        'status' => $status,
+                        'status_label' => $status === 'overdue' ? 'Vencido / Moroso' : 'Por Vencer (En Plazo)',
+                        'payment_date' => null,
+                        'folio_number' => null,
+                        'amount' => 0,
+                    ];
+                }
             }
         }
 
