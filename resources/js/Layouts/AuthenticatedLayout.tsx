@@ -1,7 +1,10 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import DownloadIndicator from '@/Components/DownloadIndicator';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { SkeletonPage } from '@/Components/Skeleton';
+import useNavigationLoading from '@/hooks/useNavigationLoading';
 import usePermissions from '@/hooks/usePermissions';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
@@ -12,6 +15,7 @@ export default function Authenticated({
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
     const { can } = usePermissions();
+    const isNavigating = useNavigationLoading();
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -267,17 +271,29 @@ export default function Authenticated({
                 </div>
             </nav>
 
-            {/* Page Header */}
-            {header && (
-                <header className="border-b border-slate-200/60 bg-white shadow-2xs">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
+            <div className="relative">
+                <div className={isNavigating ? 'invisible' : ''}>
+                    {/* Page Header */}
+                    {header && (
+                        <header className="border-b border-slate-200/60 bg-white shadow-2xs">
+                            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                                {header}
+                            </div>
+                        </header>
+                    )}
 
-            {/* Main Content */}
-            <main>{children}</main>
+                    {/* Main Content */}
+                    <main>{children}</main>
+                </div>
+
+                {isNavigating && (
+                    <div className="absolute inset-0 bg-slate-50" aria-hidden="true">
+                        <SkeletonPage />
+                    </div>
+                )}
+            </div>
+
+            <DownloadIndicator />
         </div>
     );
 }

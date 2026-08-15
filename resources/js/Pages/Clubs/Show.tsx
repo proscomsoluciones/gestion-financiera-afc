@@ -1,6 +1,8 @@
+import Spinner from '@/Components/Spinner';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 interface Club {
     id: number;
@@ -20,9 +22,13 @@ interface Club {
 
 export default function Show({ club }: { club: Club }) {
     const { can } = usePermissions();
+    const [isDeleting, setIsDeleting] = useState(false);
     const handleDelete = () => {
         if (confirm(`¿Estás seguro de eliminar el club "${club.name}"? Esta acción no se puede deshacer.`)) {
-            router.delete(route('clubs.destroy', club.id));
+            setIsDeleting(true);
+            router.delete(route('clubs.destroy', club.id), {
+                onFinish: () => setIsDeleting(false),
+            });
         }
     };
 
@@ -67,9 +73,11 @@ export default function Show({ club }: { club: Club }) {
                             </Link>
                             <button
                                 onClick={handleDelete}
-                                className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50"
+                                disabled={isDeleting}
+                                className="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 hover:bg-rose-50 disabled:opacity-50"
                             >
-                                Eliminar
+                                {isDeleting && <Spinner className="h-4 w-4" />}
+                                {isDeleting ? 'Eliminando...' : 'Eliminar'}
                             </button>
                         </div>
                     )}

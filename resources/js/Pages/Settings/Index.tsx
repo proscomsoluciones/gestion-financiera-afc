@@ -1,3 +1,4 @@
+import Spinner from '@/Components/Spinner';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
@@ -801,7 +802,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                 disabled={processing}
                                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 cursor-pointer"
                             >
-                                <span>💾</span>
+                                {processing ? <Spinner /> : <span>💾</span>}
                                 <span>{processing ? 'Guardando Cambios...' : 'Guardar Configuración General'}</span>
                             </button>
                         </div>

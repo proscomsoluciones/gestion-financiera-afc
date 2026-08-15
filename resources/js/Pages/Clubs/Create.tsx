@@ -1,3 +1,4 @@
+import Spinner from '@/Components/Spinner';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
@@ -341,8 +342,9 @@ export default function Create() {
                                         <button
                                             type="submit"
                                             disabled={processing}
-                                            className="rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 disabled:opacity-50"
+                                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 disabled:opacity-50"
                                         >
+                                            {processing && <Spinner />}
                                             {processing ? 'Guardando...' : 'Guardar Club'}
                                         </button>
                                     )}

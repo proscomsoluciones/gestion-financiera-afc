@@ -1,6 +1,7 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import Modal from '@/Components/Modal';
+import Spinner from '@/Components/Spinner';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
@@ -39,6 +40,7 @@ export default function Index({ users, roles, flash }: IndexProps) {
     const currentUserId = usePage().props.auth.user.id;
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<UserRow | null>(null);
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm({
         name: '',
@@ -97,7 +99,10 @@ export default function Index({ users, roles, flash }: IndexProps) {
 
     const handleDelete = (user: UserRow) => {
         if (confirm(`¿Eliminar al usuario "${user.name}"? Esta acción no se puede deshacer.`)) {
-            router.delete(route('users.destroy', user.id));
+            setDeletingId(user.id);
+            router.delete(route('users.destroy', user.id), {
+                onFinish: () => setDeletingId(null),
+            });
         }
     };
 
@@ -194,12 +199,17 @@ export default function Index({ users, roles, flash }: IndexProps) {
                                                     {user.id !== currentUserId && (
                                                         <button
                                                             onClick={() => handleDelete(user)}
-                                                            className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
+                                                            disabled={deletingId === user.id}
+                                                            className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition disabled:opacity-50"
                                                             title="Eliminar Usuario"
                                                         >
-                                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
+                                                            {deletingId === user.id ? (
+                                                                <Spinner className="h-4 w-4" />
+                                                            ) : (
+                                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            )}
                                                         </button>
                                                     )}
                                                 </div>
@@ -311,9 +321,10 @@ export default function Index({ users, roles, flash }: IndexProps) {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] transition-all disabled:opacity-50"
+                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] transition-all disabled:opacity-50"
                         >
-                            {editing ? 'Guardar Cambios' : 'Crear Usuario'}
+                            {processing && <Spinner />}
+                            {processing ? 'Guardando...' : editing ? 'Guardar Cambios' : 'Crear Usuario'}
                         </button>
                     </div>
                 </form>

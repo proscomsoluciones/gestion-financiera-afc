@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrintableVoucherModal, { TransactionVoucher } from '@/Components/PrintableVoucherModal';
+import Spinner from '@/Components/Spinner';
 import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -286,6 +287,7 @@ export default function Index({
     // Confirmation Alert Modal State for Deletion
     const [deletingTx, setDeletingTx] = useState<TransactionVoucher | null>(null);
     const [voidReason, setVoidReason] = useState('');
+    const [isVoiding, setIsVoiding] = useState(false);
 
     // State and Form Hook for Editing Transactions
     const [editingTx, setEditingTx] = useState<TransactionVoucher | null>(null);
@@ -1636,29 +1638,35 @@ export default function Index({
                         <div className="flex items-center justify-end gap-3 pt-2">
                             <button
                                 type="button"
+                                disabled={isVoiding}
                                 onClick={() => {
                                     setDeletingTx(null);
                                     setVoidReason('');
                                 }}
-                                className="rounded-xl px-4 py-2.5 text-xs font-extrabold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer"
+                                className="rounded-xl px-4 py-2.5 text-xs font-extrabold text-slate-600 bg-slate-100 hover:bg-slate-200 transition cursor-pointer disabled:opacity-50"
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="button"
+                                disabled={isVoiding}
                                 onClick={() => {
                                     const targetId = deletingTx.id;
                                     const reason = voidReason;
-                                    setDeletingTx(null);
-                                    setVoidReason('');
+                                    setIsVoiding(true);
                                     router.delete(route('transactions.destroy', targetId), {
                                         data: { reason },
+                                        onFinish: () => {
+                                            setIsVoiding(false);
+                                            setDeletingTx(null);
+                                            setVoidReason('');
+                                        },
                                     });
                                 }}
-                                className="rounded-xl px-5 py-2.5 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-600/20 transition cursor-pointer flex items-center gap-1.5"
+                                className="rounded-xl px-5 py-2.5 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-600/20 transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                             >
-                                <span>🚨</span>
-                                <span>Sí, Anular y Eliminar</span>
+                                {isVoiding ? <Spinner /> : <span>🚨</span>}
+                                <span>{isVoiding ? 'Anulando...' : 'Sí, Anular y Eliminar'}</span>
                             </button>
                         </div>
                     </div>
@@ -1875,7 +1883,10 @@ export default function Index({
                                     className="rounded-xl px-5 py-2.5 text-xs font-extrabold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition cursor-pointer flex items-center gap-2"
                                 >
                                     {editForm.processing ? (
-                                        <span>Guardando...</span>
+                                        <>
+                                            <Spinner />
+                                            <span>Guardando...</span>
+                                        </>
                                     ) : (
                                         <>
                                             <span>💾</span>
@@ -2643,8 +2654,9 @@ export default function Index({
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 disabled:opacity-50"
+                                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-500 disabled:opacity-50"
                                 >
+                                    {processing && <Spinner />}
                                     {processing ? 'Emitiendo...' : 'Emitir Comprobante Foliado'}
                                 </button>
                             </div>

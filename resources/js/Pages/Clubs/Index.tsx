@@ -1,3 +1,4 @@
+import Spinner from '@/Components/Spinner';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router } from '@inertiajs/react';
@@ -38,6 +39,7 @@ export default function Index({ clubs, filters }: IndexProps) {
     const { can } = usePermissions();
     const [search, setSearch] = useState(filters.search || '');
     const [status, setStatus] = useState(filters.status || '');
+    const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -52,7 +54,10 @@ export default function Index({ clubs, filters }: IndexProps) {
 
     const handleDelete = (club: Club) => {
         if (confirm(`¿Estás seguro de eliminar el club "${club.name}"? Esta acción no se puede deshacer.`)) {
-            router.delete(route('clubs.destroy', club.id));
+            setDeletingId(club.id);
+            router.delete(route('clubs.destroy', club.id), {
+                onFinish: () => setDeletingId(null),
+            });
         }
     };
 
@@ -228,12 +233,17 @@ export default function Index({ clubs, filters }: IndexProps) {
                                                                     </Link>
                                                                     <button
                                                                         onClick={() => handleDelete(club)}
-                                                                        className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
+                                                                        disabled={deletingId === club.id}
+                                                                        className="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition disabled:opacity-50"
                                                                         title="Eliminar Club"
                                                                     >
-                                                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                        </svg>
+                                                                        {deletingId === club.id ? (
+                                                                            <Spinner className="h-4 w-4" />
+                                                                        ) : (
+                                                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                            </svg>
+                                                                        )}
                                                                     </button>
                                                                 </>
                                                             )}
@@ -314,12 +324,17 @@ export default function Index({ clubs, filters }: IndexProps) {
                                                         </Link>
                                                         <button
                                                             onClick={() => handleDelete(club)}
-                                                            className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
+                                                            disabled={deletingId === club.id}
+                                                            className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100 transition disabled:opacity-50"
                                                         >
-                                                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                            </svg>
-                                                            Eliminar
+                                                            {deletingId === club.id ? (
+                                                                <Spinner className="h-4 w-4" />
+                                                            ) : (
+                                                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            )}
+                                                            {deletingId === club.id ? 'Eliminando...' : 'Eliminar'}
                                                         </button>
                                                     </>
                                                 )}
