@@ -249,7 +249,7 @@ class ReportController extends Controller
         $statement = self::buildClubStatement($club, $year, $monthFilter, $startDate, $endDate);
         $institutional = Setting::getInstitutionalData();
 
-        $pdf = Pdf::loadView('pdf.club_statement', compact('statement', 'institutional'));
+        $pdf = Pdf::loadView('pdf.club_statement', compact('statement', 'institutional', 'year'));
         $pdf->setPaper('a4', 'portrait');
 
         $safeName = str_replace([' ', '/', ':'], '_', $club->name);
@@ -602,13 +602,20 @@ class ReportController extends Controller
         $inscriptionsList = $transactions->whereIn('category', ['inscripcion', 'inscripcion_campeonato'])->values();
         $penaltiesList = $transactions->whereIn('category', ['multa', 'apelacion'])->values();
 
+        $paidTributesCount = count(array_filter($tributeHistory, fn($t) => $t['status'] === 'paid'));
+        $totalPaidTributesAmount = (float) ($totalsByCategory['tributo'] ?? 0);
+        $totalClubIncomesAmount = $totalPaid;
+
         return [
             'club' => $club,
             'year' => $year,
             'period_title' => $periodTitle,
             'total_paid' => $totalPaid,
+            'paid_tributes_count' => $paidTributesCount,
+            'total_paid_tributes_amount' => $totalPaidTributesAmount,
             'pending_tributes_count' => $pendingTributesCount,
             'total_pending_amount' => $totalPendingAmount,
+            'total_club_incomes_amount' => $totalClubIncomesAmount,
             'is_up_to_date' => ($pendingTributesCount === 0),
             'totals_by_category' => $totalsByCategory,
             'passes_list' => $passesList,

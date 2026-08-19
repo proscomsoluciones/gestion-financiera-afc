@@ -90,44 +90,28 @@
     <!-- Desglose por Categoría de Pagos -->
     <table class="category-summary">
         <tr>
-            <td>
+            <td style="width: 25%;">
                 <span class="cat-title">Tributos Mensuales</span>
-                <span class="cat-amount">${{ number_format($statement['totals_by_category']['tributo'], 0, ',', '.') }}</span>
+                <span class="cat-amount">${{ number_format($statement['totals_by_category']['tributo'] ?? 0, 0, ',', '.') }}</span>
             </td>
-            <td>
+            <td style="width: 25%;">
                 <span class="cat-title">Pases y Transferencias</span>
-                <span class="cat-amount">${{ number_format($statement['totals_by_category']['pase'], 0, ',', '.') }}</span>
+                <span class="cat-amount">${{ number_format($statement['totals_by_category']['pase'] ?? 0, 0, ',', '.') }}</span>
             </td>
-            <td>
+            <td style="width: 25%;">
                 <span class="cat-title">Inscripciones</span>
-                <span class="cat-amount">${{ number_format($statement['totals_by_category']['inscripcion'], 0, ',', '.') }}</span>
+                <span class="cat-amount">${{ number_format($statement['totals_by_category']['inscripcion'] ?? 0, 0, ',', '.') }}</span>
             </td>
-            <td>
+            <td style="width: 25%;">
                 <span class="cat-title">Multas & Apelaciones</span>
-                <span class="cat-amount">${{ number_format($statement['totals_by_category']['multas_apelaciones'], 0, ',', '.') }}</span>
+                <span class="cat-amount">${{ number_format($statement['totals_by_category']['multas_apelaciones'] ?? 0, 0, ',', '.') }}</span>
             </td>
-            <td>
-    <div class="summary-cards font-mono">
-        <div class="summary-card card-paid">
-            <span class="card-title">TRIBUTOS PAGADOS</span>
-            <span class="card-amount paid-text">${{ number_format($statement['total_paid_tributes_amount'], 0, ',', '.') }} CLP</span>
-            <span class="card-detail">{{ $statement['paid_tributes_count'] }} de 12 meses cancelados</span>
-        </div>
-        <div class="summary-card card-pending">
-            <span class="card-title">TRIBUTOS PENDIENTES</span>
-            <span class="card-amount pending-text">${{ number_format($statement['total_pending_amount'], 0, ',', '.') }} CLP</span>
-            <span class="card-detail">{{ $statement['pending_tributes_count'] }} de 12 meses pendientes</span>
-        </div>
-        <div class="summary-card card-total">
-            <span class="card-title">TOTAL RECAUDADO CLUB</span>
-            <span class="card-amount total-text">${{ number_format($statement['total_club_incomes_amount'], 0, ',', '.') }} CLP</span>
-            <span class="card-detail">Incluye Pases y Derechos</span>
-        </div>
-    </div>
+        </tr>
+    </table>
 
     <!-- 1. HISTORIAL DE TRIBUTOS MENSUALES -->
     <div class="section-title">
-        1. HISTORIAL DE TRIBUTOS MENSUALES TEMPORADA {{ $year }}
+        1. HISTORIAL DE TRIBUTOS MENSUALES TEMPORADA {{ $year ?? $statement['year'] }}
     </div>
     <table class="data-table">
         <thead>
@@ -142,7 +126,7 @@
         <tbody>
             @foreach($statement['tribute_history'] as $tribute)
                 <tr>
-                    <td><strong>{{ $tribute['month_name'] }} {{ $year }}</strong></td>
+                    <td><strong>{{ $tribute['month_name'] }} {{ $year ?? $statement['year'] }}</strong></td>
                     <td>Tributo Mensual Club</td>
                     <td>{{ $tribute['folio_number'] ?? '-' }}</td>
                     <td>{{ isset($tribute['payment_date']) && $tribute['payment_date'] ? \Carbon\Carbon::parse($tribute['payment_date'])->format('d/m/Y') : '-' }}</td>

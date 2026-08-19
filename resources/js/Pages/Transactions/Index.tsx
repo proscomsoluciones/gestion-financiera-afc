@@ -1722,6 +1722,7 @@ export default function Index({
                                         placeholder="Ej: 000003 (o dejar en blanco)"
                                         className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold font-mono text-slate-900 shadow-2xs placeholder:font-sans placeholder:font-normal"
                                     />
+                                    <p className="mt-1 text-[10px] text-slate-500 leading-tight">Puedes repetir el folio si un talonario físico incluyó varios pagos (ej: Tributo y Pase).</p>
                                     {editForm.errors.folio_number && (
                                         <p className="mt-1 text-[11px] font-bold text-rose-600">{editForm.errors.folio_number}</p>
                                     )}
@@ -1956,6 +1957,7 @@ export default function Index({
                                         placeholder="Ej: 000003"
                                         className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm font-bold font-mono text-slate-900 shadow-2xs placeholder:font-sans placeholder:font-normal placeholder:text-slate-400"
                                     />
+                                    <p className="mt-1 text-[10px] text-slate-500 leading-tight">Puedes repetir el folio si un talonario físico incluyó varios pagos (ej: Tributo y Pase).</p>
                                     {errors.folio_number && (
                                         <p className="mt-1 text-[11px] font-bold text-rose-600">{errors.folio_number}</p>
                                     )}

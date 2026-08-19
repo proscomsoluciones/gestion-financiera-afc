@@ -70,21 +70,33 @@ class TransactionVoidingTest extends TestCase
         $this->assertEquals(1, Transaction::withTrashed()->count());
     }
 
-    public function test_folio_number_of_a_voided_transaction_cannot_be_reused(): void
+    public function test_multiple_transactions_can_share_the_same_folio_number(): void
     {
         $tesorero = $this->makeTesorero();
-        $transaction = $this->makeTransaction($tesorero, ['folio_number' => 'FOL-00099']);
-        $transaction->delete();
 
+        // Primera transacción con Folio 000006 (ej: Tributo)
         $this->actingAs($tesorero)->post('/transactions', [
-            'folio_number' => 'FOL-00099',
+            'folio_number' => '000006',
             'type' => 'income',
-            'category' => 'otro_ingreso',
-            'amount' => 5000,
-            'concept' => 'Nuevo comprobante',
+            'category' => 'tributo',
+            'amount' => 40000,
+            'concept' => 'Tributo mes agosto y cuota selección',
             'payment_method' => 'efectivo',
             'date' => now()->toDateString(),
-        ])->assertSessionHasErrors('folio_number');
+        ])->assertSessionHasNoErrors()->assertRedirect('/transactions');
+
+        // Segunda transacción con el MISMO Folio 000006 (ej: Pase)
+        $this->actingAs($tesorero)->post('/transactions', [
+            'folio_number' => '000006',
+            'type' => 'income',
+            'category' => 'pase',
+            'amount' => 22000,
+            'concept' => '1. Pase Regional Jugador: Ariel Salinas S.',
+            'payment_method' => 'efectivo',
+            'date' => now()->toDateString(),
+        ])->assertSessionHasNoErrors()->assertRedirect('/transactions');
+
+        $this->assertEquals(2, Transaction::where('folio_number', '000006')->count());
     }
 
     public function test_next_folio_generation_skips_voided_transaction_ids(): void
@@ -97,5 +109,19 @@ class TransactionVoidingTest extends TestCase
         $nextFolio = Transaction::generateNextFolio();
 
         $this->assertNotEquals($firstFolio, $nextFolio);
+    }
+
+    public function test_club_statement_pdf_generation_succeeds(): void
+    {
+        $tesorero = $this->makeTesorero();
+        $club = \App\Models\Club::create([
+            'name' => 'Club Deportivo Prueba',
+            'short_name' => 'Prueba',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($tesorero)
+            ->get("/reports/club-statement-pdf/{$club->id}")
+            ->assertOk();
     }
 }

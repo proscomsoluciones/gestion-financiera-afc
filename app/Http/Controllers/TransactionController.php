@@ -117,7 +117,7 @@ class TransactionController extends Controller
         $isExpense = $request->input('type') === 'expense';
 
         $rules = [
-            'folio_number' => 'nullable|string|max:50|unique:transactions,folio_number',
+            'folio_number' => 'nullable|string|max:50',
             'type' => 'required|in:income,expense',
             'category' => 'required|string|max:50',
             'club_id' => 'nullable|exists:clubs,id',
@@ -223,12 +223,7 @@ class TransactionController extends Controller
     public function update(Request $request, Transaction $transaction): RedirectResponse
     {
         $rules = [
-            'folio_number' => [
-                'nullable',
-                'string',
-                'max:50',
-                Rule::unique('transactions', 'folio_number')->ignore($transaction->id),
-            ],
+            'folio_number' => 'nullable|string|max:50',
             'type' => 'required|in:income,expense',
             'category' => 'required|string|max:50',
             'club_id' => 'nullable|exists:clubs,id',
