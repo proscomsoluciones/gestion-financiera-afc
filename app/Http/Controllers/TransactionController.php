@@ -56,15 +56,23 @@ class TransactionController extends Controller
             $query->where('type', $request->input('type'));
         }
 
+        if ($request->filled('start_date')) {
+            $query->whereDate('date', '>=', $request->input('start_date'));
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('date', '<=', $request->input('end_date'));
+        }
+
         $perPage = (int) $request->input('per_page', 50);
         if ($perPage <= 0) { $perPage = 50; }
         if ($perPage > 200) { $perPage = 200; }
 
         $transactions = $query->latest('id')->paginate($perPage)->withQueryString();
 
-        // Metrics calculations
-        $totalIncome = Transaction::where('type', 'income')->sum('amount');
-        $totalExpense = Transaction::where('type', 'expense')->sum('amount');
+        // Metrics calculations (filtered)
+        $totalIncome = (clone $query)->where('type', 'income')->sum('amount');
+        $totalExpense = (clone $query)->where('type', 'expense')->sum('amount');
         $balance = $totalIncome - $totalExpense;
 
         $clubs = Club::where('is_active', true)->orderBy('name')->get(['id', 'name', 'short_name', 'crest']);
@@ -88,7 +96,7 @@ class TransactionController extends Controller
             'voided' => $voided,
             'filters' => array_merge(
                 ['per_page' => $perPage],
-                $request->only(['search', 'club_id', 'category', 'type', 'tribute_period', 'per_page'])
+                $request->only(['search', 'club_id', 'category', 'type', 'tribute_period', 'per_page', 'start_date', 'end_date'])
             ),
             'clubs' => $clubs,
             'tariffs' => $tariffs,

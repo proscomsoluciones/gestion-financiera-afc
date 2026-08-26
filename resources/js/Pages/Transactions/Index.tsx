@@ -106,6 +106,8 @@ interface IndexProps {
         type?: string;
         tribute_period?: string;
         per_page?: number | string;
+        start_date?: string;
+        end_date?: string;
     };
     clubs: Club[];
     tariffs?: Record<string, TariffItem>;
@@ -238,6 +240,8 @@ export default function Index({
     const [categoryFilter, setCategoryFilter] = useState(filters.category || '');
     const [typeFilter, setTypeFilter] = useState(filters.type || '');
     const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 50);
+    const [startDateFilter, setStartDateFilter] = useState(filters.start_date || '');
+    const [endDateFilter, setEndDateFilter] = useState(filters.end_date || '');
 
     // Dynamic Tariffs with fallback (CLP integers)
     const rateTributo = Math.round(tariffs.rate_tributo_club?.value ?? 30000);
@@ -638,7 +642,7 @@ export default function Index({
         setTributePeriod(newPeriod);
         router.get(
             route('transactions.index'),
-            { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: newPeriod },
+            { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: newPeriod, start_date: startDateFilter, end_date: endDateFilter },
             { preserveState: true }
         );
     };
@@ -700,7 +704,7 @@ export default function Index({
         e.preventDefault();
         router.get(
             route('transactions.index'),
-            { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: tributePeriod, per_page: perPageFilter },
+            { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: tributePeriod, per_page: perPageFilter, start_date: startDateFilter, end_date: endDateFilter },
             { preserveState: true }
         );
     };
@@ -711,6 +715,8 @@ export default function Index({
         setCategoryFilter('');
         setTypeFilter('');
         setPerPageFilter(50);
+        setStartDateFilter('');
+        setEndDateFilter('');
         router.get(route('transactions.index'), { per_page: 50 });
     };
 
@@ -962,7 +968,7 @@ export default function Index({
 
                             {/* Filters & Search */}
                             <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs">
-                                <form onSubmit={handleSearch} className="flex flex-col gap-3 lg:flex-row lg:items-center">
+                                <form onSubmit={handleSearch} className="flex flex-col gap-3 xl:flex-row xl:items-center">
                                     <div className="relative flex-1">
                                         <input
                                             type="text"
@@ -976,7 +982,7 @@ export default function Index({
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:items-center gap-2.5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:flex xl:items-center gap-2.5">
                                         <select
                                             value={clubIdFilter}
                                             onChange={(e) => setClubIdFilter(e.target.value)}
@@ -1008,6 +1014,27 @@ export default function Index({
                                             <option value="egreso">Egresos / Salidas de Caja</option>
                                         </select>
 
+                                        {/* Date Filters: Desde / Hasta */}
+                                        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1.5">
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Desde</span>
+                                            <input
+                                                type="date"
+                                                value={startDateFilter}
+                                                onChange={(e) => setStartDateFilter(e.target.value)}
+                                                className="w-full border-0 bg-transparent p-0 text-xs font-bold text-slate-700 focus:ring-0 cursor-pointer"
+                                            />
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1.5">
+                                            <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Hasta</span>
+                                            <input
+                                                type="date"
+                                                value={endDateFilter}
+                                                onChange={(e) => setEndDateFilter(e.target.value)}
+                                                className="w-full border-0 bg-transparent p-0 text-xs font-bold text-slate-700 focus:ring-0 cursor-pointer"
+                                            />
+                                        </div>
+
                                         <select
                                             value={perPageFilter}
                                             onChange={(e) => {
@@ -1015,7 +1042,7 @@ export default function Index({
                                                 setPerPageFilter(val);
                                                 router.get(
                                                     route('transactions.index'),
-                                                    { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: tributePeriod, per_page: val },
+                                                    { search, club_id: clubIdFilter, category: categoryFilter, type: typeFilter, tribute_period: tributePeriod, per_page: val, start_date: startDateFilter, end_date: endDateFilter },
                                                     { preserveState: true }
                                                 );
                                             }}
@@ -1029,10 +1056,10 @@ export default function Index({
                                     </div>
 
                                     <div className="flex items-center gap-2 justify-end shrink-0">
-                                        <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white hover:bg-slate-800 transition">
+                                        <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white hover:bg-slate-800 transition shadow-2xs">
                                             Filtrar
                                         </button>
-                                        {(search || clubIdFilter || categoryFilter || String(perPageFilter) !== '50') && (
+                                        {(search || clubIdFilter || categoryFilter || startDateFilter || endDateFilter || String(perPageFilter) !== '50') && (
                                             <button type="button" onClick={handleResetFilters} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
                                                 Limpiar
                                             </button>

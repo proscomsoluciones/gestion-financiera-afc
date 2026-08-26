@@ -74,7 +74,7 @@ class Transaction extends Model
             'otro_ingreso' => 'Otro Ingreso',
         ];
 
-        return $incomeCats[$this->category] ?? ucfirst($this->category);
+        return $incomeCats[$this->category ?? ''] ?? ucfirst($this->category ?? '');
     }
 
     public static function generateNextFolio(): string
