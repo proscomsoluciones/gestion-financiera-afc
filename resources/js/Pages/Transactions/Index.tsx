@@ -309,6 +309,7 @@ export default function Index({
         receipt_image: null as File | null,
         date: todayStr,
         notes: '',
+        breakdown: {} as Record<string, any>,
     });
 
     const handleOpenEditModal = (tx: TransactionVoucher) => {
@@ -327,6 +328,7 @@ export default function Index({
             receipt_image: null,
             date: tx.date ? tx.date.split('T')[0] : todayStr,
             notes: tx.notes || '',
+            breakdown: tx.breakdown || {},
         });
     };
 
@@ -1790,6 +1792,31 @@ export default function Index({
                                 </div>
                             </div>
 
+                            {/* Tipo de Egreso (solo visible para transacciones de tipo egreso) */}
+                            {editForm.data.type === 'expense' && (
+                                <div className="rounded-2xl bg-rose-50/70 p-4 border border-rose-200">
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-rose-950 mb-1">
+                                        TIPO DE EGRESO *
+                                    </label>
+                                    <select
+                                        value={editForm.data.breakdown?.expense_type || ''}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            editForm.setData('breakdown', { ...(editForm.data.breakdown || {}), expense_type: val });
+                                        }}
+                                        className="w-full rounded-xl border-rose-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                        required
+                                    >
+                                        <option value="">-- Seleccionar Tipo de Egreso --</option>
+                                        {(expense_categories.length > 0 ? expense_categories : defaultExpenseCategories).map((cat) => (
+                                            <option key={cat.id} value={cat.id}>
+                                                {cat.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
                             {/* Monto y Método de Pago */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
@@ -2246,6 +2273,33 @@ export default function Index({
                                         />
                                     </div>
 
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-rose-950 mb-1">
+                                                JUGADOR / BENEFICIARIO / GLOSA (OPCIONAL)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={data.player_name}
+                                                onChange={(e) => setData('player_name', e.target.value)}
+                                                placeholder="Nombre del jugador o glosa extra"
+                                                className="w-full rounded-xl border-rose-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold uppercase tracking-wider text-rose-950 mb-1">
+                                                N° OPERACIÓN / REFERENCIA (OPCIONAL)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={data.reference_number}
+                                                onChange={(e) => setData('reference_number', e.target.value)}
+                                                placeholder="N° Comprobante transferencia o depósito"
+                                                className="w-full rounded-xl border-rose-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
+                                            />
+                                        </div>
+                                    </div>
+
                                     {expenseType === 'viatico' && (
                                         <div className="rounded-xl bg-white p-3 border border-rose-200 text-xs font-semibold text-rose-900 flex items-center gap-2">
                                             <span>ℹ️</span>
@@ -2619,7 +2673,7 @@ export default function Index({
                             {/* Payment Method */}
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                    FORMA DE PAGO *
+                                    MÉTODO DE PAGO *
                                 </label>
                                 <select
                                     value={data.payment_method}
@@ -2636,7 +2690,7 @@ export default function Index({
                             {/* Field: Observaciones */}
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                    OBSERVACIONES (OPCIONAL)
+                                    OBSERVACIONES / NOTAS ADICIONALES (OPCIONAL)
                                 </label>
                                 <textarea
                                     rows={2}

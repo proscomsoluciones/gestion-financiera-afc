@@ -239,7 +239,7 @@ export default function Index({
     };
 
     // PDF & CSV Download Links Helper
-    const getDownloadUrl = (reportType: 'libro' | 'monthly' | 'annual' | 'arfa' | 'csv') => {
+    const getDownloadUrl = (reportType: 'libro' | 'monthly' | 'annual' | 'arfa' | 'csv' | 'selecciones') => {
         const params = new URLSearchParams();
         params.append('year', String(selectedYear));
         if (startDate && endDate) {
@@ -255,6 +255,8 @@ export default function Index({
             return route('reports.monthly-pdf') + '?' + params.toString();
         } else if (reportType === 'arfa') {
             return route('reports.arfa-rendicion-pdf') + '?' + params.toString();
+        } else if (reportType === 'selecciones') {
+            return route('reports.selecciones-pdf') + '?' + params.toString();
         } else if (reportType === 'csv') {
             return route('reports.export-csv') + '?' + params.toString();
         } else {
@@ -313,6 +315,15 @@ export default function Index({
                             title="Descargar Libro de Respaldos con fotos de boletas"
                         >
                             <span>🖨️</span> Libro Respaldos
+                        </a>
+                        <a
+                            href={getDownloadUrl('selecciones')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-orange-700 transition"
+                            title="Descargar Informe de Gastos de Selecciones"
+                        >
+                            <span>⚽</span> Gastos Selecciones
                         </a>
                     </div>
                 </div>

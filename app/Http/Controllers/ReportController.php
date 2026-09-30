@@ -451,6 +451,87 @@ class ReportController extends Controller
     }
 
     /**
+     * Download Selecciones (Representative Teams) Expenses Report PDF.
+     */
+    public function downloadSeleccionesPdf(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $monthFilter = $request->input('month_filter');
+        $year = (int) $request->input('year', 2026);
+
+        $query = Transaction::where('type', 'expense')
+            ->where(function ($q) {
+                $q->where('concept', 'like', '%Selecc%')
+                  ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(breakdown, '$.event')) LIKE ?", ['%Selecc%']);
+            });
+
+        $periodTitle = "Temporada {$year}";
+
+        if (!empty($startDate) && !empty($endDate)) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+            $periodTitle = "Del {$startDate} al {$endDate}";
+        } elseif (!empty($monthFilter)) {
+            if (str_contains($monthFilter, '-')) {
+                [$y, $m] = explode('-', $monthFilter);
+                $query->whereYear('date', $y)->whereMonth('date', $m);
+                $periodTitle = self::formatSpanishMonthPeriod($m, $y);
+            } else {
+                $query->whereYear('date', $year)->whereMonth('date', $monthFilter);
+                $periodTitle = self::formatSpanishMonthPeriod($monthFilter, $year);
+            }
+        } else {
+            $query->whereYear('date', $year);
+        }
+
+        $expenses = $query->orderBy('date', 'asc')->get();
+        $totalExpense = (float) $expenses->sum('amount');
+
+        $groupedExpenses = $expenses->groupBy(fn (Transaction $tx) => self::classifySeleccionTeam($tx->concept));
+        $teamOrder = ['Selección Adulta', 'Selección Sub 17', 'Ambas Selecciones', 'Gastos Generales de Jornada de Selecciones'];
+        $groupedExpenses = collect($teamOrder)
+            ->filter(fn ($team) => $groupedExpenses->has($team))
+            ->mapWithKeys(fn ($team) => [$team => $groupedExpenses->get($team)]);
+
+        $teamStyles = [
+            'Selección Adulta' => ['color' => '#1d4ed8', 'bg' => '#eff6ff', 'border' => '#3b82f6'],
+            'Selección Sub 17' => ['color' => '#047857', 'bg' => '#f0fdf4', 'border' => '#10b981'],
+            'Ambas Selecciones' => ['color' => '#7e22ce', 'bg' => '#faf5ff', 'border' => '#a855f7'],
+            'Gastos Generales de Jornada de Selecciones' => ['color' => '#92400e', 'bg' => '#fffbeb', 'border' => '#f59e0b'],
+        ];
+
+        $institutional = Setting::getInstitutionalData();
+
+        $pdf = Pdf::loadView('pdf.informe_selecciones', compact('groupedExpenses', 'totalExpense', 'periodTitle', 'institutional', 'teamStyles'));
+        $pdf->setPaper('a4', 'portrait');
+
+        $safePeriod = str_replace([' ', '/', ':'], '_', $periodTitle);
+        return $pdf->stream("Informe_Gastos_Selecciones_{$safePeriod}.pdf");
+    }
+
+    /**
+     * Classify a selecciones expense concept by representative team, based on keywords.
+     */
+    private static function classifySeleccionTeam(string $concept): string
+    {
+        $normalized = mb_strtolower($concept);
+
+        if (str_contains($normalized, 'sub17') || str_contains($normalized, 'sub 17')) {
+            return 'Selección Sub 17';
+        }
+
+        if (str_contains($normalized, 'adulta')) {
+            return 'Selección Adulta';
+        }
+
+        if (str_contains($normalized, 'ambas')) {
+            return 'Ambas Selecciones';
+        }
+
+        return 'Gastos Generales de Jornada de Selecciones';
+    }
+
+    /**
      * Helper to build a complete financial statement for a given club.
      */
     private static function buildClubStatement(
