@@ -148,7 +148,8 @@ class DashboardController extends Controller
 
         // 6. Recent Transactions (Filtered)
         $recentTransactions = (clone $baseQuery)->with(['club', 'user'])
-            ->latest('id')
+            ->orderBy('date', 'desc')
+            ->orderBy('id', 'desc')
             ->take(10)
             ->get();
 

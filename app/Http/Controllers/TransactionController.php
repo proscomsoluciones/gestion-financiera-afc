@@ -68,7 +68,7 @@ class TransactionController extends Controller
         if ($perPage <= 0) { $perPage = 50; }
         if ($perPage > 200) { $perPage = 200; }
 
-        $transactions = $query->latest('id')->paginate($perPage)->withQueryString();
+        $transactions = (clone $query)->orderBy('date', 'desc')->orderBy('id', 'desc')->paginate($perPage)->withQueryString();
 
         // Metrics calculations (filtered)
         $totalIncome = (clone $query)->where('type', 'income')->sum('amount');

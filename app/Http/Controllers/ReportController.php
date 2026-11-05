@@ -286,7 +286,7 @@ class ReportController extends Controller
             $query->whereYear('date', $year);
         }
 
-        $expenses = $query->orderBy('date', 'asc')->get();
+        $expenses = $query->orderBy('date', 'desc')->orderBy('id', 'desc')->get();
 
         // Calculate totals for period
         $incomeQuery = Transaction::where('type', 'income');
@@ -367,7 +367,7 @@ class ReportController extends Controller
             $query->whereYear('date', $year);
         }
 
-        $transactions = $query->orderBy('date', 'asc')->get();
+        $transactions = $query->orderBy('date', 'desc')->orderBy('id', 'desc')->get();
 
         $totalIncome = (float) (clone $query)->where('type', 'income')->sum('amount');
         $totalExpense = (float) (clone $query)->where('type', 'expense')->sum('amount');
@@ -484,7 +484,7 @@ class ReportController extends Controller
             $query->whereYear('date', $year);
         }
 
-        $expenses = $query->orderBy('date', 'asc')->get();
+        $expenses = $query->orderBy('date', 'desc')->orderBy('id', 'desc')->get();
         $totalExpense = (float) $expenses->sum('amount');
 
         $groupedExpenses = $expenses->groupBy(fn (Transaction $tx) => self::classifySeleccionTeam($tx->concept));
@@ -775,7 +775,7 @@ class ReportController extends Controller
             $query->whereYear('date', $year);
         }
 
-        $passes = $query->orderBy('date', 'asc')->get();
+        $passes = $query->orderBy('date', 'desc')->orderBy('id', 'desc')->get();
 
         $totalAmount = (float) $passes->sum('amount');
         $totalArfa = (float) $passes->sum(function($p) {
@@ -824,7 +824,7 @@ class ReportController extends Controller
             }
         }
 
-        $transactions = $query->orderBy('date', 'asc')->get();
+        $transactions = $query->orderBy('date', 'desc')->orderBy('id', 'desc')->get();
 
         $institutional = Setting::getInstitutionalData();
         $assocName = $institutional['association_name'] ?? 'ASOCIACIÓN DE FÚTBOL CATEMU';
