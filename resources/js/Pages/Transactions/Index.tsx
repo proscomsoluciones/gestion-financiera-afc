@@ -157,7 +157,8 @@ export default function Index({
         if (!dateStr) return '';
         const cleanDate = dateStr.split('T')[0];
         const parts = cleanDate.split('-');
-        if (parts.length === 3) {
+        // Only reorder ISO dates (YYYY-MM-DD); values already in DD-MM-YYYY are returned as-is
+        if (parts.length === 3 && parts[0].length === 4) {
             return `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
         return dateStr;
@@ -460,6 +461,11 @@ export default function Index({
 
         const targetClubId = presetClubId ? String(presetClubId) : (clubs.length > 0 ? String(clubs[0].id) : '');
         const targetPeriod = tributePeriod || `${currentMonthName} ${currentYear}`;
+
+        // Keep the period selector in sync with the period that will actually be submitted
+        const [targetMonth, targetYear] = targetPeriod.split(' ');
+        setFormMonth(availableMonths.includes(targetMonth) ? targetMonth : currentMonthName);
+        setFormYear(Number(targetYear) || currentYear);
 
         if (type === 'tributo') {
             setData({

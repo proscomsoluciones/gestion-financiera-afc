@@ -162,7 +162,8 @@ export default function Dashboard({
         if (!dateStr) return '';
         const cleanDate = dateStr.split('T')[0];
         const parts = cleanDate.split('-');
-        if (parts.length === 3) {
+        // Only reorder ISO dates (YYYY-MM-DD); values already in DD-MM-YYYY are returned as-is
+        if (parts.length === 3 && parts[0].length === 4) {
             return `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
         return dateStr;
