@@ -1,29 +1,70 @@
-name: Deploy to VPS
+# Pruebas en cada push y pull request. Al subir a main (o con el botón "Run workflow"),
+# si las pruebas pasan, se publica en el VPS: /var/www/clientes/asociacion-futbol-catemu/erp/gestion-financiera-afc
+name: Pruebas y deploy
 
-# Manual trigger only: GitHub repo -> Actions tab -> "Deploy to VPS" -> "Run workflow".
-# Always deploys the current tip of main; will not run from any other branch.
 on:
+  push:
+    branches: [main, dev]
+  pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: production-deploy
+  group: deploy-afc-finanzas
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Deploy main to production VPS
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+  pruebas:
+    runs-on: ubuntu-24.04
     steps:
-      - name: SSH into VPS and run deploy.sh
-        uses: appleboy/ssh-action@v1.0.3
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT }}
-          command_timeout: 15m
-          script_stop: true
-          script: |
-            cd "${{ secrets.VPS_PROJECT_PATH }}"
-            bash deploy.sh
+          php-version: "8.4"
+          extensions: mbstring, intl, gd, zip, bcmath, pdo_sqlite
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+
+  deploy:
+    needs: pruebas
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    environment: produccion
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, intl, gd, zip, bcmath, pdo_mysql
+          coverage: none
+      - run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
+      # Se compila en GitHub y no en el VPS (React + Vite)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      - name: Empaquetar
+        run: |
+          echo "VERSION=$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          tar --exclude=.git --exclude=.github --exclude=tests --exclude=storage \
+              --exclude=node_modules --exclude=.env --exclude=oficios_generados -czf /tmp/release.tar.gz .
+
+      - name: Llave SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          echo "${{ secrets.VPS_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Subir y activar
+        env:
+          DESTINO: deploy@${{ secrets.VPS_HOST }}
+          BASE: /var/www/clientes/asociacion-futbol-catemu/erp/gestion-financiera-afc/releases
+        run: |
+          SSH="ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes"
+          $SSH "$DESTINO" "mkdir -p $BASE/$VERSION"
+          $SSH "$DESTINO" "tar -xzf - -C $BASE/$VERSION" < /tmp/release.tar.gz
+          $SSH "$DESTINO" "bash $BASE/$VERSION/scripts/deploy/activar.sh $VERSION"

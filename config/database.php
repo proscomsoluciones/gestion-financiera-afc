@@ -58,6 +58,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
+            // Columnas timestamp en UTC, como en el servidor anterior (el VPS nuevo está en hora de Chile)
+            'timezone' => env('DB_TIMEZONE'),
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
@@ -78,6 +80,8 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'strict' => true,
+            // Columnas timestamp en UTC, como en el servidor anterior (el VPS nuevo está en hora de Chile)
+            'timezone' => env('DB_TIMEZONE'),
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
