@@ -23,6 +23,13 @@ jobs:
           extensions: mbstring, intl, gd, zip, bcmath, pdo_sqlite
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-progress
+      # Las pruebas abren páginas Inertia: necesitan public/build (manifest de Vite)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
       - run: cp .env.example .env && php artisan key:generate
       - run: php artisan test
 
