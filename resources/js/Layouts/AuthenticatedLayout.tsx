@@ -7,6 +7,17 @@ import { SkeletonPage } from '@/Components/Skeleton';
 import useNavigationLoading from '@/hooks/useNavigationLoading';
 import usePermissions from '@/hooks/usePermissions';
 import { Link, usePage } from '@inertiajs/react';
+import {
+    BarChart3,
+    LayoutDashboard,
+    LogOut,
+    Settings2,
+    Shield,
+    UserRound,
+    Users,
+    Wallet,
+    type LucideIcon,
+} from 'lucide-react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
 export default function Authenticated({
@@ -19,6 +30,15 @@ export default function Authenticated({
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    const navItems: { label: string; href: string; active: boolean; icon: LucideIcon; show: boolean }[] = [
+        { label: 'Panel Principal', href: route('dashboard'), active: route().current('dashboard'), icon: LayoutDashboard, show: true },
+        { label: 'Tesorería & Caja', href: route('transactions.index'), active: route().current('transactions.*'), icon: Wallet, show: can('transactions.view') },
+        { label: 'Clubes', href: route('clubs.index'), active: route().current('clubs.*'), icon: Shield, show: can('clubs.view') },
+        { label: 'Reportes & Libros', href: route('reports.index'), active: route().current('reports.*'), icon: BarChart3, show: can('reports.view') },
+        { label: 'Tarifas & Valores', href: route('settings.index'), active: route().current('settings.*'), icon: Settings2, show: can('settings.manage') },
+        { label: 'Usuarios', href: route('users.index'), active: route().current('users.*'), icon: Users, show: can('users.manage') },
+    ].filter((item) => item.show);
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
@@ -35,58 +55,12 @@ export default function Authenticated({
 
                             {/* Desktop Links (1280px+) */}
                             <div className="hidden space-x-1 xl:flex xl:items-center xl:space-x-2">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    <span className="mr-1.5">🏠</span>
-                                    <span>Panel Principal</span>
-                                </NavLink>
-                                {can('transactions.view') && (
-                                    <NavLink
-                                        href={route('transactions.index')}
-                                        active={route().current('transactions.*')}
-                                    >
-                                        <span className="mr-1.5">💳</span>
-                                        <span>Tesorería & Caja</span>
+                                {navItems.map(({ label, href, active, icon: Icon }) => (
+                                    <NavLink key={label} href={href} active={active}>
+                                        <Icon className="mr-1.5 h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                                        <span>{label}</span>
                                     </NavLink>
-                                )}
-                                {can('clubs.view') && (
-                                    <NavLink
-                                        href={route('clubs.index')}
-                                        active={route().current('clubs.*')}
-                                    >
-                                        <span className="mr-1.5">🛡️</span>
-                                        <span>Clubes</span>
-                                    </NavLink>
-                                )}
-                                {can('reports.view') && (
-                                    <NavLink
-                                        href={route('reports.index')}
-                                        active={route().current('reports.*')}
-                                    >
-                                        <span className="mr-1.5">📊</span>
-                                        <span>Reportes & Libros</span>
-                                    </NavLink>
-                                )}
-                                {can('settings.manage') && (
-                                    <NavLink
-                                        href={route('settings.index')}
-                                        active={route().current('settings.*')}
-                                    >
-                                        <span className="mr-1.5">⚙️</span>
-                                        <span>Tarifas & Valores</span>
-                                    </NavLink>
-                                )}
-                                {can('users.manage') && (
-                                    <NavLink
-                                        href={route('users.index')}
-                                        active={route().current('users.*')}
-                                    >
-                                        <span className="mr-1.5">👥</span>
-                                        <span>Usuarios</span>
-                                    </NavLink>
-                                )}
+                                ))}
                             </div>
                         </div>
 
@@ -130,7 +104,10 @@ export default function Authenticated({
                                             href={route('profile.edit')}
                                             className="rounded-xl px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
                                         >
-                                            👤 Mi Perfil
+                                            <span className="flex items-center gap-2">
+                                                <UserRound className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                                Mi Perfil
+                                            </span>
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
@@ -138,7 +115,10 @@ export default function Authenticated({
                                             as="button"
                                             className="w-full rounded-xl px-3 py-2 text-left text-xs font-bold text-rose-600 hover:bg-rose-50"
                                         >
-                                            🚪 Cerrar Sesión
+                                            <span className="flex items-center gap-2">
+                                                <LogOut className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                                Cerrar Sesión
+                                            </span>
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -197,52 +177,14 @@ export default function Authenticated({
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            🏠 Panel Principal
-                        </ResponsiveNavLink>
-                        {can('transactions.view') && (
-                            <ResponsiveNavLink
-                                href={route('transactions.index')}
-                                active={route().current('transactions.*')}
-                            >
-                                💳 Tesorería & Caja
+                        {navItems.map(({ label, href, active, icon: Icon }) => (
+                            <ResponsiveNavLink key={label} href={href} active={active}>
+                                <span className="flex items-center gap-2.5">
+                                    <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                                    {label}
+                                </span>
                             </ResponsiveNavLink>
-                        )}
-                        {can('clubs.view') && (
-                            <ResponsiveNavLink
-                                href={route('clubs.index')}
-                                active={route().current('clubs.*')}
-                            >
-                                🛡️ Clubes
-                            </ResponsiveNavLink>
-                        )}
-                        {can('reports.view') && (
-                            <ResponsiveNavLink
-                                href={route('reports.index')}
-                                active={route().current('reports.*')}
-                            >
-                                📊 Reportes & Libros
-                            </ResponsiveNavLink>
-                        )}
-                        {can('settings.manage') && (
-                            <ResponsiveNavLink
-                                href={route('settings.index')}
-                                active={route().current('settings.*')}
-                            >
-                                ⚙️ Tarifas & Valores
-                            </ResponsiveNavLink>
-                        )}
-                        {can('users.manage') && (
-                            <ResponsiveNavLink
-                                href={route('users.index')}
-                                active={route().current('users.*')}
-                            >
-                                👥 Usuarios
-                            </ResponsiveNavLink>
-                        )}
+                        ))}
                     </div>
 
                     <div className="border-t border-slate-100 pb-3 pt-4">
@@ -257,14 +199,20 @@ export default function Authenticated({
 
                         <div className="mt-3 space-y-1">
                             <ResponsiveNavLink href={route('profile.edit')}>
-                                👤 Mi Perfil
+                                <span className="flex items-center gap-2.5">
+                                    <UserRound className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                    Mi Perfil
+                                </span>
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
                                 href={route('logout')}
                                 as="button"
                             >
-                                🚪 Cerrar Sesión
+                                <span className="flex items-center gap-2.5">
+                                    <LogOut className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                    Cerrar Sesión
+                                </span>
                             </ResponsiveNavLink>
                         </div>
                     </div>

@@ -1,6 +1,34 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router } from '@inertiajs/react';
+import {
+    ArrowLeftRight,
+    Banknote,
+    BarChart3,
+    BookOpen,
+    CircleAlert,
+    Building2,
+    CalendarDays,
+    CircleCheck,
+    ClipboardCheck,
+    Coins,
+    FileText,
+    HeartHandshake,
+    Landmark,
+    Printer,
+    ReceiptText,
+    Scale,
+    Settings2,
+    Shield,
+    ShieldAlert,
+    TrendingDown,
+    TrendingUp,
+    Trophy,
+    UserCheck,
+    UserPlus,
+    Wallet,
+    type LucideIcon,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface TransactionVoucher {
@@ -100,6 +128,11 @@ interface DashboardProps {
             total_afc_inscripciones?: number;
             total_arfa_overall?: number;
             total_afc_overall?: number;
+        };
+        arfa_balance?: {
+            owed: number;
+            paid: number;
+            pending: number;
         };
         monthly_chart: MonthlyChartData[];
     };
@@ -220,7 +253,8 @@ export default function Dashboard({
                                 href={route('transactions.index')}
                                 className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-slate-800 transition"
                             >
-                                {can('transactions.manage') ? '💳 Registrar Cobro / Tesorería' : '💳 Ver Tesorería'}
+                                <Wallet className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                {can('transactions.manage') ? 'Registrar Cobro / Tesorería' : 'Ver Tesorería'}
                             </Link>
                         )}
                         {can('settings.manage') && (
@@ -228,7 +262,8 @@ export default function Dashboard({
                                 href={route('settings.index')}
                                 className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
                             >
-                                ⚙️ Configuración
+                                <Settings2 className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                Configuración
                             </Link>
                         )}
                     </div>
@@ -243,32 +278,31 @@ export default function Dashboard({
                     {(() => {
                         const registrar = can('transactions.manage')
                             ? [
-                                  { label: 'Tributo', icon: '🏛️', href: route('transactions.index', { nuevo: 'tributo' }), chip: 'bg-emerald-50' },
-                                  { label: 'Fondo Solidario', icon: '🤝', href: route('transactions.index', { nuevo: 'fondo_solidario' }), chip: 'bg-sky-50' },
-                                  { label: 'Pase / Trámite', icon: '⚽', href: route('transactions.index', { nuevo: 'pase' }), chip: 'bg-teal-50' },
-                                  { label: 'Multa', icon: '🚨', href: route('transactions.index', { nuevo: 'multa' }), chip: 'bg-amber-50' },
-                                  { label: 'Otros Ingresos', icon: '💎', href: route('transactions.index', { nuevo: 'otro_ingreso' }), chip: 'bg-indigo-50' },
-                                  { label: 'Salida de Caja', icon: '💸', href: route('transactions.index', { nuevo: 'egreso' }), chip: 'bg-rose-50' },
+                                  { label: 'Tributo', icon: Landmark, href: route('transactions.index', { nuevo: 'tributo' }), chip: 'bg-emerald-50 text-emerald-700' },
+                                  { label: 'Fondo Solidario', icon: HeartHandshake, href: route('transactions.index', { nuevo: 'fondo_solidario' }), chip: 'bg-sky-50 text-sky-700' },
+                                  { label: 'Pase / Trámite', icon: UserCheck, href: route('transactions.index', { nuevo: 'pase' }), chip: 'bg-teal-50 text-teal-700' },
+                                  { label: 'Multa', icon: ShieldAlert, href: route('transactions.index', { nuevo: 'multa' }), chip: 'bg-amber-50 text-amber-700' },
+                                  { label: 'Otros Ingresos', icon: Coins, href: route('transactions.index', { nuevo: 'otro_ingreso' }), chip: 'bg-indigo-50 text-indigo-700' },
+                                  { label: 'Salida de Caja', icon: ReceiptText, href: route('transactions.index', { nuevo: 'egreso' }), chip: 'bg-rose-50 text-rose-700' },
                               ]
                             : [];
                         const consultar = [
-                            can('transactions.view') && { label: 'Movimientos', icon: '💳', href: route('transactions.index'), chip: 'bg-slate-100' },
-                            can('transactions.view') && { label: 'Control de Tributos', icon: '📊', href: route('transactions.index', { tab: 'tributos' }), chip: 'bg-emerald-50' },
-                            can('reports.view') && { label: 'Reportes', icon: '📑', href: route('reports.index'), chip: 'bg-violet-50' },
-                            can('clubs.view') && { label: 'Clubes', icon: '🛡️', href: route('clubs.index'), chip: 'bg-blue-50' },
-                            can('settings.manage') && { label: 'Tarifas', icon: '⚙️', href: route('settings.index'), chip: 'bg-slate-100' },
-                        ].filter(Boolean) as { label: string; icon: string; href: string; chip: string }[];
+                            can('transactions.view') && { label: 'Movimientos', icon: ArrowLeftRight, href: route('transactions.index'), chip: 'bg-slate-100 text-slate-700' },
+                            can('transactions.view') && { label: 'Control de Tributos', icon: ClipboardCheck, href: route('transactions.index', { tab: 'tributos' }), chip: 'bg-emerald-50 text-emerald-700' },
+                            can('reports.view') && { label: 'Reportes', icon: FileText, href: route('reports.index'), chip: 'bg-violet-50 text-violet-700' },
+                            can('clubs.view') && { label: 'Clubes', icon: Shield, href: route('clubs.index'), chip: 'bg-blue-50 text-blue-700' },
+                        ].filter(Boolean) as { label: string; icon: LucideIcon; href: string; chip: string }[];
 
                         if (registrar.length === 0 && consultar.length === 0) return null;
 
-                        const tile = (item: { label: string; icon: string; href: string; chip: string }) => (
+                        const tile = (item: { label: string; icon: LucideIcon; href: string; chip: string }) => (
                             <Link
                                 key={item.label}
                                 href={item.href}
                                 className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white p-2.5 text-xs font-bold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
                             >
-                                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base ${item.chip}`}>
-                                    {item.icon}
+                                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${item.chip}`}>
+                                    <item.icon className="h-[18px] w-[18px]" strokeWidth={1.75} aria-hidden="true" />
                                 </span>
                                 <span className="leading-tight">{item.label}</span>
                             </Link>
@@ -305,8 +339,8 @@ export default function Dashboard({
                     {/* Executive Global Date Filter Toolbar */}
                     <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 text-lg font-bold">
-                                📅
+                            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+                                <CalendarDays className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </div>
                             <div>
                                 <h3 className="text-sm font-extrabold text-slate-900">
@@ -395,17 +429,25 @@ export default function Dashboard({
                                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                                     Saldo Disponible en Caja
                                 </span>
-                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 font-bold text-lg">
-                                    💰
+                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+                                    <Wallet className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                                 </span>
                             </div>
                             <div className="mt-4">
                                 <h3 className="text-3xl font-black tracking-tight text-slate-900">
                                     {formatCLP(kpis.net_balance)}
                                 </h3>
-                                <div className="mt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-600">
-                                    <span>✅ Fondos Netos Verificados</span>
-                                </div>
+                                {kpis.arfa_balance && kpis.arfa_balance.pending > 0 ? (
+                                    <div className="mt-2 flex items-start gap-1.5 text-xs font-bold text-amber-700">
+                                        <CircleAlert className="mt-px h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                                        <span>Incluye {formatCLP(kpis.arfa_balance.pending)} por pagar a ARFA</span>
+                                    </div>
+                                ) : (
+                                    <div className="mt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+                                        <CircleCheck className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                        <span>Fondos Netos Verificados</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -415,8 +457,8 @@ export default function Dashboard({
                                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                                     Total Ingresos Recaudados
                                 </span>
-                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-sky-600 font-bold text-lg">
-                                    📈
+                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 text-sky-600">
+                                    <TrendingUp className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                                 </span>
                             </div>
                             <div className="mt-4">
@@ -435,8 +477,8 @@ export default function Dashboard({
                                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                                     Total Egresos / Gastos
                                 </span>
-                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 font-bold text-lg">
-                                    💸
+                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+                                    <TrendingDown className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                                 </span>
                             </div>
                             <div className="mt-4">
@@ -455,8 +497,8 @@ export default function Dashboard({
                                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
                                     Cumplimiento Tributos ({tribute_status.period_month})
                                 </span>
-                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 font-bold text-lg">
-                                    📊
+                                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-600">
+                                    <ClipboardCheck className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                                 </span>
                             </div>
                             <div className="mt-4">
@@ -484,7 +526,7 @@ export default function Dashboard({
                         <div className="rounded-3xl border border-amber-200 bg-amber-50/50 p-5 shadow-2xs flex items-center justify-between">
                             <div>
                                 <span className="text-[11px] font-black uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                                    <span>💵</span> Disponibilidad en Caja Chica (Efectivo Físico)
+                                    <Banknote className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" /> Disponibilidad en Caja Chica (Efectivo Físico)
                                 </span>
                                 <h4 className="text-xl font-black text-amber-950 mt-1">{formatCLP(kpis.cash_balance || 0)}</h4>
                                 <p className="text-[10px] font-bold text-amber-800 mt-0.5">
@@ -499,7 +541,7 @@ export default function Dashboard({
                         <div className="rounded-3xl border border-blue-200 bg-blue-50/50 p-5 shadow-2xs flex items-center justify-between">
                             <div>
                                 <span className="text-[11px] font-black uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                                    <span>🏦</span> Fondos en Banco (Transferencias / Depósitos)
+                                    <Building2 className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" /> Fondos en Banco (Transferencias / Depósitos)
                                 </span>
                                 <h4 className="text-xl font-black text-blue-950 mt-1">{formatCLP(kpis.bank_balance || 0)}</h4>
                                 <p className="text-[10px] font-bold text-blue-800 mt-0.5">
@@ -519,7 +561,7 @@ export default function Dashboard({
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-lg">📊</span>
+                                        <BarChart3 className="h-5 w-5 text-slate-500" strokeWidth={1.75} aria-hidden="true" />
                                         <h3 className="text-lg font-extrabold text-slate-900">
                                             Gráfico Comparativo: Ingresos vs Egresos
                                         </h3>
@@ -556,7 +598,7 @@ export default function Dashboard({
                                         <div key={m.month} className="space-y-2 bg-slate-50/60 p-4 rounded-2xl border border-slate-100">
                                             <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-xs font-extrabold">
                                                 <span className="text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
-                                                    📅 {m.month} 2026
+                                                    <CalendarDays className="h-3.5 w-3.5 text-slate-400" strokeWidth={1.75} aria-hidden="true" /> {m.month} 2026
                                                 </span>
                                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                                                     <span className="text-emerald-700 font-mono font-black">
@@ -635,12 +677,12 @@ export default function Dashboard({
 
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between rounded-xl bg-emerald-50 p-3 border border-emerald-200 text-xs">
-                                            <span className="font-extrabold text-emerald-900">🟢 Proporción Ingresos</span>
+                                            <span className="flex items-center gap-2 font-extrabold text-emerald-900"><span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> Proporción Ingresos</span>
                                             <span className="font-black text-emerald-800">{incomeRatio}% ({formatCLP(kpis.total_income)})</span>
                                         </div>
 
                                         <div className="flex items-center justify-between rounded-xl bg-rose-50 p-3 border border-rose-200 text-xs">
-                                            <span className="font-extrabold text-rose-900">🔴 Proporción Egresos</span>
+                                            <span className="flex items-center gap-2 font-extrabold text-rose-900"><span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden="true" /> Proporción Egresos</span>
                                             <span className="font-black text-rose-800">{expenseRatio}% ({formatCLP(kpis.total_expense)})</span>
                                         </div>
                                     </div>
@@ -742,7 +784,7 @@ export default function Dashboard({
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="rounded-2xl bg-slate-50/80 p-4 border border-slate-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">🏛️</span>
+                                        <Landmark className="h-6 w-6 shrink-0 text-slate-500" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-slate-700">Tributos Mensuales</p>
                                             <p className="text-[10px] text-slate-400">Cuota Club + Aporte Selección</p>
@@ -755,7 +797,7 @@ export default function Dashboard({
 
                                 <div className="rounded-2xl bg-blue-50/60 p-4 border border-blue-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">🤝</span>
+                                        <HeartHandshake className="h-6 w-6 shrink-0 text-blue-600" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-blue-950">Fondo Solidario</p>
                                             <p className="text-[10px] text-blue-600">Auxilio a Clubes</p>
@@ -768,7 +810,7 @@ export default function Dashboard({
 
                                 <div className="rounded-2xl bg-sky-50/60 p-4 border border-sky-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">📝</span>
+                                        <UserPlus className="h-6 w-6 shrink-0 text-sky-600" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-sky-950">Inscripciones Jugadores</p>
                                             <p className="text-[10px] text-sky-600">ARFA $0 • 100% Arcas</p>
@@ -781,7 +823,7 @@ export default function Dashboard({
 
                                 <div className="rounded-2xl bg-purple-50/60 p-4 border border-purple-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">🏆</span>
+                                        <Trophy className="h-6 w-6 shrink-0 text-purple-600" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-purple-950">Inscripción Campeonato</p>
                                             <p className="text-[10px] text-purple-600">Bases y Torneos Libres</p>
@@ -794,7 +836,7 @@ export default function Dashboard({
 
                                 <div className="rounded-2xl bg-teal-50/60 p-4 border border-teal-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">⚽</span>
+                                        <UserCheck className="h-6 w-6 shrink-0 text-teal-600" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-teal-950">Pases / Transferencias</p>
                                             <p className="text-[10px] text-teal-600">
@@ -814,7 +856,7 @@ export default function Dashboard({
 
                                 <div className="rounded-2xl bg-indigo-50/60 p-4 border border-indigo-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">⚖️</span>
+                                        <Scale className="h-6 w-6 shrink-0 text-indigo-600" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-indigo-950">Apelaciones & Multas</p>
                                             <p className="text-[10px] text-indigo-600">Tribunal de Penas</p>
@@ -827,7 +869,7 @@ export default function Dashboard({
 
                                 <div className="rounded-2xl bg-emerald-50/60 p-4 border border-emerald-100 flex items-center justify-between sm:col-span-2">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-2xl">💎</span>
+                                        <Coins className="h-6 w-6 shrink-0 text-emerald-600" strokeWidth={1.5} aria-hidden="true" />
                                         <div>
                                             <p className="text-xs font-extrabold text-emerald-950">Otros Ingresos Institucionales</p>
                                             <p className="text-[10px] text-emerald-700">Donaciones, Proyectos Municipal / FNDR, Sponsor & Beneficios</p>
@@ -844,8 +886,8 @@ export default function Dashboard({
                         <div className="rounded-3xl border border-teal-200/80 bg-white p-6 shadow-2xs space-y-5 flex flex-col justify-between">
                             <div>
                                 <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600 font-bold">
-                                        🏛️
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600">
+                                        <Landmark className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                                     </div>
                                     <div>
                                         <h3 className="text-base font-extrabold text-slate-900">
@@ -862,7 +904,7 @@ export default function Dashboard({
                                     <div className="rounded-2xl bg-amber-50 p-4 border border-amber-200">
                                         <div className="flex items-center justify-between">
                                             <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 block">
-                                                Rendido a ARFA V Región
+                                                Corresponde a ARFA V Región
                                             </span>
                                             <span className="text-[10px] font-bold text-amber-700">Pases + Inscripciones ($0)</span>
                                         </div>
@@ -874,6 +916,37 @@ export default function Dashboard({
                                             <span>Inscripciones: $0 (Gratis)</span>
                                         </div>
                                     </div>
+
+                                    {/* Pendiente por pagar a ARFA (acumulado) */}
+                                    {kpis.arfa_balance && (
+                                        <div
+                                            className={`rounded-2xl p-4 border ${
+                                                kpis.arfa_balance.pending > 0 ? 'bg-rose-50 border-rose-200' : 'bg-slate-50 border-slate-200'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span
+                                                    className={`text-[10px] font-extrabold uppercase tracking-wider block ${
+                                                        kpis.arfa_balance.pending > 0 ? 'text-rose-800' : 'text-slate-600'
+                                                    }`}
+                                                >
+                                                    Pendiente por pagar a ARFA
+                                                </span>
+                                                <span className="text-[10px] font-bold text-slate-500">Acumulado temporada</span>
+                                            </div>
+                                            <p
+                                                className={`text-2xl font-black mt-1 ${
+                                                    kpis.arfa_balance.pending > 0 ? 'text-rose-700' : 'text-slate-700'
+                                                }`}
+                                            >
+                                                {formatCLP(kpis.arfa_balance.pending)}
+                                            </p>
+                                            <div className="mt-2 pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                                                <span>Corresponde: {formatCLP(kpis.arfa_balance.owed)}</span>
+                                                <span>Pagado: {formatCLP(kpis.arfa_balance.paid)}</span>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Box Arcas AFC */}
                                     <div className="rounded-2xl bg-emerald-50 p-4 border border-emerald-200">
@@ -898,7 +971,7 @@ export default function Dashboard({
                                 href={route('transactions.index')}
                                 className="mt-4 block w-full rounded-2xl bg-slate-900 py-3 text-center text-xs font-extrabold text-white hover:bg-slate-800 transition"
                             >
-                                💳 Ver Libro de Transacciones Completo
+                                <span className="inline-flex items-center justify-center gap-2"><BookOpen className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" /> Ver Libro de Transacciones Completo</span>
                             </Link>
                         </div>
                     </div>
@@ -917,10 +990,10 @@ export default function Dashboard({
 
                             <div className="flex gap-2">
                                 <span className="rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-200">
-                                    🟢 {tribute_status.summary.paid_count} Al Día
+                                    <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> {tribute_status.summary.paid_count} Al Día</span>
                                 </span>
                                 <span className="rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 border border-rose-200">
-                                    🔴 {tribute_status.summary.overdue_count} Morosos
+                                    <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden="true" /> {tribute_status.summary.overdue_count} Morosos</span>
                                 </span>
                             </div>
                         </div>
@@ -1026,7 +1099,7 @@ export default function Dashboard({
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
                                                 >
-                                                    🖨️ PDF
+                                                    <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> PDF
                                                 </a>
                                             </td>
                                         </tr>
@@ -1076,7 +1149,7 @@ export default function Dashboard({
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
                                             >
-                                                🖨️ Ver PDF
+                                                <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Ver PDF
                                             </a>
                                         </div>
                                     </div>
