@@ -196,6 +196,15 @@ class ReportController extends Controller
         // Transactions list for report table preview (paginated)
         $transactions = (clone $baseQuery)->with(['club', 'user'])->latest('date')->latest('id')->paginate($perPage)->withQueryString();
 
+        // Category options for the "Por Categoría" report (labels present in the period)
+        [$incomeCategoryGroups, $expenseCategoryGroups] = self::buildCategoryGroups(
+            (clone $baseQuery)->get(['id', 'type', 'category', 'breakdown', 'amount'])
+        );
+        $categoryReportOptions = [
+            'ingresos' => $incomeCategoryGroups->pluck('label')->sort()->values(),
+            'egresos' => $expenseCategoryGroups->pluck('label')->sort()->values(),
+        ];
+
         $institutional = Setting::getInstitutionalData();
 
         return Inertia::render('Reports/Index', [
@@ -225,6 +234,7 @@ class ReportController extends Controller
             'institutional' => $institutional,
             'clubs' => $allClubs,
             'club_statement' => $clubStatement,
+            'category_report_options' => $categoryReportOptions,
             'filters' => [
                 'month_filter' => $monthFilter,
                 'start_date' => $startDate,
@@ -540,33 +550,32 @@ class ReportController extends Controller
 
         $transactions = $query->orderBy('date')->orderBy('id')->get();
 
-        $otherIncomeLabels = collect(Setting::getOtherIncomeCategories())
-            ->mapWithKeys(fn ($cat) => [$cat['id'] => self::stripEmoji($cat['label'])]);
+        $tipo = in_array($request->input('tipo'), ['ingresos', 'egresos'], true) ? $request->input('tipo') : 'ambos';
+        $categoria = trim((string) $request->input('categoria', ''));
+        $showDetail = $request->input('detalle', '1') !== '0';
 
-        $groupByCategory = function ($items, callable $labelFor) {
-            return $items->groupBy($labelFor)
-                ->map(fn ($group, $label) => [
-                    'label' => $label,
-                    'count' => $group->count(),
-                    'total' => (float) $group->sum('amount'),
-                    'items' => $group->values(),
-                ])
-                ->sortByDesc('total')
-                ->values();
-        };
+        [$incomeGroups, $expenseGroups] = self::buildCategoryGroups($transactions);
 
-        $incomeGroups = $groupByCategory(
-            $transactions->where('type', 'income'),
-            fn (Transaction $tx) => self::incomeCategoryLabel($tx, $otherIncomeLabels->all())
-        );
-        $expenseGroups = $groupByCategory(
-            $transactions->where('type', 'expense'),
-            fn (Transaction $tx) => self::stripEmoji($tx->category_label)
-        );
+        if ($tipo === 'egresos') {
+            $incomeGroups = collect();
+        }
+        if ($tipo === 'ingresos') {
+            $expenseGroups = collect();
+        }
+        if ($categoria !== '') {
+            $incomeGroups = $incomeGroups->where('label', $categoria)->values();
+            $expenseGroups = $expenseGroups->where('label', $categoria)->values();
+        }
 
         $totalIncome = (float) $incomeGroups->sum('total');
         $totalExpense = (float) $expenseGroups->sum('total');
         $netBalance = $totalIncome - $totalExpense;
+
+        $reportTitle = match ($tipo) {
+            'ingresos' => 'INFORME DE INGRESOS POR CATEGORÍA',
+            'egresos' => 'INFORME DE EGRESOS POR CATEGORÍA',
+            default => 'INFORME DE INGRESOS Y EGRESOS POR CATEGORÍA',
+        };
 
         $institutional = Setting::getInstitutionalData();
 
@@ -577,12 +586,68 @@ class ReportController extends Controller
             'totalExpense',
             'netBalance',
             'periodTitle',
-            'institutional'
+            'institutional',
+            'tipo',
+            'categoria',
+            'showDetail',
+            'reportTitle'
         ));
         $pdf->setPaper('a4', 'portrait');
 
         $safePeriod = str_replace([' ', '/', ':'], '_', $periodTitle);
         return $pdf->stream("Informe_Ingresos_Egresos_por_Categoria_{$safePeriod}.pdf");
+    }
+
+    /**
+     * Group transactions by category label: [incomeGroups, expenseGroups], each sorted by total desc.
+     *
+     * @return array{0: \Illuminate\Support\Collection, 1: \Illuminate\Support\Collection}
+     */
+    private static function buildCategoryGroups($transactions): array
+    {
+        $otherIncomeLabels = collect(Setting::getOtherIncomeCategories())
+            ->mapWithKeys(fn ($cat) => [$cat['id'] => self::stripEmoji($cat['label'])])
+            ->all();
+        $expenseLabels = collect(Setting::getExpenseCategories())
+            ->filter(fn ($cat) => isset($cat['id']))
+            ->mapWithKeys(fn ($cat) => [$cat['id'] => self::stripEmoji($cat['label'])])
+            ->all();
+
+        $groupByCategory = function ($items, callable $labelFor) {
+            return $items->groupBy($labelFor)
+                ->map(fn ($group, $label) => [
+                    'label' => (string) $label,
+                    'count' => $group->count(),
+                    'total' => (float) $group->sum('amount'),
+                    'items' => $group->values(),
+                ])
+                ->sortByDesc('total')
+                ->values();
+        };
+
+        $incomeGroups = $groupByCategory(
+            $transactions->where('type', 'income'),
+            fn (Transaction $tx) => self::incomeCategoryLabel($tx, $otherIncomeLabels)
+        );
+        $expenseGroups = $groupByCategory(
+            $transactions->where('type', 'expense'),
+            fn (Transaction $tx) => self::expenseCategoryLabel($tx, $expenseLabels)
+        );
+
+        return [$incomeGroups, $expenseGroups];
+    }
+
+    /**
+     * Category label for an expense (same rules as Transaction::category_label, without a query per row).
+     */
+    private static function expenseCategoryLabel(Transaction $tx, array $expenseLabels): string
+    {
+        $typeKey = $tx->breakdown['expense_type'] ?? null;
+        if (!$typeKey) {
+            return 'Egreso General (Asociación)';
+        }
+
+        return $expenseLabels[$typeKey] ?? str_replace('_', ' ', ucfirst($typeKey));
     }
 
     /**

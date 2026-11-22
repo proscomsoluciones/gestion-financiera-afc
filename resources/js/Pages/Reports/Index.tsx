@@ -1,3 +1,4 @@
+import Modal from '@/Components/Modal';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -151,6 +152,10 @@ interface ReportsProps {
     };
     clubs: ClubItem[];
     club_statement?: ClubStatementData | null;
+    category_report_options?: {
+        ingresos: string[];
+        egresos: string[];
+    };
     filters: {
         month_filter?: string;
         start_date?: string;
@@ -171,6 +176,7 @@ export default function Index({
     institutional,
     clubs,
     club_statement,
+    category_report_options,
     filters,
 }: ReportsProps) {
     const [activeTab, setActiveTab] = useState<'libro' | 'period' | 'annual' | 'club' | 'solidarity'>('libro');
@@ -183,6 +189,10 @@ export default function Index({
         filters.club_id ? String(filters.club_id) : clubs.length > 0 ? String(clubs[0].id) : ''
     );
     const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 50);
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [categoryType, setCategoryType] = useState<'ambos' | 'ingresos' | 'egresos'>('ambos');
+    const [categoryLabel, setCategoryLabel] = useState('');
+    const [categoryDetail, setCategoryDetail] = useState(true);
 
     const formatCLP = (val: number) => {
         return '$' + Math.round(val || 0).toLocaleString('es-CL');
@@ -259,6 +269,11 @@ export default function Index({
         } else if (reportType === 'selecciones') {
             return route('reports.selecciones-pdf') + '?' + params.toString();
         } else if (reportType === 'categorias') {
+            params.append('tipo', categoryType);
+            if (categoryType !== 'ambos' && categoryLabel) {
+                params.append('categoria', categoryLabel);
+            }
+            params.append('detalle', categoryDetail ? '1' : '0');
             return route('reports.categorias-pdf') + '?' + params.toString();
         } else if (reportType === 'csv') {
             return route('reports.export-csv') + '?' + params.toString();
@@ -267,6 +282,21 @@ export default function Index({
         }
     };
 
+    const downloadButtons: {
+        type: 'libro' | 'monthly' | 'arfa' | 'csv' | 'selecciones' | 'categorias';
+        label: string;
+        icon: string;
+        chip: string;
+        title: string;
+    }[] = [
+        { type: 'monthly', label: 'PDF Movimientos', icon: '📑', chip: 'bg-rose-50', title: 'Exportar Movimientos del Período a PDF' },
+        { type: 'categorias', label: 'Por Categoría', icon: '🗂️', chip: 'bg-indigo-50', title: 'Informe de Ingresos y Egresos agrupados por categoría' },
+        { type: 'libro', label: 'Libro Respaldos', icon: '🖨️', chip: 'bg-emerald-50', title: 'Descargar Libro de Respaldos con fotos de boletas' },
+        { type: 'selecciones', label: 'Gastos Selecciones', icon: '⚽', chip: 'bg-orange-50', title: 'Descargar Informe de Gastos de Selecciones' },
+        { type: 'arfa', label: 'Pases ARFA', icon: '📄', chip: 'bg-blue-50', title: 'Planilla Rendición Pases ARFA V Región' },
+        { type: 'csv', label: 'Exportar Excel', icon: '📊', chip: 'bg-slate-100', title: 'Exportar a Planilla Excel (.xls)' },
+    ];
+
     const expensesList = (all_expenses && all_expenses.length > 0)
         ? all_expenses
         : (transactions?.data || []).filter((t: TransactionItem) => t.type === 'expense');
@@ -274,7 +304,7 @@ export default function Index({
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex flex-col gap-4">
                     <div>
                         <h2 className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2">
                             <span>📊</span> Centro de Reportes & Libro de Respaldos
@@ -284,164 +314,255 @@ export default function Index({
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2">
-                        <a
-                            href={getDownloadUrl('arfa')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-blue-700 transition"
-                            title="Planilla Rendición Pases ARFA V Región"
-                        >
-                            <span>📄</span> Pases ARFA
-                        </a>
-                        <a
-                            href={getDownloadUrl('csv')}
-                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-800 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-slate-900 transition"
-                            title="Exportar a Planilla Excel (.xls)"
-                        >
-                            <span>📊</span> Exportar Excel
-                        </a>
-                        <a
-                            href={getDownloadUrl('monthly')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-rose-700 transition"
-                            title="Exportar Movimientos del Período a PDF"
-                        >
-                            <span>📑</span> PDF Movimientos
-                        </a>
-                        <a
-                            href={getDownloadUrl('libro')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-emerald-700 transition"
-                            title="Descargar Libro de Respaldos con fotos de boletas"
-                        >
-                            <span>🖨️</span> Libro Respaldos
-                        </a>
-                        <a
-                            href={getDownloadUrl('selecciones')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-orange-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-orange-700 transition"
-                            title="Descargar Informe de Gastos de Selecciones"
-                        >
-                            <span>⚽</span> Gastos Selecciones
-                        </a>
-                        <a
-                            href={getDownloadUrl('categorias')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-indigo-700 transition"
-                            title="Informe de Ingresos y Egresos agrupados por categoría"
-                        >
-                            <span>🗂️</span> Por Categoría
-                        </a>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 sm:mr-1">
+                            Descargar
+                        </span>
+                        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                            {downloadButtons.map((btn) => btn.type === 'categorias' ? (
+                                <button
+                                    key={btn.type}
+                                    type="button"
+                                    onClick={() => setShowCategoryModal(true)}
+                                    title={btn.title}
+                                    className="group inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 text-xs font-bold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                >
+                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm ${btn.chip}`}>
+                                        {btn.icon}
+                                    </span>
+                                    {btn.label}
+                                </button>
+                            ) : (
+                                <a
+                                    key={btn.type}
+                                    href={getDownloadUrl(btn.type)}
+                                    {...(btn.type !== 'csv' ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                    title={btn.title}
+                                    className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 text-xs font-bold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                >
+                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm ${btn.chip}`}>
+                                        {btn.icon}
+                                    </span>
+                                    {btn.label}
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 </div>
             }
         >
             <Head title="Reportes & Libro de Respaldos" />
 
+            <Modal show={showCategoryModal} onClose={() => setShowCategoryModal(false)} maxWidth="md">
+                <div className="p-6">
+                    <h3 className="flex items-center gap-2 text-base font-black text-slate-900">
+                        <span>🗂️</span> Informe por Categoría
+                    </h3>
+                    <p className="mt-1 text-xs font-medium text-slate-500">
+                        Período: {startDate && endDate
+                            ? `del ${startDate} al ${endDate}`
+                            : monthFilter
+                                ? `mes ${monthFilter}`
+                                : `año ${selectedYear}`} (se cambia en la barra de período).
+                    </p>
+
+                    <div className="mt-5 space-y-4">
+                        <div>
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Movimientos</span>
+                            <div className="mt-1 grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
+                                {([
+                                    ['ambos', 'Ambos'],
+                                    ['ingresos', 'Ingresos'],
+                                    ['egresos', 'Egresos'],
+                                ] as const).map(([value, label]) => (
+                                    <button
+                                        key={value}
+                                        type="button"
+                                        onClick={() => {
+                                            setCategoryType(value);
+                                            setCategoryLabel('');
+                                        }}
+                                        className={`cursor-pointer rounded-lg py-2 text-xs font-bold transition ${
+                                            categoryType === value
+                                                ? value === 'ingresos'
+                                                    ? 'bg-white text-emerald-700 shadow-2xs'
+                                                    : value === 'egresos'
+                                                        ? 'bg-white text-rose-700 shadow-2xs'
+                                                        : 'bg-white text-slate-900 shadow-2xs'
+                                                : 'text-slate-500 hover:text-slate-800'
+                                        }`}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {categoryType !== 'ambos' && (
+                            <label className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Categoría</span>
+                                <select
+                                    value={categoryLabel}
+                                    onChange={(e) => setCategoryLabel(e.target.value)}
+                                    className="h-10 w-full cursor-pointer rounded-xl border-slate-200 bg-slate-50 py-0 pl-3 pr-9 text-xs font-bold text-slate-800 shadow-2xs"
+                                >
+                                    <option value="">
+                                        {categoryType === 'ingresos' ? 'Todas las categorías de ingreso' : 'Todas las categorías de egreso'}
+                                    </option>
+                                    {(category_report_options?.[categoryType] || []).map((label) => (
+                                        <option key={label} value={label}>{label}</option>
+                                    ))}
+                                </select>
+                            </label>
+                        )}
+
+                        <label className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-slate-200 p-3">
+                            <input
+                                type="checkbox"
+                                checked={categoryDetail}
+                                onChange={(e) => setCategoryDetail(e.target.checked)}
+                                className="mt-0.5 rounded border-slate-300 text-indigo-600"
+                            />
+                            <span>
+                                <span className="block text-xs font-bold text-slate-800">Incluir detalle de movimientos</span>
+                                <span className="block text-[11px] text-slate-500">Lista cada movimiento bajo su categoría. Sin detalle, solo sale el resumen.</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div className="mt-6 flex justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setShowCategoryModal(false)}
+                            className="h-9 cursor-pointer rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                        >
+                            Cancelar
+                        </button>
+                        <a
+                            href={getDownloadUrl('categorias')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setShowCategoryModal(false)}
+                            className="inline-flex h-9 items-center rounded-xl bg-indigo-600 px-4 text-xs font-black text-white shadow-2xs hover:bg-indigo-700"
+                        >
+                            Generar PDF
+                        </a>
+                    </div>
+                </div>
+            </Modal>
+
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
 
                     {/* Executive Global Date Filter Toolbar */}
-                    <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 text-lg font-bold">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-lg">
                                 🗓️
                             </div>
                             <div>
                                 <h3 className="text-sm font-extrabold text-slate-900">
-                                    Filtrar Período y Año del Reporte
+                                    Período del reporte
                                 </h3>
                                 <p className="text-xs font-medium text-slate-500">
-                                    Selecciona el año, mes o rango de fechas para generar el Libro o la Cartola del Club
+                                    Elige un año, un mes o un rango de fechas. Se aplica a los totales y a todos los reportes descargables.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 sm:flex sm:flex-wrap sm:items-end">
                             {/* Year Selector */}
-                            <select
-                                value={selectedYear}
-                                onChange={(e) => {
-                                    const val = Number(e.target.value);
-                                    setSelectedYear(val);
-                                    setMonthFilter('');
-                                    setStartDate('');
-                                    setEndDate('');
-                                    handleApplyFilter('', '', '', val);
-                                }}
-                                className="rounded-xl border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-extrabold text-slate-800 shadow-2xs cursor-pointer"
-                            >
-                                <option value={2026}>📅 Año 2026</option>
-                                <option value={2027}>📅 Año 2027</option>
-                                <option value={2028}>📅 Año 2028</option>
-                            </select>
+                            <label className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Año</span>
+                                <select
+                                    value={selectedYear}
+                                    onChange={(e) => {
+                                        const val = Number(e.target.value);
+                                        setSelectedYear(val);
+                                        setMonthFilter('');
+                                        setStartDate('');
+                                        setEndDate('');
+                                        handleApplyFilter('', '', '', val);
+                                    }}
+                                    className="h-9 w-full cursor-pointer rounded-xl border-slate-200 bg-slate-50 py-0 pl-3 pr-9 text-xs font-bold text-slate-800 shadow-2xs sm:w-28"
+                                >
+                                    <option value={2026}>2026</option>
+                                    <option value={2027}>2027</option>
+                                    <option value={2028}>2028</option>
+                                </select>
+                            </label>
 
                             {/* Month Selector */}
-                            <select
-                                value={monthFilter}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setMonthFilter(val);
-                                    setStartDate('');
-                                    setEndDate('');
-                                    handleApplyFilter(val, '', '');
-                                }}
-                                className="rounded-xl border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-extrabold text-slate-800 shadow-2xs cursor-pointer"
-                            >
-                                <option value="">🗓️ Todo el Período Anual</option>
-                                <option value={`${selectedYear}-01`}>Enero</option>
-                                <option value={`${selectedYear}-02`}>Febrero</option>
-                                <option value={`${selectedYear}-03`}>Marzo</option>
-                                <option value={`${selectedYear}-04`}>Abril</option>
-                                <option value={`${selectedYear}-05`}>Mayo</option>
-                                <option value={`${selectedYear}-06`}>Junio</option>
-                                <option value={`${selectedYear}-07`}>Julio</option>
-                                <option value={`${selectedYear}-08`}>Agosto</option>
-                                <option value={`${selectedYear}-09`}>Septiembre</option>
-                                <option value={`${selectedYear}-10`}>Octubre</option>
-                                <option value={`${selectedYear}-11`}>Noviembre</option>
-                                <option value={`${selectedYear}-12`}>Diciembre</option>
-                            </select>
+                            <label className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Mes</span>
+                                <select
+                                    value={monthFilter}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setMonthFilter(val);
+                                        setStartDate('');
+                                        setEndDate('');
+                                        handleApplyFilter(val, '', '');
+                                    }}
+                                    className="h-9 w-full cursor-pointer rounded-xl border-slate-200 bg-slate-50 py-0 pl-3 pr-9 text-xs font-bold text-slate-800 shadow-2xs sm:w-44"
+                                >
+                                    <option value="">Todo el año</option>
+                                    <option value={`${selectedYear}-01`}>Enero</option>
+                                    <option value={`${selectedYear}-02`}>Febrero</option>
+                                    <option value={`${selectedYear}-03`}>Marzo</option>
+                                    <option value={`${selectedYear}-04`}>Abril</option>
+                                    <option value={`${selectedYear}-05`}>Mayo</option>
+                                    <option value={`${selectedYear}-06`}>Junio</option>
+                                    <option value={`${selectedYear}-07`}>Julio</option>
+                                    <option value={`${selectedYear}-08`}>Agosto</option>
+                                    <option value={`${selectedYear}-09`}>Septiembre</option>
+                                    <option value={`${selectedYear}-10`}>Octubre</option>
+                                    <option value={`${selectedYear}-11`}>Noviembre</option>
+                                    <option value={`${selectedYear}-12`}>Diciembre</option>
+                                </select>
+                            </label>
+
+                            <div className="hidden h-9 items-center px-1 text-[10px] font-bold uppercase text-slate-300 sm:flex">o</div>
 
                             {/* Custom Date Range */}
-                            <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
-                                <span className="text-[10px] font-bold uppercase text-slate-400 pl-1">Desde:</span>
+                            <label className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Desde</span>
                                 <input
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
-                                    className="rounded-lg border-0 bg-transparent py-0.5 px-1.5 text-xs font-bold text-slate-800 focus:ring-0 w-28"
+                                    className="h-9 w-full rounded-xl border-slate-200 bg-slate-50 px-3 py-0 text-xs font-bold text-slate-800 shadow-2xs sm:w-40"
                                 />
-                                <span className="text-[10px] font-bold uppercase text-slate-400">Hasta:</span>
+                            </label>
+                            <label className="flex flex-col gap-1">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Hasta</span>
                                 <input
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="rounded-lg border-0 bg-transparent py-0.5 px-1.5 text-xs font-bold text-slate-800 focus:ring-0 w-28"
+                                    className="h-9 w-full rounded-xl border-slate-200 bg-slate-50 px-3 py-0 text-xs font-bold text-slate-800 shadow-2xs sm:w-40"
                                 />
+                            </label>
+
+                            <div className="col-span-2 flex gap-2 sm:col-span-1">
                                 <button
                                     type="button"
                                     onClick={() => handleApplyFilter()}
-                                    className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-black text-white hover:bg-indigo-700 shadow-2xs cursor-pointer"
+                                    disabled={!startDate || !endDate}
+                                    className="h-9 flex-1 cursor-pointer rounded-xl bg-indigo-600 px-4 text-xs font-black text-white shadow-2xs hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40 sm:flex-none"
                                 >
-                                    Filtrar
+                                    Aplicar rango
                                 </button>
+                                {(monthFilter || startDate || endDate) && (
+                                    <button
+                                        type="button"
+                                        onClick={handleResetFilter}
+                                        className="h-9 flex-1 cursor-pointer rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 hover:bg-slate-50 sm:flex-none"
+                                    >
+                                        Restablecer
+                                    </button>
+                                )}
                             </div>
-
-                            {(monthFilter || startDate || endDate) && (
-                                <button
-                                    type="button"
-                                    onClick={handleResetFilter}
-                                    className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
-                                >
-                                    Restablecer
-                                </button>
-                            )}
                         </div>
                     </div>
 

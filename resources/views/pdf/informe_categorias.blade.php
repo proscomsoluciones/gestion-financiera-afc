@@ -48,8 +48,13 @@
                     RUT: {{ $institutional['association_rut'] ?? '' }} • {{ $institutional['association_address'] ?? '' }}
                 </p>
                 <p style="font-size: 11px; color: #0f172a; margin: 3px 0 0 0; font-weight: 900; text-transform: uppercase;">
-                    INFORME DE INGRESOS Y EGRESOS POR CATEGORÍA
+                    {{ $reportTitle }}
                 </p>
+                @if($categoria !== '')
+                    <p style="font-size: 9.5px; color: #1e40af; margin: 2px 0 0 0; font-weight: bold;">
+                        Categoría: {{ $categoria }}
+                    </p>
+                @endif
             </td>
             <td style="width: 150px; text-align: right; vertical-align: middle;">
                 <div style="background-color: #eff6ff; border: 1.5px solid #1e3a8a; border-radius: 8px; padding: 5px 8px; text-align: center;">
@@ -63,21 +68,28 @@
     <!-- RESUMEN -->
     <table style="width: 100%; border-collapse: separate; border-spacing: 5px 0; margin-bottom: 10px;">
         <tr>
-            <td style="width: 33.3%; background-color: #f0fdf4; border: 1.5px solid #10b981; border-radius: 6px; padding: 8px; text-align: center;">
-                <span style="font-size: 8.5px; font-weight: bold; color: #047857; text-transform: uppercase; display: block;">INGRESOS TOTALES</span>
-                <span style="font-size: 12px; font-weight: 900; color: #059669; display: block; margin-top: 2px;">+${{ number_format($totalIncome, 0, ',', '.') }}</span>
-            </td>
-            <td style="width: 33.3%; background-color: #fef2f2; border: 1.5px solid #ef4444; border-radius: 6px; padding: 8px; text-align: center;">
-                <span style="font-size: 8.5px; font-weight: bold; color: #b91c1c; text-transform: uppercase; display: block;">EGRESOS TOTALES</span>
-                <span style="font-size: 12px; font-weight: 900; color: #dc2626; display: block; margin-top: 2px;">-${{ number_format($totalExpense, 0, ',', '.') }}</span>
-            </td>
-            <td style="width: 33.3%; background-color: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px; text-align: center;">
-                <span style="font-size: 8.5px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block;">SALDO DEL PERÍODO</span>
-                <span style="font-size: 12px; font-weight: 900; color: #1e40af; display: block; margin-top: 2px;">${{ number_format($netBalance, 0, ',', '.') }}</span>
-            </td>
+            @if($tipo !== 'egresos')
+                <td style="background-color: #f0fdf4; border: 1.5px solid #10b981; border-radius: 6px; padding: 8px; text-align: center;">
+                    <span style="font-size: 8.5px; font-weight: bold; color: #047857; text-transform: uppercase; display: block;">INGRESOS TOTALES</span>
+                    <span style="font-size: 12px; font-weight: 900; color: #059669; display: block; margin-top: 2px;">+${{ number_format($totalIncome, 0, ',', '.') }}</span>
+                </td>
+            @endif
+            @if($tipo !== 'ingresos')
+                <td style="background-color: #fef2f2; border: 1.5px solid #ef4444; border-radius: 6px; padding: 8px; text-align: center;">
+                    <span style="font-size: 8.5px; font-weight: bold; color: #b91c1c; text-transform: uppercase; display: block;">EGRESOS TOTALES</span>
+                    <span style="font-size: 12px; font-weight: 900; color: #dc2626; display: block; margin-top: 2px;">-${{ number_format($totalExpense, 0, ',', '.') }}</span>
+                </td>
+            @endif
+            @if($tipo === 'ambos' && $categoria === '')
+                <td style="background-color: #eff6ff; border: 1.5px solid #3b82f6; border-radius: 6px; padding: 8px; text-align: center;">
+                    <span style="font-size: 8.5px; font-weight: bold; color: #1d4ed8; text-transform: uppercase; display: block;">SALDO DEL PERÍODO</span>
+                    <span style="font-size: 12px; font-weight: 900; color: #1e40af; display: block; margin-top: 2px;">${{ number_format($netBalance, 0, ',', '.') }}</span>
+                </td>
+            @endif
         </tr>
     </table>
 
+    @if($tipo !== 'egresos')
     <!-- RESUMEN DE INGRESOS POR CATEGORÍA -->
     <div class="section-title section-income">Ingresos por categoría</div>
     <table class="data-table">
@@ -108,7 +120,9 @@
             </tr>
         </tbody>
     </table>
+    @endif
 
+    @if($tipo !== 'ingresos')
     <!-- RESUMEN DE EGRESOS POR CATEGORÍA -->
     <div class="section-title section-expense">Egresos por categoría</div>
     <table class="data-table">
@@ -139,6 +153,7 @@
             </tr>
         </tbody>
     </table>
+    @endif
 
     <!-- FIRMAS -->
     <div style="margin-top: 35px; width: 100%; page-break-inside: avoid;">
@@ -164,7 +179,7 @@
     </div>
 
     <!-- DETALLE DE INGRESOS -->
-    @if($incomeGroups->isNotEmpty())
+    @if($showDetail && $incomeGroups->isNotEmpty())
         <div class="page-break"></div>
         <div class="section-title section-income">Detalle de ingresos por categoría</div>
         @foreach($incomeGroups as $group)
@@ -187,7 +202,7 @@
     @endif
 
     <!-- DETALLE DE EGRESOS -->
-    @if($expenseGroups->isNotEmpty())
+    @if($showDetail && $expenseGroups->isNotEmpty())
         <div class="page-break"></div>
         <div class="section-title section-expense">Detalle de egresos por categoría</div>
         @foreach($expenseGroups as $group)

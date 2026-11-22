@@ -86,6 +86,56 @@ class CategoryReportTest extends TestCase
             ->assertOk();
     }
 
+    public function test_category_report_can_be_limited_to_one_type_and_category(): void
+    {
+        $tesorero = $this->makeTesorero();
+
+        $this->makeTransaction($tesorero, ['amount' => 380000, 'breakdown' => ['subcategory' => 'finales']]);
+        $this->makeTransaction($tesorero, ['type' => 'expense', 'category' => 'egreso', 'amount' => 135000, 'breakdown' => ['expense_type' => 'viatico']]);
+        $this->makeTransaction($tesorero, ['type' => 'expense', 'category' => 'egreso', 'amount' => 49000, 'breakdown' => ['expense_type' => 'compra']]);
+
+        Pdf::shouldReceive('loadView')
+            ->once()
+            ->withArgs(function (string $view, array $data) {
+                $this->assertSame('egresos', $data['tipo']);
+                $this->assertFalse($data['showDetail']);
+                $this->assertSame('INFORME DE EGRESOS POR CATEGORÍA', $data['reportTitle']);
+                $this->assertCount(0, $data['incomeGroups']);
+                $this->assertCount(1, $data['expenseGroups']);
+                $this->assertSame(49000.0, $data['totalExpense']);
+                $this->assertSame(0.0, $data['totalIncome']);
+
+                return true;
+            })
+            ->andReturnSelf();
+        Pdf::shouldReceive('setPaper')->andReturnSelf();
+        Pdf::shouldReceive('stream')->andReturn(response('pdf'));
+
+        $this->actingAs($tesorero)
+            ->get(route('reports.categorias-pdf', [
+                'year' => 2026,
+                'tipo' => 'egresos',
+                'categoria' => 'Compra de Insumos / Balones / Materiales',
+                'detalle' => '0',
+            ]))
+            ->assertOk();
+    }
+
+    public function test_reports_page_lists_category_options(): void
+    {
+        $tesorero = $this->makeTesorero();
+        $this->makeTransaction($tesorero, ['amount' => 380000, 'breakdown' => ['subcategory' => 'finales']]);
+        $this->makeTransaction($tesorero, ['type' => 'expense', 'category' => 'egreso', 'amount' => 49000, 'breakdown' => ['expense_type' => 'compra']]);
+
+        $this->actingAs($tesorero)
+            ->get(route('reports.index'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('category_report_options.ingresos', ['Recaudación Entradas / Final de Campeonato'])
+                ->where('category_report_options.egresos', ['Compra de Insumos / Balones / Materiales'])
+            );
+    }
+
     public function test_category_report_renders_pdf(): void
     {
         $tesorero = $this->makeTesorero();
