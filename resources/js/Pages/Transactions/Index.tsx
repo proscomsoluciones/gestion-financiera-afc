@@ -828,30 +828,32 @@ export default function Index({
                     </div>
 
                     {/* Navigation Tabs Bar */}
-                    <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 rounded-2xl border shadow-2xs">
-                        <div className="flex gap-2 py-2">
+                    <div className="rounded-2xl border border-slate-200 bg-white px-2 shadow-2xs sm:px-4">
+                        <div className="-mx-2 flex gap-2 overflow-x-auto px-2 py-2 sm:mx-0 sm:px-0">
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('historial')}
-                                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold transition-all ${
+                                className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-xs font-extrabold transition-all sm:px-4 ${
                                     activeTab === 'historial'
                                         ? 'bg-slate-900 text-white shadow-sm'
                                         : 'text-slate-600 hover:bg-slate-100'
                                 }`}
                             >
-                                <span>💳 Registrar & Historial de Movimientos</span>
+                                <span className="sm:hidden">💳 Movimientos</span>
+                                <span className="hidden sm:inline">💳 Registrar & Historial de Movimientos</span>
                             </button>
 
                             <button
                                 type="button"
                                 onClick={() => setActiveTab('tributos')}
-                                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold transition-all ${
+                                className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-xs font-extrabold transition-all sm:px-4 ${
                                     activeTab === 'tributos'
                                         ? 'bg-emerald-600 text-white shadow-sm'
                                         : 'text-slate-600 hover:bg-slate-100'
                                 }`}
                             >
-                                <span>📊 Control de Tributos por Club (Días Hábiles)</span>
+                                <span className="sm:hidden">📊 Tributos</span>
+                                <span className="hidden sm:inline">📊 Control de Tributos por Club (Días Hábiles)</span>
                                 {tribute_status && tribute_status.summary.overdue_count > 0 && (
                                     <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">
                                         {tribute_status.summary.overdue_count} Morosos
@@ -863,13 +865,14 @@ export default function Index({
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab('anulados')}
-                                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-extrabold transition-all ${
+                                    className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2.5 text-xs font-extrabold transition-all sm:px-4 ${
                                         activeTab === 'anulados'
                                             ? 'bg-rose-600 text-white shadow-sm'
                                             : 'text-slate-600 hover:bg-slate-100'
                                     }`}
                                 >
-                                    <span>🗑️ Comprobantes Anulados (Auditoría)</span>
+                                    <span className="sm:hidden">🗑️ Anulados</span>
+                                    <span className="hidden sm:inline">🗑️ Comprobantes Anulados (Auditoría)</span>
                                     {voided && voided.total > 0 && (
                                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${activeTab === 'anulados' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
                                             {voided.total}

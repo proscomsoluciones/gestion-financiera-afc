@@ -139,7 +139,60 @@ export default function Index({ users, roles, flash }: IndexProps) {
                         </div>
                     )}
 
-                    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+                    {/* Mobile: user cards */}
+                    <div className="space-y-3 sm:hidden">
+                        {users.map((user) => (
+                            <div key={user.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-xs font-black text-white shadow-xs">
+                                        {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="font-bold text-slate-900">
+                                            {user.name}
+                                            {user.id === currentUserId && (
+                                                <span className="ml-2 text-[10px] font-bold text-emerald-600">(Tú)</span>
+                                            )}
+                                        </p>
+                                        <p className="truncate text-xs font-semibold text-slate-400">{user.email}</p>
+                                        <div className="mt-2 flex flex-wrap gap-1.5">
+                                            <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold ${ROLE_STYLES[user.role || ''] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                                                {ROLE_LABELS[user.role || ''] || 'Sin rol'}
+                                            </span>
+                                            {user.email_verified_at ? (
+                                                <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700">
+                                                    Verificado
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-700">
+                                                    Pendiente
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="mt-3 flex gap-2 border-t border-slate-100 pt-3">
+                                    <button
+                                        onClick={() => openEdit(user)}
+                                        className="flex-1 rounded-xl border border-slate-200 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50"
+                                    >
+                                        Editar
+                                    </button>
+                                    {user.id !== currentUserId && (
+                                        <button
+                                            onClick={() => handleDelete(user)}
+                                            disabled={deletingId === user.id}
+                                            className="flex-1 rounded-xl border border-rose-200 bg-rose-50 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
+                                        >
+                                            {deletingId === user.id ? 'Eliminando…' : 'Eliminar'}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="hidden overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm sm:block">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-sm">
                                 <thead>

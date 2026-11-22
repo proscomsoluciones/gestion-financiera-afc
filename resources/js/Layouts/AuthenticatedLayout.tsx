@@ -33,8 +33,8 @@ export default function Authenticated({
                                 </Link>
                             </div>
 
-                            {/* Desktop Links (1024px+) */}
-                            <div className="hidden space-x-1 lg:flex lg:items-center lg:space-x-2">
+                            {/* Desktop Links (1280px+) */}
+                            <div className="hidden space-x-1 xl:flex xl:items-center xl:space-x-2">
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
@@ -90,8 +90,8 @@ export default function Authenticated({
                             </div>
                         </div>
 
-                        {/* User Dropdown Profile (1024px+) */}
-                        <div className="hidden lg:flex lg:items-center lg:ms-6">
+                        {/* User Dropdown Profile (1280px+) */}
+                        <div className="hidden xl:flex xl:items-center xl:ms-6">
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -145,8 +145,8 @@ export default function Authenticated({
                             </div>
                         </div>
 
-                        {/* Hamburger Button for Mobile & Tablet (< 1024px) */}
-                        <div className="-me-2 flex items-center lg:hidden">
+                        {/* Hamburger Button for Mobile & Tablet (< 1280px) */}
+                        <div className="-me-2 flex items-center xl:hidden">
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
@@ -189,11 +189,11 @@ export default function Authenticated({
                     </div>
                 </div>
 
-                {/* Mobile & Tablet Navigation Menu (< 1024px) */}
+                {/* Mobile & Tablet Navigation Menu (< 1280px) */}
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' lg:hidden border-t border-slate-100 bg-white'
+                        ' xl:hidden border-t border-slate-100 bg-white'
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">

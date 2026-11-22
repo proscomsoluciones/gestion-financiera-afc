@@ -320,7 +320,7 @@ export default function Index({ tariffs, institutional, other_income_categories 
                                         <select
                                             value={data.start_tribute_month}
                                             onChange={(e) => setData('start_tribute_month', Number(e.target.value))}
-                                            className="w-full rounded-xl border-amber-300 bg-white px-4 py-2.5 text-sm font-black text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 shadow-2xs"
+                                            className="w-full rounded-xl border-amber-300 bg-white py-2.5 pl-4 pr-10 text-sm font-black text-amber-950 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 shadow-2xs"
                                         >
                                             <option value={1}>Enero (Mes 1)</option>
                                             <option value={2}>Febrero (Mes 2)</option>

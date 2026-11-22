@@ -628,11 +628,11 @@ export default function Index({
                     </div>
 
                     {/* Navigation Tabs Bar */}
-                    <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 rounded-2xl border shadow-2xs">
-                        <div className="flex space-x-6 overflow-x-auto">
+                    <div className="rounded-2xl border border-slate-200 bg-white px-4 shadow-2xs">
+                        <div className="-mx-4 flex gap-6 overflow-x-auto px-4">
                             <button
                                 onClick={() => setActiveTab('libro')}
-                                className={`py-4 text-xs font-black tracking-wide transition border-b-2 uppercase ${
+                                className={`shrink-0 whitespace-nowrap border-b-2 py-4 text-xs font-black uppercase tracking-wide transition ${
                                     activeTab === 'libro'
                                         ? 'border-emerald-600 text-emerald-600'
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
@@ -643,7 +643,7 @@ export default function Index({
 
                             <button
                                 onClick={() => setActiveTab('period')}
-                                className={`py-4 text-xs font-black tracking-wide transition border-b-2 uppercase ${
+                                className={`shrink-0 whitespace-nowrap border-b-2 py-4 text-xs font-black uppercase tracking-wide transition ${
                                     activeTab === 'period'
                                         ? 'border-indigo-600 text-indigo-600'
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
@@ -654,7 +654,7 @@ export default function Index({
 
                             <button
                                 onClick={() => setActiveTab('annual')}
-                                className={`py-4 text-xs font-black tracking-wide transition border-b-2 uppercase ${
+                                className={`shrink-0 whitespace-nowrap border-b-2 py-4 text-xs font-black uppercase tracking-wide transition ${
                                     activeTab === 'annual'
                                         ? 'border-purple-600 text-purple-600'
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
@@ -665,7 +665,7 @@ export default function Index({
 
                             <button
                                 onClick={() => setActiveTab('club')}
-                                className={`py-4 text-xs font-black tracking-wide transition border-b-2 uppercase ${
+                                className={`shrink-0 whitespace-nowrap border-b-2 py-4 text-xs font-black uppercase tracking-wide transition ${
                                     activeTab === 'club'
                                         ? 'border-blue-600 text-blue-600'
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
@@ -676,7 +676,7 @@ export default function Index({
 
                             <button
                                 onClick={() => setActiveTab('solidarity')}
-                                className={`py-4 text-xs font-black tracking-wide transition border-b-2 uppercase ${
+                                className={`shrink-0 whitespace-nowrap border-b-2 py-4 text-xs font-black uppercase tracking-wide transition ${
                                     activeTab === 'solidarity'
                                         ? 'border-cyan-600 text-cyan-600'
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
@@ -1155,11 +1155,11 @@ export default function Index({
                                                 setSelectedClubId(val);
                                                 router.get(route('reports.index'), { club_id: val, year: selectedYear, month_filter: monthFilter, start_date: startDate, end_date: endDate }, { preserveState: true, preserveScroll: true });
                                             }}
-                                            className="rounded-xl border-slate-200 bg-slate-50 px-4 py-2 text-xs font-extrabold text-slate-900 shadow-2xs cursor-pointer"
+                                            className="h-9 w-full cursor-pointer rounded-xl border-slate-200 bg-slate-50 py-0 pl-3 pr-9 text-xs font-extrabold text-slate-900 shadow-2xs sm:w-auto"
                                         >
                                             {clubs.map((c) => (
                                                 <option key={c.id} value={c.id}>
-                                                    🛡️ {c.name}
+                                                    {c.name}
                                                 </option>
                                             ))}
                                         </select>
@@ -1281,7 +1281,7 @@ export default function Index({
                                                         : 'bg-blue-50/60 border-blue-200'
                                                 }`}
                                             >
-                                                <div className="flex items-center justify-between font-extrabold">
+                                                <div className="flex flex-col gap-0.5 font-extrabold sm:flex-row sm:items-center sm:justify-between sm:gap-2">
                                                     <span className="text-slate-900 uppercase">📅 {t.month_name}</span>
                                                     {t.status === 'paid' ? (
                                                         <span className="text-emerald-700 font-bold">✔ Pagado</span>

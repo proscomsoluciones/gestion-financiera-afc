@@ -255,7 +255,7 @@ export default function Dashboard({
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
                             {/* Month Selector */}
                             <select
                                 value={monthFilter}
@@ -266,9 +266,9 @@ export default function Dashboard({
                                     setEndDate('');
                                     handleApplyFilter(val, '', '');
                                 }}
-                                className="rounded-xl border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-extrabold text-slate-800 shadow-2xs cursor-pointer"
+                                className="h-9 w-full cursor-pointer rounded-xl border-slate-200 bg-slate-50 py-0 pl-3 pr-9 text-xs font-extrabold text-slate-800 shadow-2xs sm:w-auto"
                             >
-                                <option value="">🗓️ Todo el Período 2026</option>
+                                <option value="">Todo el Período 2026</option>
                                 <option value="2026-01">Enero 2026</option>
                                 <option value="2026-02">Febrero 2026</option>
                                 <option value="2026-03">Marzo 2026</option>
@@ -284,25 +284,29 @@ export default function Dashboard({
                             </select>
 
                             {/* Custom Date Range */}
-                            <div className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
-                                <span className="text-[10px] font-bold uppercase text-slate-400 pl-1">Desde:</span>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    className="rounded-lg border-0 bg-transparent py-0.5 px-1.5 text-xs font-bold text-slate-800 focus:ring-0 w-28"
-                                />
-                                <span className="text-[10px] font-bold uppercase text-slate-400">Hasta:</span>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="rounded-lg border-0 bg-transparent py-0.5 px-1.5 text-xs font-bold text-slate-800 focus:ring-0 w-28"
-                                />
+                            <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1.5 sm:flex sm:items-center">
+                                <label className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-1.5">
+                                    <span className="pl-1 text-[10px] font-bold uppercase text-slate-400">Desde:</span>
+                                    <input
+                                        type="date"
+                                        value={startDate}
+                                        onChange={(e) => setStartDate(e.target.value)}
+                                        className="w-full rounded-lg border-0 bg-transparent px-1.5 py-0.5 text-xs font-bold text-slate-800 focus:ring-0 sm:w-32"
+                                    />
+                                </label>
+                                <label className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-1.5">
+                                    <span className="pl-1 text-[10px] font-bold uppercase text-slate-400">Hasta:</span>
+                                    <input
+                                        type="date"
+                                        value={endDate}
+                                        onChange={(e) => setEndDate(e.target.value)}
+                                        className="w-full rounded-lg border-0 bg-transparent px-1.5 py-0.5 text-xs font-bold text-slate-800 focus:ring-0 sm:w-32"
+                                    />
+                                </label>
                                 <button
                                     type="button"
                                     onClick={() => handleApplyFilter()}
-                                    className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-black text-white hover:bg-emerald-700 shadow-2xs cursor-pointer"
+                                    className="col-span-2 cursor-pointer rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-black text-white shadow-2xs hover:bg-emerald-700"
                                 >
                                     Filtrar Fechas
                                 </button>
@@ -487,11 +491,11 @@ export default function Dashboard({
 
                                     return (
                                         <div key={m.month} className="space-y-2 bg-slate-50/60 p-4 rounded-2xl border border-slate-100">
-                                            <div className="flex items-center justify-between text-xs font-extrabold">
+                                            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-xs font-extrabold">
                                                 <span className="text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
                                                     📅 {m.month} 2026
                                                 </span>
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                                                     <span className="text-emerald-700 font-mono font-black">
                                                         +{formatCLP(m.income)}
                                                     </span>
@@ -617,9 +621,9 @@ export default function Dashboard({
                                             setEndDate('');
                                             handleApplyFilter(val, '', '');
                                         }}
-                                        className="rounded-xl border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-2xs"
+                                        className="h-8 cursor-pointer rounded-xl border-slate-200 bg-slate-50 py-0 pl-3 pr-9 text-xs font-bold text-slate-700 shadow-2xs"
                                     >
-                                        <option value="">🗓️ Todo el Período 2026</option>
+                                        <option value="">Todo el Período 2026</option>
                                         <option value="2026-01">Enero 2026</option>
                                         <option value="2026-02">Febrero 2026</option>
                                         <option value="2026-03">Marzo 2026</option>
@@ -894,7 +898,7 @@ export default function Dashboard({
 
                     {/* 5. Últimos Comprobantes Emitidos */}
                     <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xs space-y-5">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div className="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="text-lg font-extrabold text-slate-900">
                                     Últimos Comprobantes Emitidos

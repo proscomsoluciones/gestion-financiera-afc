@@ -159,8 +159,14 @@ export default function Show({ club }: { club: Club }) {
                             <h3 className="text-lg font-extrabold text-slate-900 mb-4 border-b border-slate-100 pb-3">
                                 Reseña Histórica y Trayectoria
                             </h3>
-                            <div className="prose prose-slate text-sm leading-relaxed text-slate-600 font-medium">
-                                {club.history ? club.history : 'No se ha registrado una reseña histórica para este club.'}
+                            <div className="space-y-3 text-sm font-medium leading-relaxed text-slate-600">
+                                {club.history
+                                    ? club.history
+                                        .split(/<\/p>|<br\s*\/?>|\n{2,}/i)
+                                        .map((part) => part.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim())
+                                        .filter(Boolean)
+                                        .map((paragraph, i) => <p key={i}>{paragraph}</p>)
+                                    : <p>No se ha registrado una reseña histórica para este club.</p>}
                             </div>
                         </div>
 
