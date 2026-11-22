@@ -16,6 +16,7 @@ import {
     FileText,
     Flag,
     HeartHandshake,
+    Info,
     Landmark,
     Lock,
     NotebookPen,
@@ -2388,7 +2389,7 @@ export default function Index({
 
                                     {expenseType === 'viatico' && (
                                         <div className="rounded-xl bg-white p-3 border border-rose-200 text-xs font-semibold text-rose-900 flex items-center gap-2">
-                                            <span>ℹ️</span>
+                                            <Info className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
                                             <span>
                                                 Para <strong>Viáticos</strong> no es obligatorio adjuntar foto de boleta. El sistema emitirá automáticamente el <strong>Comprobante Oficial en PDF</strong> con número de Folio y firma de Tesorería.
                                             </span>

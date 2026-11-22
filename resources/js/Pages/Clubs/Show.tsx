@@ -179,7 +179,7 @@ export default function Show({ club }: { club: Club }) {
                                 <div className="flex flex-wrap gap-2">
                                     {club.categories.map((cat, idx) => (
                                         <span key={idx} className="rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-200">
-                                            ⚽ {cat}
+                                            {cat}
                                         </span>
                                     ))}
                                 </div>

@@ -1,6 +1,33 @@
 import Modal from '@/Components/Modal';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
+import {
+    ArrowDownToLine,
+    ArrowLeftRight,
+    ArrowUpFromLine,
+    BadgeCheck,
+    Banknote,
+    BarChart3,
+    BookOpen,
+    Building2,
+    CalendarDays,
+    Camera,
+    CircleCheck,
+    ClipboardList,
+    Download,
+    FileSpreadsheet,
+    FileText,
+    HeartHandshake,
+    Layers,
+    ListTree,
+    Scale,
+    Shield,
+    TriangleAlert,
+    UserCheck,
+    Users,
+    Wallet,
+    type LucideIcon,
+} from 'lucide-react';
 import { useState } from 'react';
 
 interface TransactionItem {
@@ -285,16 +312,16 @@ export default function Index({
     const downloadButtons: {
         type: 'libro' | 'monthly' | 'arfa' | 'csv' | 'selecciones' | 'categorias';
         label: string;
-        icon: string;
+        icon: LucideIcon;
         chip: string;
         title: string;
     }[] = [
-        { type: 'monthly', label: 'PDF Movimientos', icon: '📑', chip: 'bg-rose-50', title: 'Exportar Movimientos del Período a PDF' },
-        { type: 'categorias', label: 'Por Categoría', icon: '🗂️', chip: 'bg-indigo-50', title: 'Informe de Ingresos y Egresos agrupados por categoría' },
-        { type: 'libro', label: 'Libro Respaldos', icon: '🖨️', chip: 'bg-emerald-50', title: 'Descargar Libro de Respaldos con fotos de boletas' },
-        { type: 'selecciones', label: 'Gastos Selecciones', icon: '⚽', chip: 'bg-orange-50', title: 'Descargar Informe de Gastos de Selecciones' },
-        { type: 'arfa', label: 'Pases ARFA', icon: '📄', chip: 'bg-blue-50', title: 'Planilla Rendición Pases ARFA V Región' },
-        { type: 'csv', label: 'Exportar Excel', icon: '📊', chip: 'bg-slate-100', title: 'Exportar a Planilla Excel (.xls)' },
+        { type: 'monthly', label: 'PDF Movimientos', icon: FileText, chip: 'bg-rose-50 text-rose-700', title: 'Exportar Movimientos del Período a PDF' },
+        { type: 'categorias', label: 'Por Categoría', icon: Layers, chip: 'bg-indigo-50 text-indigo-700', title: 'Informe de Ingresos y Egresos agrupados por categoría' },
+        { type: 'libro', label: 'Libro Respaldos', icon: BookOpen, chip: 'bg-emerald-50 text-emerald-700', title: 'Descargar Libro de Respaldos con fotos de boletas' },
+        { type: 'selecciones', label: 'Gastos Selecciones', icon: Users, chip: 'bg-orange-50 text-orange-700', title: 'Descargar Informe de Gastos de Selecciones' },
+        { type: 'arfa', label: 'Pases ARFA', icon: UserCheck, chip: 'bg-blue-50 text-blue-700', title: 'Planilla Rendición Pases ARFA V Región' },
+        { type: 'csv', label: 'Exportar Excel', icon: FileSpreadsheet, chip: 'bg-slate-100 text-slate-700', title: 'Exportar a Planilla Excel (.xls)' },
     ];
 
     const expensesList = (all_expenses && all_expenses.length > 0)
@@ -307,7 +334,7 @@ export default function Index({
                 <div className="flex flex-col gap-4">
                     <div>
                         <h2 className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-2">
-                            <span>📊</span> Centro de Reportes & Libro de Respaldos
+                            <BarChart3 className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Centro de Reportes & Libro de Respaldos
                         </h2>
                         <p className="text-xs font-medium text-slate-500 mt-0.5">
                             {institutional.association_name || 'Asociación de Fútbol Catemu'} • Generación de Libros Físicos/Digitales, Balances y Cartolas de Clubes
@@ -327,8 +354,8 @@ export default function Index({
                                     title={btn.title}
                                     className="group inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 text-xs font-bold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
                                 >
-                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm ${btn.chip}`}>
-                                        {btn.icon}
+                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${btn.chip}`}>
+                                        <btn.icon className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                     </span>
                                     {btn.label}
                                 </button>
@@ -340,8 +367,8 @@ export default function Index({
                                     title={btn.title}
                                     className="group inline-flex items-center gap-2 whitespace-nowrap rounded-xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 text-xs font-bold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
                                 >
-                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-sm ${btn.chip}`}>
-                                        {btn.icon}
+                                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${btn.chip}`}>
+                                        <btn.icon className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                     </span>
                                     {btn.label}
                                 </a>
@@ -356,7 +383,7 @@ export default function Index({
             <Modal show={showCategoryModal} onClose={() => setShowCategoryModal(false)} maxWidth="md">
                 <div className="p-6">
                     <h3 className="flex items-center gap-2 text-base font-black text-slate-900">
-                        <span>🗂️</span> Informe por Categoría
+                        <Layers className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Informe por Categoría
                     </h3>
                     <p className="mt-1 text-xs font-medium text-slate-500">
                         Período: {startDate && endDate
@@ -458,7 +485,7 @@ export default function Index({
                     <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-2xs">
                         <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-lg">
-                                🗓️
+                                <CalendarDays className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </div>
                             <div>
                                 <h3 className="text-sm font-extrabold text-slate-900">
@@ -599,7 +626,7 @@ export default function Index({
                         <div className="rounded-3xl border border-amber-200 bg-amber-50/50 p-5 shadow-2xs flex items-center justify-between">
                             <div>
                                 <span className="text-[11px] font-black uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                                    <span>💵</span> Disponibilidad en Caja Chica (Efectivo)
+                                    <Banknote className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Disponibilidad en Caja Chica (Efectivo)
                                 </span>
                                 <h4 className="text-xl font-black text-amber-950 mt-1">{formatCLP(summary.cash_balance || 0)}</h4>
                                 <p className="text-[10px] font-bold text-amber-800 mt-0.5">
@@ -614,7 +641,7 @@ export default function Index({
                         <div className="rounded-3xl border border-blue-200 bg-blue-50/50 p-5 shadow-2xs flex items-center justify-between">
                             <div>
                                 <span className="text-[11px] font-black uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
-                                    <span>🏦</span> Fondos en Cuenta Bancaria (Transferencias / Depósitos)
+                                    <Building2 className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Fondos en Cuenta Bancaria (Transferencias / Depósitos)
                                 </span>
                                 <h4 className="text-xl font-black text-blue-950 mt-1">{formatCLP(summary.bank_balance || 0)}</h4>
                                 <p className="text-[10px] font-bold text-blue-800 mt-0.5">
@@ -638,7 +665,7 @@ export default function Index({
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
                                 }`}
                             >
-                                📖 Libro de Respaldos con Anexo PDF
+                                <span className="inline-flex items-center gap-1.5"><BookOpen className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Libro de Respaldos con Anexo PDF</span>
                             </button>
 
                             <button
@@ -649,7 +676,7 @@ export default function Index({
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
                                 }`}
                             >
-                                🗓️ Informe de Movimientos del Período
+                                <span className="inline-flex items-center gap-1.5"><CalendarDays className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Informe de Movimientos del Período</span>
                             </button>
 
                             <button
@@ -660,7 +687,7 @@ export default function Index({
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
                                 }`}
                             >
-                                📊 Balance Anual 2026
+                                <span className="inline-flex items-center gap-1.5"><BarChart3 className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Balance Anual 2026</span>
                             </button>
 
                             <button
@@ -671,7 +698,7 @@ export default function Index({
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
                                 }`}
                             >
-                                🛡️ Cartola & Estado por Club
+                                <span className="inline-flex items-center gap-1.5"><Shield className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Cartola & Estado por Club</span>
                             </button>
 
                             <button
@@ -682,7 +709,7 @@ export default function Index({
                                         : 'border-transparent text-slate-400 hover:text-slate-700'
                                 }`}
                             >
-                                🤝 Informe Fondo Solidario
+                                <span className="inline-flex items-center gap-1.5"><HeartHandshake className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Informe Fondo Solidario</span>
                             </button>
                         </div>
                     </div>
@@ -707,7 +734,7 @@ export default function Index({
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-emerald-700 transition"
                                     >
-                                        <span>🖨️</span> Descargar Libro de Respaldos PDF
+                                        <Download className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Descargar Libro de Respaldos PDF
                                     </a>
                                 </div>
 
@@ -741,11 +768,11 @@ export default function Index({
                                                             <td className="py-3 px-5 text-center">
                                                                 {exp.receipt_image ? (
                                                                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
-                                                                        📷 Foto Adjunta
+                                                                        <span className="inline-flex items-center gap-1.5"><Camera className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Foto Adjunta</span>
                                                                     </span>
                                                                 ) : (
                                                                     <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-500">
-                                                                        📄 Comprobante Folio
+                                                                        <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Comprobante Folio</span>
                                                                     </span>
                                                                 )}
                                                             </td>
@@ -784,7 +811,7 @@ export default function Index({
                                                 {expensesList.map((exp: TransactionItem) => (
                                                     <div key={exp.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 flex flex-col justify-between">
                                                         <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                                                            <span className="text-xs font-bold text-slate-600">📅 {formatDateChile(exp.date)}</span>
+                                                            <span className="text-xs font-bold text-slate-600">{formatDateChile(exp.date)}</span>
                                                             <span className="text-sm font-black text-rose-600">-{formatCLP(exp.amount)}</span>
                                                         </div>
                                                         <div>
@@ -794,11 +821,11 @@ export default function Index({
                                                         <div className="pt-1 flex items-center justify-between text-[11px]">
                                                             {exp.receipt_image ? (
                                                                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-bold text-emerald-700 border border-emerald-200">
-                                                                    📷 Foto Adjunta
+                                                                    <span className="inline-flex items-center gap-1.5"><Camera className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Foto Adjunta</span>
                                                                 </span>
                                                             ) : (
                                                                 <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 font-bold text-slate-500">
-                                                                    📄 Comprobante Folio
+                                                                    <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Comprobante Folio</span>
                                                                 </span>
                                                             )}
                                                         </div>
@@ -840,7 +867,7 @@ export default function Index({
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-indigo-700 transition"
                                     >
-                                        <span>📄</span> Descargar Informe Mensual (PDF)
+                                        <FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Descargar Informe Mensual (PDF)
                                     </a>
                                 </div>
 
@@ -892,7 +919,7 @@ export default function Index({
                                                         <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                                                             {tx.folio_number}
                                                         </span>
-                                                        <span className="text-xs font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                        <span className="text-xs font-bold text-slate-500">{formatDateChile(tx.date)}</span>
                                                     </div>
                                                     <span className={`text-sm font-black ${
                                                         tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'
@@ -944,7 +971,7 @@ export default function Index({
                                                         : 'text-slate-500 hover:text-slate-800'
                                                 }`}
                                             >
-                                                📊 Resumen
+                                                <span className="inline-flex items-center gap-1.5"><BarChart3 className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Resumen</span>
                                             </button>
                                             <button
                                                 type="button"
@@ -955,7 +982,7 @@ export default function Index({
                                                         : 'text-slate-500 hover:text-slate-800'
                                                 }`}
                                             >
-                                                🔍 Detallado por Categoría
+                                                <span className="inline-flex items-center gap-1.5"><ListTree className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Detallado por Categoría</span>
                                             </button>
                                         </div>
 
@@ -965,7 +992,7 @@ export default function Index({
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-purple-700 transition"
                                         >
-                                            <span>📊</span> Descargar Balance Anual (PDF)
+                                            <BarChart3 className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Descargar Balance Anual (PDF)
                                         </a>
                                     </div>
                                 </div>
@@ -988,7 +1015,7 @@ export default function Index({
                                                     {annual_balance.map((row) => (
                                                         <tr key={row.month_num} className="hover:bg-slate-50/80">
                                                             <td className="py-3.5 px-5 font-black text-slate-900 uppercase">
-                                                                📅 {row.month_name} {selectedYear}
+                                                                {row.month_name} {selectedYear}
                                                             </td>
                                                             <td className="py-3.5 px-5 text-right font-bold text-emerald-600">
                                                                 +{formatCLP(row.income)}
@@ -1013,7 +1040,7 @@ export default function Index({
                                             {annual_balance.map((row) => (
                                                 <div key={row.month_num} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 flex flex-col justify-between">
                                                     <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                                                        <span className="font-black text-slate-900 text-xs uppercase">📅 {row.month_name} {selectedYear}</span>
+                                                        <span className="font-black text-slate-900 text-xs uppercase">{row.month_name} {selectedYear}</span>
                                                         <span className="font-mono font-black text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md">
                                                             Saldo: {formatCLP(row.accumulated)}
                                                         </span>
@@ -1059,7 +1086,7 @@ export default function Index({
                                                     {annual_balance.map((row) => (
                                                         <tr key={row.month_num} className="hover:bg-slate-50/80">
                                                             <td className="py-3.5 px-4 font-black text-slate-900 uppercase">
-                                                                📅 {row.month_name}
+                                                                {row.month_name}
                                                             </td>
                                                             <td className="py-3.5 px-4 text-right font-bold text-emerald-600">
                                                                 {formatCLP(row.categories?.tributo || 0)}
@@ -1090,7 +1117,7 @@ export default function Index({
                                             {annual_balance.map((row) => (
                                                 <div key={row.month_num} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs space-y-2 text-xs">
                                                     <div className="font-black text-slate-900 border-b border-slate-100 pb-2 uppercase">
-                                                        📅 {row.month_name}
+                                                        {row.month_name}
                                                     </div>
                                                     <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
                                                         <div className="flex justify-between">
@@ -1134,7 +1161,7 @@ export default function Index({
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 text-2xl font-bold">
-                                            🛡️
+                                            <Shield className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-extrabold text-slate-900">
@@ -1175,7 +1202,7 @@ export default function Index({
                                              rel="noopener noreferrer"
                                              className="inline-flex items-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-teal-800 transition"
                                          >
-                                             <span>📜</span> Certificado Paz y Salvo
+                                             <BadgeCheck className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Certificado Paz y Salvo
                                          </a>
 
                                          <a
@@ -1192,7 +1219,7 @@ export default function Index({
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-md hover:bg-emerald-700 transition"
                                         >
-                                            <span>🖨️</span> Descargar Cartola en PDF
+                                            <Download className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Descargar Cartola en PDF
                                         </a>
                                     </div>
                                 </div>
@@ -1230,7 +1257,7 @@ export default function Index({
                                             <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">Total Cancelado</span>
                                             <h4 className="text-2xl font-black text-emerald-900 mt-1">{formatCLP(club_statement.total_paid)}</h4>
                                         </div>
-                                        <span className="text-2xl">💰</span>
+                                        <Wallet className="h-7 w-7 shrink-0 opacity-60" strokeWidth={1.75} aria-hidden="true" />
                                     </div>
 
                                     <div className="rounded-2xl bg-amber-50/80 p-4 border border-amber-100 flex items-center justify-between">
@@ -1240,7 +1267,7 @@ export default function Index({
                                                 {club_statement.pending_tributes_count} Mes(es) ({formatCLP(club_statement.total_pending_amount)})
                                             </h4>
                                         </div>
-                                        <span className="text-2xl">⚠️</span>
+                                        <TriangleAlert className="h-7 w-7 shrink-0 opacity-60" strokeWidth={1.75} aria-hidden="true" />
                                     </div>
 
                                     <div className="rounded-2xl bg-slate-50/80 p-4 border border-slate-200 flex items-center justify-between">
@@ -1249,16 +1276,16 @@ export default function Index({
                                             <div className="mt-1">
                                                 {club_statement.is_up_to_date ? (
                                                     <span className="inline-flex items-center gap-1 text-xs font-black text-emerald-600 bg-emerald-100 px-2.5 py-1 rounded-lg">
-                                                        ✅ AL DÍA
+                                                        <span className="inline-flex items-center gap-1.5"><CircleCheck className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> AL DÍA</span>
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1 text-xs font-black text-rose-600 bg-rose-100 px-2.5 py-1 rounded-lg">
-                                                        🔴 MOROSO ({club_statement.pending_tributes_count} PENDIENTES)
+                                                        <span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden="true" /> MOROSO ({club_statement.pending_tributes_count} PENDIENTES)
                                                     </span>
                                                 )}
                                             </div>
                                         </div>
-                                        <span className="text-2xl">📋</span>
+                                        <ClipboardList className="h-7 w-7 shrink-0 opacity-60" strokeWidth={1.75} aria-hidden="true" />
                                     </div>
                                 </div>
 
@@ -1282,15 +1309,15 @@ export default function Index({
                                                 }`}
                                             >
                                                 <div className="flex flex-col gap-0.5 font-extrabold sm:flex-row sm:items-center sm:justify-between sm:gap-2">
-                                                    <span className="text-slate-900 uppercase">📅 {t.month_name}</span>
+                                                    <span className="text-slate-900 uppercase">{t.month_name}</span>
                                                     {t.status === 'paid' ? (
-                                                        <span className="text-emerald-700 font-bold">✔ Pagado</span>
+                                                        <span className="text-emerald-700 font-bold">Pagado</span>
                                                     ) : t.status === 'exempt' ? (
-                                                        <span className="text-slate-500 font-bold">⚪ Previo a Gestión</span>
+                                                        <span className="text-slate-500 font-bold">Previo a Gestión</span>
                                                     ) : t.status === 'overdue' ? (
-                                                        <span className="text-rose-600 font-bold">✖ Vencido / Moroso</span>
+                                                        <span className="text-rose-600 font-bold">Vencido / Moroso</span>
                                                     ) : (
-                                                        <span className="text-blue-600 font-bold">⏳ Por Vencer (En Plazo)</span>
+                                                        <span className="text-blue-600 font-bold">Por Vencer (En Plazo)</span>
                                                     )}
                                                 </div>
                                                 {t.status === 'paid' && (
@@ -1308,7 +1335,7 @@ export default function Index({
                                     <div className="space-y-3 pt-2">
                                         <div className="flex items-center justify-between">
                                             <h4 className="text-xs font-black uppercase tracking-wider text-teal-800 flex items-center gap-1.5">
-                                                <span>🔄</span> 2. Detalle Transparente de Pases: ARFA V Región vs Retención Asociación
+                                                <ArrowLeftRight className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> 2. Detalle Transparente de Pases: ARFA V Región vs Retención Asociación
                                                 <span className="ml-2 rounded-full bg-teal-100 px-2.5 py-0.5 text-[10px] font-extrabold text-teal-800 border border-teal-200">
                                                     {club_statement.passes_count || 0} Pases ({club_statement.passes_adult_count || 0} Adultos • {club_statement.passes_femenino_count || 0} Femeninos)
                                                 </span>
@@ -1380,7 +1407,7 @@ export default function Index({
                                                             <span className="font-mono font-black text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
                                                                 {pass.folio_number}
                                                             </span>
-                                                            <span className="font-bold text-slate-500">📅 {formatDateChile(pass.date)}</span>
+                                                            <span className="font-bold text-slate-500">{formatDateChile(pass.date)}</span>
                                                         </div>
                                                         <p className="font-bold text-slate-900">{pass.concept}</p>
                                                         <div className="grid grid-cols-3 gap-1 pt-1 text-[11px] text-center bg-slate-50 p-2 rounded-xl border border-slate-100">
@@ -1449,7 +1476,7 @@ export default function Index({
                                                                         rel="noopener noreferrer"
                                                                         className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition"
                                                                     >
-                                                                        🖨️ Recibo
+                                                                        <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Ver Recibo</span>
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -1475,7 +1502,7 @@ export default function Index({
                                                                 <span className="font-mono font-black text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                                                                     {tx.folio_number}
                                                                 </span>
-                                                                <span className="text-xs font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                                <span className="text-xs font-bold text-slate-500">{formatDateChile(tx.date)}</span>
                                                             </div>
                                                             <span className="font-black text-sm text-emerald-600">+{formatCLP(tx.amount)}</span>
                                                         </div>
@@ -1492,7 +1519,7 @@ export default function Index({
                                                                 rel="noopener noreferrer"
                                                                 className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800"
                                                             >
-                                                                🖨️ Ver Recibo PDF
+                                                                <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Ver Recibo</span>
                                                             </a>
                                                         </div>
                                                     </div>
@@ -1516,7 +1543,7 @@ export default function Index({
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                                     <div>
                                         <h3 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                                            <span>🤝</span> Informe Especial: Fondo Solidario & Auxilios Médicos
+                                            <HeartHandshake className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Informe Especial: Fondo Solidario & Auxilios Médicos
                                         </h3>
                                         <p className="text-xs font-medium text-slate-500">
                                             Control y rendición transparente de fondos recaudados de los clubes y entregados a beneficiarios
@@ -1534,7 +1561,7 @@ export default function Index({
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                                     <div className="rounded-2xl border border-blue-200/80 bg-blue-50/50 p-5">
                                         <div className="text-[11px] font-extrabold uppercase tracking-wider text-blue-700">
-                                            📥 Total Recaudado (Aportes Clubes)
+                                            <span className="inline-flex items-center gap-1.5"><ArrowDownToLine className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Total Recaudado (Aportes Clubes)</span>
                                         </div>
                                         <div className="mt-2 text-2xl font-black text-blue-900">
                                             {formatCLP(solidarity_report?.total_collected || 0)}
@@ -1546,7 +1573,7 @@ export default function Index({
 
                                     <div className="rounded-2xl border border-rose-200/80 bg-rose-50/50 p-5">
                                         <div className="text-[11px] font-extrabold uppercase tracking-wider text-rose-700">
-                                            📤 Total Entregado (Ayudas a Beneficiarios)
+                                            <span className="inline-flex items-center gap-1.5"><ArrowUpFromLine className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Total Entregado (Ayudas a Beneficiarios)</span>
                                         </div>
                                         <div className="mt-2 text-2xl font-black text-rose-900">
                                             {formatCLP(solidarity_report?.total_delivered || 0)}
@@ -1564,7 +1591,7 @@ export default function Index({
                                         <div className={`text-[11px] font-extrabold uppercase tracking-wider ${
                                             (solidarity_report?.pending_balance || 0) === 0 ? 'text-emerald-700' : 'text-amber-700'
                                         }`}>
-                                            ⚖️ Saldo por Entregar / Rendir
+                                            <span className="inline-flex items-center gap-1.5"><Scale className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Saldo por Entregar / Rendir</span>
                                         </div>
                                         <div className={`mt-2 text-2xl font-black ${
                                             (solidarity_report?.pending_balance || 0) === 0 ? 'text-emerald-900' : 'text-amber-900'
@@ -1574,7 +1601,7 @@ export default function Index({
                                         <p className={`mt-1 text-[11px] font-medium ${
                                             (solidarity_report?.pending_balance || 0) === 0 ? 'text-emerald-600' : 'text-amber-600'
                                         }`}>
-                                            {(solidarity_report?.pending_balance || 0) === 0 ? '✅ Rendición 100% al día y cuadrada' : '⚠️ Pendiente por asignar o entregar'}
+                                            {(solidarity_report?.pending_balance || 0) === 0 ? 'Rendición 100% al día y cuadrada' : 'Pendiente por asignar o entregar'}
                                         </p>
                                     </div>
                                 </div>
@@ -1582,7 +1609,7 @@ export default function Index({
                                 {/* Table 1: Incomes / Collections */}
                                 <div className="space-y-3 pt-2">
                                     <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                                        <span>📥</span> 1. Aportes y Fondos Recaudados por los Clubes
+                                        <ArrowDownToLine className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> 1. Aportes y Fondos Recaudados por los Clubes
                                     </h4>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
                                         {/* Desktop Table View (1024px+) */}
@@ -1638,7 +1665,7 @@ export default function Index({
                                                             <span className="font-mono font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
                                                                 {tx.folio_number}
                                                             </span>
-                                                            <span className="font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                            <span className="font-bold text-slate-500">{formatDateChile(tx.date)}</span>
                                                         </div>
                                                         <div className="space-y-1">
                                                             <span className="font-extrabold text-slate-900 block">{tx.club ? tx.club.name : '— Aporte Varios —'}</span>
@@ -1662,7 +1689,7 @@ export default function Index({
                                 {/* Table 2: Expenses / Deliveries */}
                                 <div className="space-y-3 pt-2">
                                     <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                                        <span>📤</span> 2. Ayudas Entregadas y Desembolsadas a Beneficiarios
+                                        <ArrowUpFromLine className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> 2. Ayudas Entregadas y Desembolsadas a Beneficiarios
                                     </h4>
                                     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white">
                                         {/* Desktop Table View (1024px+) */}
@@ -1704,7 +1731,7 @@ export default function Index({
                                                                         rel="noopener noreferrer"
                                                                         className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-700 hover:bg-slate-100 transition"
                                                                     >
-                                                                        🖨️ Recibo
+                                                                        <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Ver Recibo</span>
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -1729,7 +1756,7 @@ export default function Index({
                                                             <span className="font-mono font-black text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
                                                                 {tx.folio_number}
                                                             </span>
-                                                            <span className="font-bold text-slate-500">📅 {formatDateChile(tx.date)}</span>
+                                                            <span className="font-bold text-slate-500">{formatDateChile(tx.date)}</span>
                                                         </div>
                                                         <div className="space-y-1">
                                                             <span className="font-extrabold text-slate-900 block">{tx.club ? tx.club.name : '— Beneficiario Directo —'}</span>
@@ -1742,7 +1769,7 @@ export default function Index({
                                                                 rel="noopener noreferrer"
                                                                 className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700"
                                                             >
-                                                                🖨️ PDF
+                                                                <span className="inline-flex items-center gap-1.5"><FileText className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Ver PDF</span>
                                                             </a>
                                                             <span className="font-black text-sm text-rose-600">-{formatCLP(tx.amount)}</span>
                                                         </div>
