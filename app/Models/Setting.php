@@ -173,12 +173,12 @@ class Setting extends Model
         }
 
         return [
-            ['id' => 'donacion', 'label' => '🎁 Donación / Aporte Voluntario'],
-            ['id' => 'proyecto', 'label' => '🏛️ Proyecto / Subvención Municipal o FNDR'],
-            ['id' => 'finales', 'label' => '🎟️ Recaudación Entradas / Final de Campeonato'],
-            ['id' => 'sponsor', 'label' => '⭐ Sponsor / Auspicio Comercial'],
-            ['id' => 'evento', 'label' => '🎟️ Venta de Bases / Evento / Beneficio'],
-            ['id' => 'otro', 'label' => '💎 Otro Ingreso Extraordinario'],
+            ['id' => 'donacion', 'label' => 'Donación / Aporte Voluntario'],
+            ['id' => 'proyecto', 'label' => 'Proyecto / Subvención Municipal o FNDR'],
+            ['id' => 'finales', 'label' => 'Recaudación Entradas / Final de Campeonato'],
+            ['id' => 'sponsor', 'label' => 'Sponsor / Auspicio Comercial'],
+            ['id' => 'evento', 'label' => 'Venta de Bases / Evento / Beneficio'],
+            ['id' => 'otro', 'label' => 'Otro Ingreso Extraordinario'],
         ];
     }
 

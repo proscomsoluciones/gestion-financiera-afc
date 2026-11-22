@@ -36,7 +36,7 @@
                     <img src="{{ $institutional['logo_url'] }}" style="max-width: 55px; max-height: 55px;">
                 @else
                     <div style="width: 48px; height: 48px; background: #1e3a8a; color: #ffffff; font-weight: 900; font-size: 16px; text-align: center; line-height: 48px; border-radius: 8px;">
-                        ⚽
+                        AFC
                     </div>
                 @endif
             </td>

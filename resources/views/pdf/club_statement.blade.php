@@ -55,7 +55,7 @@
                     RUT: {{ $institutional['association_rut'] ?? '65.123.456-K' }} • {{ $institutional['association_address'] ?? 'Región de Valparaíso, Chile' }}
                 </p>
                 <p style="font-size: 11px; color: #0f172a; margin: 3px 0 0 0; font-weight: 900; text-transform: uppercase;">
-                    CARTOLA FINANCIERA Y ESTADO DE CUENTA: {{ strtoupper($statement['club']->name) }}
+                    CARTOLA FINANCIERA Y ESTADO DE CUENTA: {{ mb_strtoupper($statement['club']->name) }}
                 </p>
             </td>
             <td style="width: 150px; text-align: right; vertical-align: middle;">

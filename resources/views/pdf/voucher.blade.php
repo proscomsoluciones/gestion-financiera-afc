@@ -279,7 +279,7 @@
                                 @if(!empty($institutional['logo_path']) && file_exists(storage_path('app/public/' . $institutional['logo_path'])))
                                     <img src="{{ storage_path('app/public/' . $institutional['logo_path']) }}" class="logo-img" alt="Logo">
                                 @else
-                                    <div class="logo-box">⚽</div>
+                                    <div class="logo-box">AFC</div>
                                 @endif
                             </td>
                             <td class="title-area">

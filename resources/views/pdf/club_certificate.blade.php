@@ -46,7 +46,7 @@
                     <img src="{{ $institutional['logo_url'] }}" style="max-width: 55px; max-height: 55px;">
                 @else
                     <div style="width: 48px; height: 48px; background: #047857; color: #ffffff; font-weight: 900; font-size: 16px; text-align: center; line-height: 48px; border-radius: 8px;">
-                        ⚽
+                        AFC
                     </div>
                 @endif
             </td>
@@ -80,16 +80,16 @@
 
     <div class="certificate-body">
         <p>
-            La <strong>{{ $institutional['association_name'] ?? 'Asociación de Fútbol Catemu' }}</strong>, a través de su Secretaría de Tesorería General, certifica por medio del presente documento oficial que la institución deportiva denominada <span class="highlight">{{ strtoupper($club->name) }}</span>, ha sido evaluada financieramente para la temporada correspondiente al año <span class="highlight">{{ $year }}</span>.
+            La <strong>{{ $institutional['association_name'] ?? 'Asociación de Fútbol Catemu' }}</strong>, a través de su Secretaría de Tesorería General, certifica por medio del presente documento oficial que la institución deportiva denominada <span class="highlight">{{ mb_strtoupper($club->name) }}</span>, ha sido evaluada financieramente para la temporada correspondiente al año <span class="highlight">{{ $year }}</span>.
         </p>
 
         @if($statement['is_up_to_date'])
             <p>
-                A la fecha de emisión de este certificado, el club <span class="highlight">{{ strtoupper($club->name) }}</span> ha dado <span class="highlight">CUMPLIMIENTO TOTAL</span> al pago de sus tributos mensuales, cuotas institucionales y derechos reglamentarios. Por lo tanto, se encuentra en condición de <span class="highlight">ESTADO AL DÍA</span> con la Tesorería General, encontrándose plenamente habilitado para participar en competencias oficiales, votar en Asambleas de Presidentes y realizar trámites reglamentarios.
+                A la fecha de emisión de este certificado, el club <span class="highlight">{{ mb_strtoupper($club->name) }}</span> ha dado <span class="highlight">CUMPLIMIENTO TOTAL</span> al pago de sus tributos mensuales, cuotas institucionales y derechos reglamentarios. Por lo tanto, se encuentra en condición de <span class="highlight">ESTADO AL DÍA</span> con la Tesorería General, encontrándose plenamente habilitado para participar en competencias oficiales, votar en Asambleas de Presidentes y realizar trámites reglamentarios.
             </p>
         @else
             <p>
-                A la fecha de emisión de este documento, el club <span class="highlight">{{ strtoupper($club->name) }}</span> registra un saldo pendiente de <span class="highlight">${{ number_format($statement['total_pending_amount'], 0, ',', '.') }} CLP</span> correspondiente a <span class="highlight">{{ $statement['pending_tributes_count'] }} período(s) de tributo mensual</span>. Se solicita regularizar dicha situación a la brevedad ante la Tesorería General.
+                A la fecha de emisión de este documento, el club <span class="highlight">{{ mb_strtoupper($club->name) }}</span> registra un saldo pendiente de <span class="highlight">${{ number_format($statement['total_pending_amount'], 0, ',', '.') }} CLP</span> correspondiente a <span class="highlight">{{ $statement['pending_tributes_count'] }} período(s) de tributo mensual</span>. Se solicita regularizar dicha situación a la brevedad ante la Tesorería General.
             </p>
         @endif
     </div>
