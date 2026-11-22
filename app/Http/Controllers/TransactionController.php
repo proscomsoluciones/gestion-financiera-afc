@@ -64,8 +64,8 @@ class TransactionController extends Controller
             $query->whereDate('date', '<=', $request->input('end_date'));
         }
 
-        $perPage = (int) $request->input('per_page', 50);
-        if ($perPage <= 0) { $perPage = 50; }
+        $perPage = (int) $request->input('per_page', 10);
+        if ($perPage <= 0) { $perPage = 10; }
         if ($perPage > 200) { $perPage = 200; }
 
         $transactions = (clone $query)->orderBy('date', 'desc')->orderBy('id', 'desc')->paginate($perPage)->withQueryString();

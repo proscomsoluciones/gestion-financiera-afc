@@ -240,7 +240,7 @@ export default function Index({
     const [clubIdFilter, setClubIdFilter] = useState(filters.club_id || '');
     const [categoryFilter, setCategoryFilter] = useState(filters.category || '');
     const [typeFilter, setTypeFilter] = useState(filters.type || '');
-    const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 50);
+    const [perPageFilter, setPerPageFilter] = useState<string | number>(filters.per_page || 10);
     const [startDateFilter, setStartDateFilter] = useState(filters.start_date || '');
     const [endDateFilter, setEndDateFilter] = useState(filters.end_date || '');
 
@@ -722,10 +722,10 @@ export default function Index({
         setClubIdFilter('');
         setCategoryFilter('');
         setTypeFilter('');
-        setPerPageFilter(50);
+        setPerPageFilter(10);
         setStartDateFilter('');
         setEndDateFilter('');
-        router.get(route('transactions.index'), { per_page: 50 });
+        router.get(route('transactions.index'), { per_page: 10 });
     };
 
     const handleSubmitTransaction = (e: React.FormEvent) => {
@@ -979,25 +979,37 @@ export default function Index({
 
                             {/* Filters & Search */}
                             <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs">
-                                <form onSubmit={handleSearch} className="flex flex-col gap-3 xl:flex-row xl:items-center">
-                                    <div className="relative flex-1">
-                                        <input
-                                            type="text"
-                                            value={search}
-                                            onChange={(e) => setSearch(e.target.value)}
-                                            placeholder="Buscar por N° Folio, concepto, jugador o comprobante..."
-                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
-                                        />
-                                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                                            🔍
+                                <form onSubmit={handleSearch} className="space-y-3">
+                                    <div className="flex flex-col gap-2 sm:flex-row">
+                                        <div className="relative flex-1">
+                                            <input
+                                                type="search"
+                                                value={search}
+                                                onChange={(e) => setSearch(e.target.value)}
+                                                placeholder="Buscar por N° Folio, concepto, jugador o comprobante..."
+                                                className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
+                                            />
+                                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                                                🔍
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button type="submit" className="h-11 flex-1 rounded-xl bg-slate-900 px-6 text-xs font-extrabold text-white shadow-2xs transition hover:bg-slate-800 sm:flex-none">
+                                                Buscar
+                                            </button>
+                                            {(search || clubIdFilter || categoryFilter || startDateFilter || endDateFilter || String(perPageFilter) !== '10') && (
+                                                <button type="button" onClick={handleResetFilters} className="h-11 flex-1 rounded-xl border border-slate-200 px-4 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 sm:flex-none">
+                                                    Limpiar
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:flex xl:items-center gap-2.5">
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
                                         <select
                                             value={clubIdFilter}
                                             onChange={(e) => setClubIdFilter(e.target.value)}
-                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
+                                            className="h-10 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-3.5 pr-9 text-xs font-bold text-slate-700"
                                         >
                                             <option value="">Todos los Clubes</option>
                                             <option value="afc">🏛️ Arcas Directas (Asociación)</option>
@@ -1011,7 +1023,7 @@ export default function Index({
                                         <select
                                             value={categoryFilter}
                                             onChange={(e) => setCategoryFilter(e.target.value)}
-                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
+                                            className="h-10 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-3.5 pr-9 text-xs font-bold text-slate-700"
                                         >
                                             <option value="">Todas las Categorías</option>
                                             <option value="tributo">Tributos Mensuales</option>
@@ -1026,7 +1038,7 @@ export default function Index({
                                         </select>
 
                                         {/* Date Filters: Desde / Hasta */}
-                                        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1.5">
+                                        <div className="flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3">
                                             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Desde</span>
                                             <input
                                                 type="date"
@@ -1036,7 +1048,7 @@ export default function Index({
                                             />
                                         </div>
 
-                                        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-1.5">
+                                        <div className="flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/50 px-3">
                                             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Hasta</span>
                                             <input
                                                 type="date"
@@ -1057,24 +1069,13 @@ export default function Index({
                                                     { preserveState: true }
                                                 );
                                             }}
-                                            className="w-full rounded-xl border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs font-bold text-slate-700"
+                                            className="h-10 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-3.5 pr-9 text-xs font-bold text-slate-700"
                                         >
-                                            <option value="50">📄 50 por pág. (Todos)</option>
-                                            <option value="25">📄 25 por pág.</option>
-                                            <option value="100">📄 100 por pág.</option>
                                             <option value="10">📄 10 por pág.</option>
+                                            <option value="25">📄 25 por pág.</option>
+                                            <option value="50">📄 50 por pág.</option>
+                                            <option value="100">📄 100 por pág.</option>
                                         </select>
-                                    </div>
-
-                                    <div className="flex items-center gap-2 justify-end shrink-0">
-                                        <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-extrabold text-white hover:bg-slate-800 transition shadow-2xs">
-                                            Filtrar
-                                        </button>
-                                        {(search || clubIdFilter || categoryFilter || startDateFilter || endDateFilter || String(perPageFilter) !== '50') && (
-                                            <button type="button" onClick={handleResetFilters} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
-                                                Limpiar
-                                            </button>
-                                        )}
                                     </div>
                                 </form>
                             </div>
