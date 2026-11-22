@@ -73,4 +73,38 @@ class TransactionReceiptUploadTest extends TestCase
 
         $this->assertDatabaseHas('transactions', ['concept' => 'Aporte con PDF']);
     }
+
+    public function test_editing_without_a_new_file_keeps_the_existing_receipt(): void
+    {
+        $tesorero = $this->makeTesorero();
+
+        $this->actingAs($tesorero)->post('/transactions', array_merge(
+            $this->baseTransactionData(),
+            ['receipt_image' => UploadedFile::fake()->create('factura.pdf', 50, 'application/pdf')]
+        ))->assertSessionHasNoErrors();
+
+        $transaction = \App\Models\Transaction::firstOrFail();
+        $originalReceipt = $transaction->receipt_image;
+        $this->assertNotNull($originalReceipt);
+
+        // Edit only the concept, sending no file (as the edit form does).
+        $this->actingAs($tesorero)->put("/transactions/{$transaction->id}", array_merge(
+            $this->baseTransactionData(),
+            ['concept' => 'Concepto corregido', 'receipt_image' => null]
+        ))->assertSessionHasNoErrors();
+
+        $transaction->refresh();
+        $this->assertSame('Concepto corregido', $transaction->concept);
+        $this->assertSame($originalReceipt, $transaction->receipt_image);
+
+        // A new file replaces it.
+        $this->actingAs($tesorero)->put("/transactions/{$transaction->id}", array_merge(
+            $this->baseTransactionData(),
+            ['receipt_image' => UploadedFile::fake()->image('boleta.jpg')]
+        ))->assertSessionHasNoErrors();
+
+        $transaction->refresh();
+        $this->assertNotSame($originalReceipt, $transaction->receipt_image);
+        Storage::disk('public')->assertExists($transaction->receipt_image);
+    }
 }

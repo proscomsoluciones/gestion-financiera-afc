@@ -252,6 +252,9 @@ class TransactionController extends Controller
         if ($request->hasFile('receipt_image')) {
             $path = $request->file('receipt_image')->store('vouchers', 'public');
             $validated['receipt_image'] = $path;
+        } else {
+            // Sin archivo nuevo se conserva el respaldo existente (no se borra al editar).
+            unset($validated['receipt_image']);
         }
 
         if (!empty($validated['folio_number'])) {
