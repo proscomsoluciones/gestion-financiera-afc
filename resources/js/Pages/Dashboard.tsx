@@ -8,7 +8,6 @@ import {
     BookOpen,
     ChevronLeft,
     ChevronRight,
-    CircleAlert,
     Building2,
     CalendarDays,
     CircleCheck,
@@ -457,17 +456,10 @@ export default function Dashboard({
                                 <h3 className="text-3xl font-black tracking-tight text-slate-900">
                                     {formatCLP(kpis.net_balance)}
                                 </h3>
-                                {kpis.arfa_balance && kpis.arfa_balance.pending > 0 ? (
-                                    <div className="mt-2 flex items-start gap-1.5 text-xs font-bold text-amber-700">
-                                        <CircleAlert className="mt-px h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
-                                        <span>Incluye {formatCLP(kpis.arfa_balance.pending)} por pagar a ARFA</span>
-                                    </div>
-                                ) : (
-                                    <div className="mt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-600">
-                                        <CircleCheck className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-                                        <span>Fondos Netos Verificados</span>
-                                    </div>
-                                )}
+                                <div className="mt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+                                    <CircleCheck className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                    <span>Fondos Netos Verificados</span>
+                                </div>
                             </div>
                         </div>
 
