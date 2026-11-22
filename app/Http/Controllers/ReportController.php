@@ -510,6 +510,110 @@ class ReportController extends Controller
     }
 
     /**
+     * Download Income & Expenses by Category Report PDF.
+     */
+    public function downloadCategoriesPdf(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $monthFilter = $request->input('month_filter');
+        $year = (int) $request->input('year', 2026);
+
+        $query = Transaction::query();
+        $periodTitle = "Temporada {$year}";
+
+        if (!empty($startDate) && !empty($endDate)) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+            $periodTitle = "Del {$startDate} al {$endDate}";
+        } elseif (!empty($monthFilter)) {
+            if (str_contains($monthFilter, '-')) {
+                [$y, $m] = explode('-', $monthFilter);
+                $query->whereYear('date', $y)->whereMonth('date', $m);
+                $periodTitle = self::formatSpanishMonthPeriod($m, $y);
+            } else {
+                $query->whereYear('date', $year)->whereMonth('date', $monthFilter);
+                $periodTitle = self::formatSpanishMonthPeriod($monthFilter, $year);
+            }
+        } else {
+            $query->whereYear('date', $year);
+        }
+
+        $transactions = $query->orderBy('date')->orderBy('id')->get();
+
+        $otherIncomeLabels = collect(Setting::getOtherIncomeCategories())
+            ->mapWithKeys(fn ($cat) => [$cat['id'] => self::stripEmoji($cat['label'])]);
+
+        $groupByCategory = function ($items, callable $labelFor) {
+            return $items->groupBy($labelFor)
+                ->map(fn ($group, $label) => [
+                    'label' => $label,
+                    'count' => $group->count(),
+                    'total' => (float) $group->sum('amount'),
+                    'items' => $group->values(),
+                ])
+                ->sortByDesc('total')
+                ->values();
+        };
+
+        $incomeGroups = $groupByCategory(
+            $transactions->where('type', 'income'),
+            fn (Transaction $tx) => self::incomeCategoryLabel($tx, $otherIncomeLabels->all())
+        );
+        $expenseGroups = $groupByCategory(
+            $transactions->where('type', 'expense'),
+            fn (Transaction $tx) => self::stripEmoji($tx->category_label)
+        );
+
+        $totalIncome = (float) $incomeGroups->sum('total');
+        $totalExpense = (float) $expenseGroups->sum('total');
+        $netBalance = $totalIncome - $totalExpense;
+
+        $institutional = Setting::getInstitutionalData();
+
+        $pdf = Pdf::loadView('pdf.informe_categorias', compact(
+            'incomeGroups',
+            'expenseGroups',
+            'totalIncome',
+            'totalExpense',
+            'netBalance',
+            'periodTitle',
+            'institutional'
+        ));
+        $pdf->setPaper('a4', 'portrait');
+
+        $safePeriod = str_replace([' ', '/', ':'], '_', $periodTitle);
+        return $pdf->stream("Informe_Ingresos_Egresos_por_Categoria_{$safePeriod}.pdf");
+    }
+
+    /**
+     * Category label for an income, using the "Otros Ingresos" subcategory when present.
+     */
+    private static function incomeCategoryLabel(Transaction $tx, array $otherIncomeLabels): string
+    {
+        if ($tx->category !== 'otro_ingreso') {
+            return self::stripEmoji($tx->category_label);
+        }
+
+        $sub = $tx->breakdown['subcategory'] ?? null;
+        if ($sub && isset($otherIncomeLabels[$sub])) {
+            return $otherIncomeLabels[$sub];
+        }
+        if (!empty($tx->breakdown['event'])) {
+            return 'Recaudación de Eventos (Liguillas / Partidos)';
+        }
+
+        return 'Otro Ingreso (sin subcategoría)';
+    }
+
+    /**
+     * DomPDF cannot render emoji: remove them from category labels.
+     */
+    private static function stripEmoji(string $text): string
+    {
+        return trim(preg_replace('/[\x{1F000}-\x{1FFFF}\x{2600}-\x{27BF}\x{FE0F}]/u', '', $text));
+    }
+
+    /**
      * Classify a selecciones expense concept by representative team, based on keywords.
      */
     private static function classifySeleccionTeam(string $concept): string

@@ -240,7 +240,7 @@ export default function Index({
     };
 
     // PDF & CSV Download Links Helper
-    const getDownloadUrl = (reportType: 'libro' | 'monthly' | 'annual' | 'arfa' | 'csv' | 'selecciones') => {
+    const getDownloadUrl = (reportType: 'libro' | 'monthly' | 'annual' | 'arfa' | 'csv' | 'selecciones' | 'categorias') => {
         const params = new URLSearchParams();
         params.append('year', String(selectedYear));
         if (startDate && endDate) {
@@ -258,6 +258,8 @@ export default function Index({
             return route('reports.arfa-rendicion-pdf') + '?' + params.toString();
         } else if (reportType === 'selecciones') {
             return route('reports.selecciones-pdf') + '?' + params.toString();
+        } else if (reportType === 'categorias') {
+            return route('reports.categorias-pdf') + '?' + params.toString();
         } else if (reportType === 'csv') {
             return route('reports.export-csv') + '?' + params.toString();
         } else {
@@ -325,6 +327,15 @@ export default function Index({
                             title="Descargar Informe de Gastos de Selecciones"
                         >
                             <span>⚽</span> Gastos Selecciones
+                        </a>
+                        <a
+                            href={getDownloadUrl('categorias')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-2 text-xs font-extrabold text-white shadow-2xs hover:bg-indigo-700 transition"
+                            title="Informe de Ingresos y Egresos agrupados por categoría"
+                        >
+                            <span>🗂️</span> Por Categoría
                         </a>
                     </div>
                 </div>

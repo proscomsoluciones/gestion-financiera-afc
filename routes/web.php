@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports/club-certificate-pdf/{club}', [ReportController::class, 'downloadClubCertificatePdf'])->name('reports.club-certificate-pdf');
         Route::get('/reports/arfa-rendicion-pdf', [ReportController::class, 'downloadArfaRendicionPdf'])->name('reports.arfa-rendicion-pdf');
         Route::get('/reports/selecciones-pdf', [ReportController::class, 'downloadSeleccionesPdf'])->name('reports.selecciones-pdf');
+        Route::get('/reports/categorias-pdf', [ReportController::class, 'downloadCategoriesPdf'])->name('reports.categorias-pdf');
         Route::get('/reports/export-csv', [ReportController::class, 'exportCsv'])->name('reports.export-csv');
     });
 
