@@ -135,7 +135,7 @@ class DashboardController extends Controller
         }
 
         if (!$activePeriod) {
-            $activePeriod = 'Agosto 2026';
+            $activePeriod = TributeStatusService::currentPeriod();
         }
 
         $tributeStatus = TributeStatusService::getTributeStatusForPeriod($activePeriod);
@@ -182,7 +182,7 @@ class DashboardController extends Controller
             'tribute_status' => $tributeStatus,
             'recent_transactions' => $recentTransactions,
             'institutional' => $institutional,
-            'filters' => $request->only(['month_filter', 'start_date', 'end_date']),
+            'filters' => $request->only(['month_filter', 'start_date', 'end_date', 'tribute_period']),
         ]);
     }
 

@@ -6,6 +6,8 @@ import {
     Banknote,
     BarChart3,
     BookOpen,
+    ChevronLeft,
+    ChevronRight,
     CircleAlert,
     Building2,
     CalendarDays,
@@ -15,7 +17,6 @@ import {
     FileText,
     HeartHandshake,
     Landmark,
-    Printer,
     ReceiptText,
     Scale,
     Settings2,
@@ -143,6 +144,7 @@ interface DashboardProps {
         month_filter?: string;
         start_date?: string;
         end_date?: string;
+        tribute_period?: string;
     };
 }
 
@@ -155,6 +157,24 @@ export default function Dashboard({
 }: DashboardProps) {
     const { can } = usePermissions();
     const [monthFilter, setMonthFilter] = useState(filters?.month_filter || '');
+
+    // Navegación de meses en "Estado de Cumplimiento de Tributos"
+    const TRIBUTE_MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const nowDate = new Date();
+    const currentTributePeriod = `${TRIBUTE_MONTHS[nowDate.getMonth()]} ${nowDate.getFullYear()}`;
+    const shiftTributePeriod = (period: string, delta: number) => {
+        const [name, yearStr] = period.split(' ');
+        const index = TRIBUTE_MONTHS.findIndex((m) => m.toLowerCase() === (name || '').toLowerCase());
+        const base = (Number(yearStr) || nowDate.getFullYear()) * 12 + (index >= 0 ? index : nowDate.getMonth()) + delta;
+        return `${TRIBUTE_MONTHS[((base % 12) + 12) % 12]} ${Math.floor(base / 12)}`;
+    };
+    const goToTributePeriod = (period: string) => {
+        router.get(
+            route('dashboard'),
+            { ...(filters || {}), tribute_period: period },
+            { preserveState: true, preserveScroll: true, only: ['tribute_status', 'filters'] },
+        );
+    };
     const [startDate, setStartDate] = useState(filters?.start_date || '');
     const [endDate, setEndDate] = useState(filters?.end_date || '');
 
@@ -981,20 +1001,59 @@ export default function Dashboard({
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
                             <div>
                                 <h3 className="text-lg font-extrabold text-slate-900">
-                                    Estado de Cumplimiento de Tributos ({tribute_status.period_month})
+                                    Estado de Cumplimiento de Tributos
                                 </h3>
                                 <p className="text-xs font-medium text-slate-500">
                                     Fecha Límite en Días Hábiles: <span className="font-bold text-slate-800">{tribute_status.due_date_formatted}</span>
                                 </p>
                             </div>
 
-                            <div className="flex gap-2">
-                                <span className="rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-200">
-                                    <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> {tribute_status.summary.paid_count} Al Día</span>
-                                </span>
-                                <span className="rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 border border-rose-200">
-                                    <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden="true" /> {tribute_status.summary.overdue_count} Morosos</span>
-                                </span>
+                            <div className="flex flex-col gap-2 sm:items-end">
+                                <div className="flex items-center gap-1 self-start rounded-xl border border-slate-200 bg-slate-50 p-1 sm:self-auto">
+                                    <button
+                                        type="button"
+                                        onClick={() => goToTributePeriod(shiftTributePeriod(tribute_status.period_month, -1))}
+                                        className="rounded-lg p-1.5 text-slate-600 transition hover:bg-white hover:text-slate-900"
+                                        title="Mes anterior"
+                                        aria-label="Mes anterior"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                                    </button>
+                                    <span className="min-w-[8.5rem] text-center text-xs font-extrabold text-slate-800">
+                                        {tribute_status.period_month}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => goToTributePeriod(shiftTributePeriod(tribute_status.period_month, 1))}
+                                        className="rounded-lg p-1.5 text-slate-600 transition hover:bg-white hover:text-slate-900"
+                                        title="Mes siguiente"
+                                        aria-label="Mes siguiente"
+                                    >
+                                        <ChevronRight className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                                    </button>
+                                    {tribute_status.period_month !== currentTributePeriod && (
+                                        <button
+                                            type="button"
+                                            onClick={() => goToTributePeriod(currentTributePeriod)}
+                                            className="rounded-lg bg-white px-2.5 py-1 text-[11px] font-bold text-emerald-700 shadow-2xs transition hover:bg-emerald-50"
+                                        >
+                                            Mes actual
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <span className="rounded-xl bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-200">
+                                        <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> {tribute_status.summary.paid_count} Al Día</span>
+                                    </span>
+                                    {tribute_status.summary.pending_count > 0 && (
+                                        <span className="rounded-xl bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700 border border-blue-200">
+                                            <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-blue-500" aria-hidden="true" /> {tribute_status.summary.pending_count} En Plazo</span>
+                                        </span>
+                                    )}
+                                    <span className="rounded-xl bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 border border-rose-200">
+                                        <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden="true" /> {tribute_status.summary.overdue_count} Morosos</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -1099,7 +1158,7 @@ export default function Dashboard({
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
                                                 >
-                                                    <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> PDF
+                                                    <FileText className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Ver PDF
                                                 </a>
                                             </td>
                                         </tr>
@@ -1149,7 +1208,7 @@ export default function Dashboard({
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
                                             >
-                                                <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Ver PDF
+                                                <FileText className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Ver PDF
                                             </a>
                                         </div>
                                     </div>

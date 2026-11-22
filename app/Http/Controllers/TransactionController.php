@@ -81,7 +81,7 @@ class TransactionController extends Controller
         $institutional = Setting::getInstitutionalData();
 
         // Tribute Compliance Status for active period
-        $tributePeriod = $request->input('tribute_period', 'Agosto 2026');
+        $tributePeriod = $request->input('tribute_period') ?: TributeStatusService::currentPeriod();
         $tributeStatus = TributeStatusService::getTributeStatusForPeriod($tributePeriod);
 
         // Voided transactions (audit trail)

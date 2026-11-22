@@ -49,6 +49,17 @@ class TributeStatusService
     /**
      * Parse month & year string like "Agosto 2026" or "08-2026".
      */
+    /**
+     * Período del mes en curso, p. ej. "Noviembre 2026".
+     */
+    public static function currentPeriod(): string
+    {
+        $now = Carbon::now();
+        $name = array_search($now->month, self::$spanishMonths, true);
+
+        return mb_convert_case((string) $name, MB_CASE_TITLE, 'UTF-8').' '.$now->year;
+    }
+
     public static function parsePeriodString(string $periodMonth): array
     {
         $parts = explode(' ', trim($periodMonth));

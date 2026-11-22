@@ -13,6 +13,7 @@ import {
     CirclePlus,
     ClipboardCheck,
     Coins,
+    FileText,
     Flag,
     HeartHandshake,
     Landmark,
@@ -20,7 +21,6 @@ import {
     NotebookPen,
     Paperclip,
     Pencil,
-    Printer,
     ReceiptText,
     Save,
     Scale,
@@ -1224,7 +1224,7 @@ export default function Index({
                                                                         className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-800 hover:bg-emerald-600 hover:text-white transition shadow-2xs"
                                                                         title="Abrir / Imprimir Comprobante PDF"
                                                                     >
-                                                                        <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /><span>Imprimir PDF</span>
+                                                                        <FileText className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /><span>Ver PDF</span>
                                                                     </a>
                                                                     {canManage && (
                                                                         <>
@@ -1321,7 +1321,7 @@ export default function Index({
                                                             rel="noopener noreferrer"
                                                             className="flex-1 text-center inline-flex items-center justify-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
                                                         >
-                                                            <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> PDF
+                                                            <FileText className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Ver PDF
                                                         </a>
                                                         {canManage && (
                                                             <>
