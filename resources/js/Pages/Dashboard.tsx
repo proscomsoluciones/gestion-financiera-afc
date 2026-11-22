@@ -239,6 +239,69 @@ export default function Dashboard({
 
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+                    {/* Accesos directos */}
+                    {(() => {
+                        const registrar = can('transactions.manage')
+                            ? [
+                                  { label: 'Tributo', icon: '🏛️', href: route('transactions.index', { nuevo: 'tributo' }), chip: 'bg-emerald-50' },
+                                  { label: 'Fondo Solidario', icon: '🤝', href: route('transactions.index', { nuevo: 'fondo_solidario' }), chip: 'bg-sky-50' },
+                                  { label: 'Pase / Trámite', icon: '⚽', href: route('transactions.index', { nuevo: 'pase' }), chip: 'bg-teal-50' },
+                                  { label: 'Multa', icon: '🚨', href: route('transactions.index', { nuevo: 'multa' }), chip: 'bg-amber-50' },
+                                  { label: 'Otros Ingresos', icon: '💎', href: route('transactions.index', { nuevo: 'otro_ingreso' }), chip: 'bg-indigo-50' },
+                                  { label: 'Salida de Caja', icon: '💸', href: route('transactions.index', { nuevo: 'egreso' }), chip: 'bg-rose-50' },
+                              ]
+                            : [];
+                        const consultar = [
+                            can('transactions.view') && { label: 'Movimientos', icon: '💳', href: route('transactions.index'), chip: 'bg-slate-100' },
+                            can('transactions.view') && { label: 'Control de Tributos', icon: '📊', href: route('transactions.index', { tab: 'tributos' }), chip: 'bg-emerald-50' },
+                            can('reports.view') && { label: 'Reportes', icon: '📑', href: route('reports.index'), chip: 'bg-violet-50' },
+                            can('clubs.view') && { label: 'Clubes', icon: '🛡️', href: route('clubs.index'), chip: 'bg-blue-50' },
+                            can('settings.manage') && { label: 'Tarifas', icon: '⚙️', href: route('settings.index'), chip: 'bg-slate-100' },
+                        ].filter(Boolean) as { label: string; icon: string; href: string; chip: string }[];
+
+                        if (registrar.length === 0 && consultar.length === 0) return null;
+
+                        const tile = (item: { label: string; icon: string; href: string; chip: string }) => (
+                            <Link
+                                key={item.label}
+                                href={item.href}
+                                className="flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white p-2.5 text-xs font-bold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                            >
+                                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-base ${item.chip}`}>
+                                    {item.icon}
+                                </span>
+                                <span className="leading-tight">{item.label}</span>
+                            </Link>
+                        );
+
+                        return (
+                            <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5">
+                                <div className="grid gap-5 lg:grid-cols-5">
+                                    {registrar.length > 0 && (
+                                        <div className="lg:col-span-3">
+                                            <h3 className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                Registrar
+                                            </h3>
+                                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                                {registrar.map(tile)}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {consultar.length > 0 && (
+                                        <div className={registrar.length > 0 ? 'lg:col-span-2' : 'lg:col-span-5'}>
+                                            <h3 className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                                Consultar
+                                            </h3>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {consultar.map(tile)}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })()}
+
                     {/* Executive Global Date Filter Toolbar */}
                     <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">

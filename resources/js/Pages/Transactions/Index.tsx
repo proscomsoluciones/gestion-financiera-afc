@@ -645,6 +645,30 @@ export default function Index({
         }
     };
 
+    // Accesos directos desde el Dashboard: ?nuevo=<tipo> abre el formulario, ?tab=tributos|anulados cambia de pestaña.
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const nuevo = params.get('nuevo');
+        const tab = params.get('tab');
+        const formTypes = ['tributo', 'fondo_solidario', 'inscripcion', 'inscripcion_campeonato', 'pase', 'apelacion', 'multa', 'egreso', 'otro_ingreso'] as const;
+        type FormType = (typeof formTypes)[number];
+
+        if (tab === 'tributos' || (tab === 'anulados' && canManage)) {
+            setActiveTab(tab);
+        }
+        if (nuevo && canManage && (formTypes as readonly string[]).includes(nuevo)) {
+            setActiveTab('historial');
+            openFormModal(nuevo as FormType);
+        }
+        if (nuevo || tab) {
+            params.delete('nuevo');
+            params.delete('tab');
+            const query = params.toString();
+            window.history.replaceState(window.history.state, '', window.location.pathname + (query ? `?${query}` : ''));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Handle Period change for tribute status table
     const handleTributePeriodChange = (newPeriod: string) => {
         setTributePeriod(newPeriod);
