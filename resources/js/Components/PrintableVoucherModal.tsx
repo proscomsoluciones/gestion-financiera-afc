@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { ExternalLink, FileText, Paperclip, Printer, Shield } from 'lucide-react';
 
 export interface TransactionVoucher {
     id: number;
@@ -109,7 +110,7 @@ export default function PrintableVoucherModal({
                                     <div className="flex items-center gap-2">
                                         <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-pulse" />
                                         <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
-                                            Comprobante Foliado Generado (Modo Ahorro de Tinta 🍃)
+                                            Comprobante Foliado Generado (Modo Ahorro de Tinta)
                                         </span>
                                     </div>
 
@@ -120,14 +121,14 @@ export default function PrintableVoucherModal({
                                             rel="noopener noreferrer"
                                             className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-500 transition"
                                         >
-                                            📄 Abrir PDF Oficial
+                                            <FileText className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" /> Abrir PDF Oficial
                                         </a>
                                         <button
                                             type="button"
                                             onClick={handlePrint}
                                             className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition"
                                         >
-                                            🖨️ Imprimir Recibo
+                                            <Printer className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" /> Imprimir Recibo
                                         </button>
                                         <button
                                             type="button"
@@ -151,8 +152,8 @@ export default function PrintableVoucherModal({
                                                     className="h-14 w-14 object-contain rounded-xl border-2 border-black bg-white p-1"
                                                 />
                                             ) : (
-                                                <div className="flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-white text-black font-black text-xl">
-                                                    ⚽
+                                                <div className="flex h-14 w-14 items-center justify-center rounded-xl border-2 border-black bg-white text-black">
+                                                    <Shield className="h-7 w-7" strokeWidth={1.75} aria-hidden="true" />
                                                 </div>
                                             )}
                                             <div>
@@ -194,7 +195,7 @@ export default function PrintableVoucherModal({
                                             </p>
                                             {transaction.player_name && (
                                                 <p className="text-xs font-bold text-black mt-1">
-                                                    ⚽ Jugador: {transaction.player_name}
+                                                    Jugador: {transaction.player_name}
                                                 </p>
                                             )}
                                         </div>
@@ -354,7 +355,7 @@ export default function PrintableVoucherModal({
                                         <div className="rounded-xl border border-black bg-white p-4 space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <p className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
-                                                    <span>📄</span>
+                                                    <Paperclip className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                                     <span>Boleta / Respaldo Digital Adjunto</span>
                                                 </p>
                                                 <a
@@ -363,14 +364,14 @@ export default function PrintableVoucherModal({
                                                     rel="noopener noreferrer"
                                                     className="no-print inline-flex items-center gap-1 text-xs font-bold text-black underline"
                                                 >
-                                                    <span>🔍 Ver Completa</span>
-                                                    <span>↗</span>
+                                                    <span>Ver Completa</span>
+                                                    <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" />
                                                 </a>
                                             </div>
 
                                             {transaction.receipt_image_url.endsWith('.pdf') ? (
                                                 <div className="p-3 bg-white rounded-xl border border-black text-xs font-bold text-black">
-                                                    📎 Documento PDF Adjunto ({transaction.receipt_image_url.split('/').pop()})
+                                                    Documento PDF Adjunto ({transaction.receipt_image_url.split('/').pop()})
                                                 </div>
                                             ) : (
                                                 <div className="overflow-hidden rounded-xl border border-black bg-white max-h-48 flex justify-center items-center">

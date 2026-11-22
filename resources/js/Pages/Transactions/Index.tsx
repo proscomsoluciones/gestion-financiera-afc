@@ -3,6 +3,40 @@ import PrintableVoucherModal, { TransactionVoucher } from '@/Components/Printabl
 import Spinner from '@/Components/Spinner';
 import usePermissions from '@/hooks/usePermissions';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import {
+    ArrowLeftRight,
+    Ban,
+    CalendarDays,
+    Camera,
+    CircleAlert,
+    CircleCheck,
+    CirclePlus,
+    ClipboardCheck,
+    Coins,
+    Flag,
+    HeartHandshake,
+    Landmark,
+    Lock,
+    NotebookPen,
+    Paperclip,
+    Pencil,
+    Printer,
+    ReceiptText,
+    Save,
+    Scale,
+    Search,
+    Settings2,
+    ShieldAlert,
+    Trash2,
+    TrendingDown,
+    TrendingUp,
+    Trophy,
+    UserCheck,
+    Users,
+    Wallet,
+    X,
+    type LucideIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface Club {
@@ -797,11 +831,13 @@ export default function Index({
                                 href={route('settings.index')}
                                 className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"
                             >
-                                ⚙️ Configurar Tarifas
+                                <Settings2 className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                Configurar Tarifas
                             </Link>
                         )}
                         <span className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs">
-                            📝 Folio Manual según Talonario
+                            <NotebookPen className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                            Folio Manual según Talonario
                         </span>
                     </div>
                 </div>
@@ -821,8 +857,8 @@ export default function Index({
                                     ${Math.round(metrics.total_income).toLocaleString('es-CL')}
                                 </h4>
                             </div>
-                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 font-bold">
-                                📈
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                                <TrendingUp className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </span>
                         </div>
 
@@ -833,8 +869,8 @@ export default function Index({
                                     ${Math.round(metrics.total_expense).toLocaleString('es-CL')}
                                 </h4>
                             </div>
-                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 font-bold">
-                                📉
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
+                                <TrendingDown className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </span>
                         </div>
 
@@ -845,8 +881,8 @@ export default function Index({
                                     ${Math.round(metrics.balance).toLocaleString('es-CL')}
                                 </h4>
                             </div>
-                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800 font-bold">
-                                💰
+                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                                <Wallet className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </span>
                         </div>
                     </div>
@@ -863,8 +899,9 @@ export default function Index({
                                         : 'text-slate-600 hover:bg-slate-100'
                                 }`}
                             >
-                                <span className="sm:hidden">💳 Movimientos</span>
-                                <span className="hidden sm:inline">💳 Registrar & Historial de Movimientos</span>
+                                <ArrowLeftRight className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                <span className="sm:hidden">Movimientos</span>
+                                <span className="hidden sm:inline">Registrar & Historial de Movimientos</span>
                             </button>
 
                             <button
@@ -876,8 +913,9 @@ export default function Index({
                                         : 'text-slate-600 hover:bg-slate-100'
                                 }`}
                             >
-                                <span className="sm:hidden">📊 Tributos</span>
-                                <span className="hidden sm:inline">📊 Control de Tributos por Club (Días Hábiles)</span>
+                                <ClipboardCheck className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                <span className="sm:hidden">Tributos</span>
+                                <span className="hidden sm:inline">Control de Tributos por Club (Días Hábiles)</span>
                                 {tribute_status && tribute_status.summary.overdue_count > 0 && (
                                     <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-black text-white">
                                         {tribute_status.summary.overdue_count} Morosos
@@ -895,8 +933,9 @@ export default function Index({
                                             : 'text-slate-600 hover:bg-slate-100'
                                     }`}
                                 >
-                                    <span className="sm:hidden">🗑️ Anulados</span>
-                                    <span className="hidden sm:inline">🗑️ Comprobantes Anulados (Auditoría)</span>
+                                    <Ban className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+                                    <span className="sm:hidden">Anulados</span>
+                                    <span className="hidden sm:inline">Comprobantes Anulados (Auditoría)</span>
                                     {voided && voided.total > 0 && (
                                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${activeTab === 'anulados' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
                                             {voided.total}
@@ -923,7 +962,7 @@ export default function Index({
                                         onClick={() => openFormModal('tributo')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 text-center transition hover:bg-emerald-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">🏛️</span>
+                                        <Landmark className="mb-1.5 h-6 w-6 text-emerald-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Tributo</span>
                                         <span className="text-[10px] font-bold text-emerald-700 group-hover:text-emerald-100">${totalTributoCalc.toLocaleString('es-CL')}</span>
                                     </button>
@@ -933,7 +972,7 @@ export default function Index({
                                         onClick={() => openFormModal('fondo_solidario')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-blue-200 bg-blue-50/60 p-3 text-center transition hover:bg-blue-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">🤝</span>
+                                        <HeartHandshake className="mb-1.5 h-6 w-6 text-sky-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Fondo Solidario</span>
                                         <span className="text-[10px] font-bold text-blue-700 group-hover:text-blue-100">Variable</span>
                                     </button>
@@ -943,7 +982,7 @@ export default function Index({
                                         onClick={() => openFormModal('pase')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-teal-200 bg-teal-50/60 p-3 text-center transition hover:bg-teal-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">⚽</span>
+                                        <UserCheck className="mb-1.5 h-6 w-6 text-teal-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Pase / Trámite Jugador</span>
                                         <span className="text-[10px] font-bold text-teal-700 group-hover:text-teal-100">Códigos 1 al 7</span>
                                     </button>
@@ -953,7 +992,7 @@ export default function Index({
                                         onClick={() => openFormModal('inscripcion_campeonato')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-purple-200 bg-purple-50/60 p-3 text-center transition hover:bg-purple-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">🏆</span>
+                                        <Trophy className="mb-1.5 h-6 w-6 text-purple-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Insc. Campeonato</span>
                                         <span className="text-[10px] font-bold text-purple-700 group-hover:text-purple-100">Variable</span>
                                     </button>
@@ -963,7 +1002,7 @@ export default function Index({
                                         onClick={() => openFormModal('apelacion')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 text-center transition hover:bg-indigo-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">⚖️</span>
+                                        <Scale className="mb-1.5 h-6 w-6 text-indigo-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Apelación</span>
                                         <span className="text-[10px] font-bold text-indigo-700 group-hover:text-indigo-100">${rateApelacion.toLocaleString('es-CL')}</span>
                                     </button>
@@ -973,7 +1012,7 @@ export default function Index({
                                         onClick={() => openFormModal('multa')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-amber-200 bg-amber-50/60 p-3 text-center transition hover:bg-amber-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">🚨</span>
+                                        <ShieldAlert className="mb-1.5 h-6 w-6 text-amber-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Multa</span>
                                         <span className="text-[10px] font-bold text-amber-700 group-hover:text-amber-100">Variable</span>
                                     </button>
@@ -983,7 +1022,7 @@ export default function Index({
                                         onClick={() => openFormModal('egreso')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-rose-200 bg-rose-50/60 p-3 text-center transition hover:bg-rose-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">💸</span>
+                                        <ReceiptText className="mb-1.5 h-6 w-6 text-rose-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Salida Caja</span>
                                         <span className="text-[10px] font-bold text-rose-700 group-hover:text-rose-100">Egreso</span>
                                     </button>
@@ -993,7 +1032,7 @@ export default function Index({
                                         onClick={() => openFormModal('otro_ingreso')}
                                         className="flex flex-col items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50/60 p-3 text-center transition hover:bg-indigo-600 hover:text-white group"
                                     >
-                                        <span className="text-xl mb-1">💎</span>
+                                        <Coins className="mb-1.5 h-6 w-6 text-indigo-700 group-hover:text-white" strokeWidth={1.5} aria-hidden="true" />
                                         <span className="text-xs font-extrabold text-slate-800 group-hover:text-white">Otros Ingresos</span>
                                         <span className="text-[10px] font-bold text-indigo-700 group-hover:text-indigo-100">Donación/Proyectos</span>
                                     </button>
@@ -1014,7 +1053,7 @@ export default function Index({
                                                 className="h-11 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-11 pr-4 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
                                             />
                                             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                                                🔍
+                                                <Search className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
@@ -1036,7 +1075,7 @@ export default function Index({
                                             className="h-10 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-3.5 pr-9 text-xs font-bold text-slate-700"
                                         >
                                             <option value="">Todos los Clubes</option>
-                                            <option value="afc">🏛️ Arcas Directas (Asociación)</option>
+                                            <option value="afc">Arcas Directas (Asociación)</option>
                                             {clubs.map((c) => (
                                                 <option key={c.id} value={c.id}>
                                                     {c.name}
@@ -1095,10 +1134,10 @@ export default function Index({
                                             }}
                                             className="h-10 w-full rounded-xl border-slate-200 bg-slate-50/50 py-0 pl-3.5 pr-9 text-xs font-bold text-slate-700"
                                         >
-                                            <option value="10">📄 10 por pág.</option>
-                                            <option value="25">📄 25 por pág.</option>
-                                            <option value="50">📄 50 por pág.</option>
-                                            <option value="100">📄 100 por pág.</option>
+                                            <option value="10">10 por pág.</option>
+                                            <option value="25">25 por pág.</option>
+                                            <option value="50">50 por pág.</option>
+                                            <option value="100">100 por pág.</option>
                                         </select>
                                     </div>
                                 </form>
@@ -1131,7 +1170,7 @@ export default function Index({
                                                             </td>
 
                                                             <td className="py-3.5 px-4 text-slate-700 text-[11px] font-bold">
-                                                                📅 {formatDateChile(tx.date)}
+                                                                {formatDateChile(tx.date)}
                                                             </td>
 
                                                             <td className="py-3.5 px-4 font-bold text-slate-800">
@@ -1157,7 +1196,7 @@ export default function Index({
                                                                         rel="noreferrer"
                                                                         className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 hover:underline mt-0.5"
                                                                     >
-                                                                        <span>📄 Boleta Adjunta</span>
+                                                                        <Paperclip className="h-3 w-3" strokeWidth={1.75} aria-hidden="true" /><span>Boleta Adjunta</span>
                                                                     </a>
                                                                 )}
                                                             </td>
@@ -1185,7 +1224,7 @@ export default function Index({
                                                                         className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-800 hover:bg-emerald-600 hover:text-white transition shadow-2xs"
                                                                         title="Abrir / Imprimir Comprobante PDF"
                                                                     >
-                                                                        <span>🖨️ Imprimir PDF</span>
+                                                                        <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /><span>Imprimir PDF</span>
                                                                     </a>
                                                                     {canManage && (
                                                                         <>
@@ -1195,7 +1234,7 @@ export default function Index({
                                                                                 className="rounded-xl p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
                                                                                 title="Editar Comprobante / Registro"
                                                                             >
-                                                                                ✏️
+                                                                                <Pencil className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                                                             </button>
                                                                             <button
                                                                                 type="button"
@@ -1203,7 +1242,7 @@ export default function Index({
                                                                                 className="rounded-xl p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
                                                                                 title="Anular Comprobante"
                                                                             >
-                                                                                🗑️
+                                                                                <Trash2 className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                                                             </button>
                                                                         </>
                                                                     )}
@@ -1269,7 +1308,7 @@ export default function Index({
                                                                     rel="noreferrer"
                                                                     className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:underline"
                                                                 >
-                                                                    📄 Boleta Adjunta
+                                                                    <Paperclip className="h-3 w-3" strokeWidth={1.75} aria-hidden="true" /> Boleta Adjunta
                                                                 </a>
                                                             )}
                                                         </div>
@@ -1282,23 +1321,23 @@ export default function Index({
                                                             rel="noopener noreferrer"
                                                             className="flex-1 text-center inline-flex items-center justify-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-600 hover:text-white transition"
                                                         >
-                                                            🖨️ PDF
+                                                            <Printer className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> PDF
                                                         </a>
                                                         {canManage && (
                                                             <>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleOpenEditModal(tx)}
-                                                                    className="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100 transition"
+                                                                    className="inline-flex items-center gap-1 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-bold text-indigo-700 hover:bg-indigo-100 transition"
                                                                 >
-                                                                    ✏️ Editar
+                                                                    <Pencil className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Editar
                                                                 </button>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => handleDelete(tx)}
-                                                                    className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
+                                                                    className="inline-flex items-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 transition"
                                                                 >
-                                                                    🗑️ Anular
+                                                                    <Ban className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Anular
                                                                 </button>
                                                             </>
                                                         )}
@@ -1411,13 +1450,13 @@ export default function Index({
 
                                     <div className="flex gap-1.5 text-xs font-bold">
                                         <span className="rounded-xl bg-emerald-50 px-3 py-1.5 text-emerald-700 border border-emerald-200">
-                                            🟢 {tribute_status.summary.paid_count} Al Día
+                                            <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> {tribute_status.summary.paid_count} Al Día</span>
                                         </span>
                                         <span className="rounded-xl bg-rose-50 px-3 py-1.5 text-rose-700 border border-rose-200">
-                                            🔴 {tribute_status.summary.overdue_count} Vencidos
+                                            <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-rose-500" aria-hidden="true" /> {tribute_status.summary.overdue_count} Vencidos</span>
                                         </span>
                                         <span className="rounded-xl bg-blue-50 px-3 py-1.5 text-blue-700 border border-blue-200">
-                                            🔵 {tribute_status.summary.pending_count} En Plazo
+                                            <span className="inline-flex items-center gap-1.5"><span className="inline-block h-2 w-2 rounded-full bg-blue-500" aria-hidden="true" /> {tribute_status.summary.pending_count} En Plazo</span>
                                         </span>
                                     </div>
                                 </div>
@@ -1444,11 +1483,11 @@ export default function Index({
                                                 </td>
 
                                                 <td className="py-3 px-4 text-slate-700 font-bold">
-                                                    📅 {tribute_status.period_month}
+                                                    {tribute_status.period_month}
                                                 </td>
 
                                                 <td className="py-3 px-4 text-slate-500 font-medium">
-                                                    📌 {c.due_date}
+                                                    {c.due_date}
                                                 </td>
 
                                                 <td className="py-3 px-4">
@@ -1486,11 +1525,11 @@ export default function Index({
                                                                     : 'bg-emerald-600 hover:bg-emerald-500'
                                                             }`}
                                                         >
-                                                            💳 Cobrar Tributo AHORA
+                                                            Cobrar Tributo AHORA
                                                         </button>
                                                     ) : c.status === 'paid' ? (
                                                         <span className="text-xs font-bold text-emerald-600">
-                                                            ✅ Cumplido
+                                                            <span className="inline-flex items-center gap-1"><CircleCheck className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Cumplido</span>
                                                         </span>
                                                     ) : (
                                                         <span className="text-xs font-medium text-slate-400">— Sin permiso —</span>
@@ -1522,12 +1561,12 @@ export default function Index({
                                         <div className="space-y-1.5 text-xs">
                                             <div className="flex items-center justify-between text-slate-600">
                                                 <span className="text-slate-400 font-semibold">Período:</span>
-                                                <span className="font-bold">📅 {tribute_status.period_month}</span>
+                                                <span className="font-bold">{tribute_status.period_month}</span>
                                             </div>
 
                                             <div className="flex items-center justify-between text-slate-600">
                                                 <span className="text-slate-400 font-semibold">Fecha Límite:</span>
-                                                <span className="font-medium text-slate-700">📌 {c.due_date}</span>
+                                                <span className="font-medium text-slate-700">{c.due_date}</span>
                                             </div>
 
                                             <div className="flex items-center justify-between text-slate-600">
@@ -1555,11 +1594,11 @@ export default function Index({
                                                             : 'bg-emerald-600 hover:bg-emerald-500'
                                                     }`}
                                                 >
-                                                    💳 Cobrar Tributo AHORA
+                                                    Cobrar Tributo AHORA
                                                 </button>
                                             ) : c.status === 'paid' ? (
                                                 <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl">
-                                                    ✅ Tributo Al Día
+                                                    <span className="inline-flex items-center gap-1"><CircleCheck className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Tributo Al Día</span>
                                                 </span>
                                             ) : (
                                                 <span className="text-xs font-medium text-slate-400">— Sin permiso —</span>
@@ -1575,8 +1614,8 @@ export default function Index({
                     {activeTab === 'anulados' && canManage && (
                         <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
                             <div className="border-b border-slate-100 bg-rose-50/50 p-4">
-                                <p className="text-xs font-bold text-rose-800">
-                                    🔒 Registro de auditoría: comprobantes anulados, quién los anuló y cuándo. No se pueden eliminar de forma permanente ni restaurar desde aquí.
+                                <p className="flex items-start gap-2 text-xs font-bold text-rose-800">
+                                    <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Registro de auditoría: comprobantes anulados, quién los anuló y cuándo. No se pueden eliminar de forma permanente ni restaurar desde aquí.
                                 </p>
                             </div>
                             {voided && voided.data.length > 0 ? (
@@ -1657,8 +1696,8 @@ export default function Index({
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
                     <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-rose-100 space-y-4">
                         <div className="flex items-center gap-3.5 border-b border-rose-100 pb-3">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 text-xl font-bold shrink-0">
-                                🚨
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 shrink-0">
+                                <ShieldAlert className="h-6 w-6" strokeWidth={1.75} aria-hidden="true" />
                             </div>
                             <div>
                                 <h3 className="text-base font-extrabold text-slate-900">
@@ -1680,8 +1719,8 @@ export default function Index({
                                 <p><strong>Monto:</strong> ${Math.round(Number(deletingTx.amount)).toLocaleString('es-CL')} CLP</p>
                                 {deletingTx.club && <p><strong>Club:</strong> {deletingTx.club.name}</p>}
                             </div>
-                            <p className="font-semibold text-[11px] text-rose-700">
-                                ⚠️ Esta acción anulará el registro de las arcas y recalculará los saldos disponibles. Queda registrado en la auditoría quién y cuándo lo anuló.
+                            <p className="flex items-start gap-1.5 font-semibold text-[11px] text-rose-700">
+                                <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={1.75} aria-hidden="true" /> Esta acción anulará el registro de las arcas y recalculará los saldos disponibles. Queda registrado en la auditoría quién y cuándo lo anuló.
                             </p>
                         </div>
 
@@ -1728,7 +1767,7 @@ export default function Index({
                                 }}
                                 className="rounded-xl px-5 py-2.5 text-xs font-extrabold text-white bg-rose-600 hover:bg-rose-700 shadow-md shadow-rose-600/20 transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                             >
-                                {isVoiding ? <Spinner /> : <span>🚨</span>}
+                                {isVoiding ? <Spinner /> : <Ban className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />}
                                 <span>{isVoiding ? 'Anulando...' : 'Sí, Anular y Eliminar'}</span>
                             </button>
                         </div>
@@ -1746,7 +1785,7 @@ export default function Index({
                                     Edición de Registro #{editingTx.id}
                                 </span>
                                 <h3 className="text-xl font-extrabold text-slate-900">
-                                    ✏️ Editar Comprobante / Transacción
+                                    <span className="flex items-center gap-2"><Pencil className="h-5 w-5 text-indigo-600" strokeWidth={1.75} aria-hidden="true" /> Editar Comprobante / Transacción</span>
                                 </h3>
                             </div>
                             <button
@@ -1754,7 +1793,7 @@ export default function Index({
                                 onClick={() => setEditingTx(null)}
                                 className="rounded-xl p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
                             >
-                                ✕
+                                <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </button>
                         </div>
 
@@ -1762,7 +1801,7 @@ export default function Index({
                             {Object.keys(editForm.errors).length > 0 && (
                                 <div className="rounded-2xl bg-rose-50 p-3.5 border border-rose-200 text-xs font-bold text-rose-800 space-y-1">
                                     <p className="flex items-center gap-1.5 text-rose-900 font-extrabold">
-                                        <span>🚨</span>
+                                        <CircleAlert className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                         <span>Atención: Revisa los siguientes campos:</span>
                                     </p>
                                     <ul className="list-disc list-inside font-semibold text-rose-700">
@@ -1879,10 +1918,10 @@ export default function Index({
                                         onChange={(e) => editForm.setData('payment_method', e.target.value as any)}
                                         className="w-full rounded-xl border-slate-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-900 shadow-2xs"
                                     >
-                                        <option value="efectivo">💵 Efectivo en Caja</option>
-                                        <option value="transferencia">🏦 Transferencia Bancaria</option>
-                                        <option value="deposito">📥 Depósito Bancario</option>
-                                        <option value="cheque">📜 Cheque</option>
+                                        <option value="efectivo">Efectivo en Caja</option>
+                                        <option value="transferencia">Transferencia Bancaria</option>
+                                        <option value="deposito">Depósito Bancario</option>
+                                        <option value="cheque">Cheque</option>
                                     </select>
                                 </div>
                             </div>
@@ -1978,7 +2017,7 @@ export default function Index({
                                         </>
                                     ) : (
                                         <>
-                                            <span>💾</span>
+                                            <Save className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                             <span>Guardar Cambios</span>
                                         </>
                                     )}
@@ -1999,14 +2038,27 @@ export default function Index({
                                     N° de Folio según Talonario / Boleta Física
                                 </span>
                                 <h3 className="text-xl font-extrabold text-slate-900">
-                                    {activeModal === 'tributo' && '🏛️ Cobro de Tributo Mensual'}
-                                    {activeModal === 'fondo_solidario' && '🤝 Aporte a Fondo Solidario'}
-                                    {activeModal === 'inscripcion_campeonato' && '🏆 Inscripción de Campeonato (Monto Variable)'}
-                                    {activeModal === 'pase' && '⚽ Cobro de Pase / Trámite Jugador'}
-                                    {activeModal === 'apelacion' && '⚖️ Cobro de Apelación'}
-                                    {activeModal === 'multa' && '🚨 Cobro de Multa (Monto Variable)'}
-                                    {activeModal === 'egreso' && '💸 Registrar Salida de Caja / Egreso'}
-                                    {activeModal === 'otro_ingreso' && '➕ Registrar Otro Ingreso'}
+                                    {(() => {
+                                        const titles: Record<string, [LucideIcon, string, string]> = {
+                                            tributo: [Landmark, 'text-emerald-600', 'Cobro de Tributo Mensual'],
+                                            fondo_solidario: [HeartHandshake, 'text-sky-600', 'Aporte a Fondo Solidario'],
+                                            inscripcion_campeonato: [Trophy, 'text-purple-600', 'Inscripción de Campeonato (Monto Variable)'],
+                                            pase: [UserCheck, 'text-teal-600', 'Cobro de Pase / Trámite Jugador'],
+                                            apelacion: [Scale, 'text-indigo-600', 'Cobro de Apelación'],
+                                            multa: [ShieldAlert, 'text-amber-600', 'Cobro de Multa (Monto Variable)'],
+                                            egreso: [ReceiptText, 'text-rose-600', 'Registrar Salida de Caja / Egreso'],
+                                            otro_ingreso: [CirclePlus, 'text-indigo-600', 'Registrar Otro Ingreso'],
+                                        };
+                                        const entry = activeModal ? titles[activeModal] : undefined;
+                                        if (!entry) return null;
+                                        const [TitleIcon, color, text] = entry;
+                                        return (
+                                            <span className="flex items-center gap-2">
+                                                <TitleIcon className={`h-5 w-5 shrink-0 ${color}`} strokeWidth={1.75} aria-hidden="true" />
+                                                {text}
+                                            </span>
+                                        );
+                                    })()}
                                 </h3>
                             </div>
                             <button
@@ -2014,7 +2066,7 @@ export default function Index({
                                 onClick={() => setActiveModal(null)}
                                 className="rounded-xl p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100"
                             >
-                                ✕
+                                <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
                             </button>
                         </div>
 
@@ -2022,7 +2074,7 @@ export default function Index({
                             {Object.keys(errors).length > 0 && (
                                 <div className="rounded-2xl bg-rose-50 p-3.5 border border-rose-200 text-xs font-bold text-rose-800 space-y-1">
                                     <p className="flex items-center gap-1.5 text-rose-900 font-extrabold">
-                                        <span>🚨</span>
+                                        <CircleAlert className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                         <span>Atención: Revisa los siguientes campos:</span>
                                     </p>
                                     <ul className="list-disc list-inside font-semibold text-rose-700">
@@ -2351,7 +2403,7 @@ export default function Index({
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-100 pb-3">
                                         <div>
                                             <h4 className="text-xs font-black uppercase tracking-wider text-blue-950 flex items-center gap-1.5">
-                                                <span>🤝</span>
+                                                <HeartHandshake className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                                 <span>Lista de Aportes al Fondo Solidario ({solidarityRows.length})</span>
                                             </h4>
                                             <p className="text-[11px] font-medium text-blue-700">
@@ -2391,7 +2443,7 @@ export default function Index({
                                                             }}
                                                             className="text-rose-600 hover:text-rose-800 font-extrabold text-xs"
                                                         >
-                                                            🗑️ Eliminar
+                                                            <span className="inline-flex items-center gap-1"><Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Eliminar</span>
                                                         </button>
                                                     )}
                                                 </div>
@@ -2456,7 +2508,7 @@ export default function Index({
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-teal-100 pb-3">
                                         <div>
                                             <h4 className="text-xs font-black uppercase tracking-wider text-teal-950 flex items-center gap-1.5">
-                                                <span>👥</span>
+                                                <Users className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                                 <span>Lista de Jugadores en el Comprobante ({playerRows.length})</span>
                                             </h4>
                                             <p className="text-[11px] font-medium text-teal-700">
@@ -2504,7 +2556,7 @@ export default function Index({
                                                             }}
                                                             className="text-rose-600 hover:text-rose-800 font-extrabold text-xs"
                                                         >
-                                                            🗑️ Eliminar
+                                                            <span className="inline-flex items-center gap-1"><Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" /> Eliminar</span>
                                                         </button>
                                                     )}
                                                 </div>
@@ -2739,7 +2791,7 @@ export default function Index({
                             {activeModal === 'egreso' && (
                                 <div className="rounded-2xl border border-rose-200 bg-rose-50/60 p-4 space-y-2">
                                     <label className="block text-xs font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-1.5">
-                                        <span>📷</span>
+                                        <Camera className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
                                         <span>RESPALDO / FOTO DE BOLETA O FACTURA (OPCIONAL)</span>
                                     </label>
                                     <input
