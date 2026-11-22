@@ -50,13 +50,15 @@ class ReportController extends Controller
         $cashBalance = $incomeCash - $expenseCash;
         $bankBalance = $incomeBank - $expenseBank;
 
+        $tramites = Transaction::splitTramites((clone $baseQuery)->where('category', 'pase')->get());
+
         // Breakdown by category
         $categoryBreakdown = [
             'tributo' => (float) (clone $baseQuery)->where('category', 'tributo')->sum('amount'),
             'fondo_solidario' => (float) (clone $baseQuery)->where('category', 'fondo_solidario')->sum('amount'),
-            'inscripcion' => (float) (clone $baseQuery)->where('category', 'inscripcion')->sum('amount'),
+            'inscripcion' => (float) (clone $baseQuery)->where('category', 'inscripcion')->sum('amount') + $tramites['inscripcion'],
             'inscripcion_campeonato' => (float) (clone $baseQuery)->where('category', 'inscripcion_campeonato')->sum('amount'),
-            'pase' => (float) (clone $baseQuery)->where('category', 'pase')->sum('amount'),
+            'pase' => $tramites['pase'],
             'apelacion' => (float) (clone $baseQuery)->where('category', 'apelacion')->sum('amount'),
             'multa' => (float) (clone $baseQuery)->where('category', 'multa')->sum('amount'),
             'otro_ingreso' => (float) (clone $baseQuery)->where('category', 'otro_ingreso')->sum('amount'),
@@ -76,8 +78,9 @@ class ReportController extends Controller
             $runningBalance += $monthNet;
 
             $catTributo = (float) Transaction::where('category', 'tributo')->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
-            $catPase = (float) Transaction::where('category', 'pase')->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
-            $catInscripcion = (float) Transaction::whereIn('category', ['inscripcion', 'inscripcion_campeonato'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
+            $monthTramites = Transaction::splitTramites(Transaction::where('category', 'pase')->whereYear('date', $year)->whereMonth('date', $monthNum)->get());
+            $catPase = $monthTramites['pase'];
+            $catInscripcion = (float) Transaction::whereIn('category', ['inscripcion', 'inscripcion_campeonato'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount') + $monthTramites['inscripcion'];
             $catMultaApelacion = (float) Transaction::whereIn('category', ['multa', 'apelacion'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
             $catOtrosIngresos = (float) Transaction::whereIn('category', ['fondo_solidario', 'otro_ingreso'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
 
@@ -423,8 +426,9 @@ class ReportController extends Controller
             $totalExpenseYear += $exp;
 
             $catTributo = (float) Transaction::where('category', 'tributo')->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
-            $catPase = (float) Transaction::where('category', 'pase')->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
-            $catInscripcion = (float) Transaction::whereIn('category', ['inscripcion', 'inscripcion_campeonato'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
+            $monthTramites = Transaction::splitTramites(Transaction::where('category', 'pase')->whereYear('date', $year)->whereMonth('date', $monthNum)->get());
+            $catPase = $monthTramites['pase'];
+            $catInscripcion = (float) Transaction::whereIn('category', ['inscripcion', 'inscripcion_campeonato'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount') + $monthTramites['inscripcion'];
             $catMultaApelacion = (float) Transaction::whereIn('category', ['multa', 'apelacion'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
             $catOtrosIngresos = (float) Transaction::whereIn('category', ['fondo_solidario', 'otro_ingreso'])->whereYear('date', $year)->whereMonth('date', $monthNum)->sum('amount');
 

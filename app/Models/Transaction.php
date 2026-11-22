@@ -77,6 +77,52 @@ class Transaction extends Model
         return $incomeCats[$this->category ?? ''] ?? ucfirst($this->category ?? '');
     }
 
+    /** Códigos de trámite que son inscripciones de jugadores (1 Adulto, 2 Infantil, 3 Femenina). */
+    public const INSCRIPTION_CODES = ['1', '2', '3'];
+
+    /**
+     * Separa los comprobantes de "Pase / Trámite" (categoría pase) en pases (códigos 4 a 7)
+     * e inscripciones de jugadores (códigos 1 a 3), que se registran como ítems del mismo comprobante.
+     *
+     * @param  iterable<Transaction>  $transactions
+     * @return array{pase: float, pase_arfa: float, pase_afc: float, inscripcion: float, inscripcion_arfa: float, inscripcion_afc: float, pase_count: int, inscripcion_count: int}
+     */
+    public static function splitTramites(iterable $transactions): array
+    {
+        $totals = [
+            'pase' => 0.0, 'pase_arfa' => 0.0, 'pase_afc' => 0.0,
+            'inscripcion' => 0.0, 'inscripcion_arfa' => 0.0, 'inscripcion_afc' => 0.0,
+            'pase_count' => 0, 'inscripcion_count' => 0,
+        ];
+
+        foreach ($transactions as $tx) {
+            $items = $tx->breakdown['items'] ?? null;
+
+            if (is_array($items) && count($items) > 0) {
+                foreach ($items as $item) {
+                    $key = in_array((string) ($item['code'] ?? ''), self::INSCRIPTION_CODES, true) ? 'inscripcion' : 'pase';
+                    $amount = (float) ($item['amount'] ?? 0);
+                    $arfa = (float) ($item['arfa_cost'] ?? 0);
+                    $totals[$key] += $amount;
+                    $totals[$key.'_arfa'] += $arfa;
+                    $totals[$key.'_afc'] += $amount - $arfa;
+                    $totals[$key.'_count']++;
+                }
+
+                continue;
+            }
+
+            // Comprobantes antiguos sin detalle por ítem: se consideran pases completos.
+            $arfa = (float) ($tx->breakdown['arfa_cost'] ?? 17000);
+            $totals['pase'] += (float) $tx->amount;
+            $totals['pase_arfa'] += $arfa;
+            $totals['pase_afc'] += (float) ($tx->breakdown['afc_margin'] ?? ((float) $tx->amount - $arfa));
+            $totals['pase_count']++;
+        }
+
+        return $totals;
+    }
+
     public static function generateNextFolio(): string
     {
         $lastId = self::withTrashed()->max('id') ?? 0;

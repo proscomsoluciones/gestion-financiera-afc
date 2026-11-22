@@ -50,20 +50,14 @@ class DashboardController extends Controller
         $bankBalance = $incomeBank - $expenseBank;
 
         // 2. ARFA V Región vs AFC Fund Distribution calculation for Pases & Inscripciones
-        $passTransactions = (clone $baseQuery)->where('category', 'pase')->get();
-        $totalArfaPasses = 0;
-        $totalAfcPasses = 0;
+        // Los comprobantes de "Pase / Trámite" incluyen pases (códigos 4-7) e inscripciones de jugadores (códigos 1-3).
+        $tramites = Transaction::splitTramites((clone $baseQuery)->where('category', 'pase')->get());
+        $legacyInscriptions = (float) (clone $baseQuery)->where('category', 'inscripcion')->sum('amount');
 
-        foreach ($passTransactions as $tx) {
-            $arfaCost = $tx->breakdown['arfa_cost'] ?? 17000;
-            $afcMargin = $tx->breakdown['afc_margin'] ?? ($tx->amount - $arfaCost);
-            $totalArfaPasses += $arfaCost;
-            $totalAfcPasses += $afcMargin;
-        }
-
-        $inscriptionTransactions = (clone $baseQuery)->where('category', 'inscripcion')->get();
-        $totalArfaInscriptions = 0; // Always $0 CLP in ARFA V Región
-        $totalAfcInscriptions = (float) $inscriptionTransactions->sum('amount'); // 100% AFC
+        $totalArfaPasses = $tramites['pase_arfa'];
+        $totalAfcPasses = $tramites['pase_afc'];
+        $totalArfaInscriptions = $tramites['inscripcion_arfa']; // Normalmente $0: las inscripciones son 100% AFC
+        $totalAfcInscriptions = $tramites['inscripcion_afc'] + $legacyInscriptions;
 
         $totalArfaOverall = $totalArfaPasses + $totalArfaInscriptions;
         $totalAfcOverall = $totalAfcPasses + $totalAfcInscriptions;
@@ -72,9 +66,9 @@ class DashboardController extends Controller
         $categories = [
             'tributo' => (float) (clone $baseQuery)->where('category', 'tributo')->sum('amount'),
             'fondo_solidario' => (float) (clone $baseQuery)->where('category', 'fondo_solidario')->sum('amount'),
-            'inscripcion' => (float) (clone $baseQuery)->where('category', 'inscripcion')->sum('amount'),
+            'inscripcion' => $tramites['inscripcion'] + $legacyInscriptions,
             'inscripcion_campeonato' => (float) (clone $baseQuery)->where('category', 'inscripcion_campeonato')->sum('amount'),
-            'pase' => (float) (clone $baseQuery)->where('category', 'pase')->sum('amount'),
+            'pase' => $tramites['pase'],
             'pase_afc' => $totalAfcPasses,
             'pase_arfa' => $totalArfaPasses,
             'apelacion' => (float) (clone $baseQuery)->where('category', 'apelacion')->sum('amount'),
@@ -153,6 +147,10 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
+        // 6b. Cuenta corriente con ARFA (acumulada, sin filtro de período): lo que corresponde a ARFA
+        // por pases cobrados menos lo ya pagado (egresos cuya categoría menciona "ARFA").
+        $arfaBalance = self::arfaBalance();
+
         // 7. Institutional & Tariffs Data
         $institutional = Setting::getInstitutionalData();
         $totalClubsCount = Club::where('is_active', true)->count();
@@ -178,6 +176,7 @@ class DashboardController extends Controller
                     'total_arfa_overall' => $totalArfaOverall,
                     'total_afc_overall' => $totalAfcOverall,
                 ],
+                'arfa_balance' => $arfaBalance,
                 'monthly_chart' => $monthlyChart,
             ],
             'tribute_status' => $tributeStatus,
@@ -185,5 +184,32 @@ class DashboardController extends Controller
             'institutional' => $institutional,
             'filters' => $request->only(['month_filter', 'start_date', 'end_date']),
         ]);
+    }
+
+    /**
+     * Saldo acumulado con ARFA V Región.
+     *
+     * @return array{owed: float, paid: float, pending: float}
+     */
+    public static function arfaBalance(): array
+    {
+        $tramites = Transaction::splitTramites(Transaction::where('category', 'pase')->get());
+        $owed = $tramites['pase_arfa'] + $tramites['inscripcion_arfa'];
+
+        $arfaExpenseTypes = collect(Setting::getExpenseCategories())
+            ->filter(fn ($cat) => isset($cat['id']) && stripos($cat['label'] ?? '', 'arfa') !== false)
+            ->pluck('id')
+            ->all();
+
+        $paid = (float) Transaction::where('type', 'expense')
+            ->get(['amount', 'breakdown'])
+            ->filter(fn (Transaction $tx) => in_array($tx->breakdown['expense_type'] ?? null, $arfaExpenseTypes, true))
+            ->sum('amount');
+
+        return [
+            'owed' => $owed,
+            'paid' => $paid,
+            'pending' => max(0.0, $owed - $paid),
+        ];
     }
 }
